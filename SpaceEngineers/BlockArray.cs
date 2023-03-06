@@ -32,7 +32,7 @@ namespace SpaceEngineers
             list = new List<T>();
             index = 0;
 
-            program.GridTerminalSystem.GetBlocksOfType(list, b => b.Name.StartsWith(prefix));
+            program.GridTerminalSystem.GetBlocksOfType(list, b => b.Name.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase));
             ForEach(init);
         }
 
