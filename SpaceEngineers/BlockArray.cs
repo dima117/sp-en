@@ -32,8 +32,19 @@ namespace SpaceEngineers
             list = new List<T>();
             index = 0;
 
-            program.GridTerminalSystem.GetBlocksOfType(list, b => b.Name.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase));
-            ForEach(init);
+            var tmp = new List<IMyTerminalBlock>();
+            program.GridTerminalSystem.GetBlocks(tmp);
+
+            foreach (var x in tmp)
+            {
+                var block = x as T;
+
+                if (block != null)
+                {
+                    list.Add(block);
+                    init(block);
+                }
+            }
         }
 
         public void ForEach(Action<T> fn = null)

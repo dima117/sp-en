@@ -34,6 +34,11 @@ namespace SpaceEngineers
             return target.Position + (target.Velocity * Convert.ToSingle(timePassed.TotalSeconds));
         }
 
+        public int Count
+        {
+            get { return camArray.Count; }
+        }
+
         public TargetTracker(MyGridProgram program, string prefix = "Camera")
         {
             camArray = new BlockArray<IMyCameraBlock>(program, prefix, cam => cam.EnableRaycast = true);
@@ -46,8 +51,8 @@ namespace SpaceEngineers
 
         public void Clear()
         {
-            CurrentTarget = default;
-            LastLock = default;
+            CurrentTarget = default(MyDetectedEntityInfo);
+            LastLock = default(DateTime);
             ScanDelayMs = 0;
         }
 
@@ -80,7 +85,7 @@ namespace SpaceEngineers
         {
             var camera = camArray.GetNext(cam => cam.CanScan(distance));
 
-            var target = camera?.Raycast(distance) ?? default;
+            var target = camera?.Raycast(distance) ?? default(MyDetectedEntityInfo);
 
             UpdateTarget(camera, target, true);
         }
@@ -89,7 +94,7 @@ namespace SpaceEngineers
         {
             var camera = camArray.GetNext(cam => cam.CanScan(pos));
 
-            var target = camera?.Raycast(pos) ?? default;
+            var target = camera?.Raycast(pos) ?? default(MyDetectedEntityInfo);
 
             UpdateTarget(camera, target, true);
         }
@@ -97,7 +102,7 @@ namespace SpaceEngineers
         public void Update()
         {
             var timePassed = DateTime.UtcNow - LastLock;
- 
+
             // если цель не захвачена или прошло мало времени, то ничего не делаем
             if (CurrentTarget.IsEmpty() || timePassed.TotalMilliseconds < ScanDelayMs)
             {
@@ -109,7 +114,7 @@ namespace SpaceEngineers
 
             var camera = camArray.GetNext(cam => cam.CanScan(calculatedTargetPos));
 
-            var target = camera?.Raycast(calculatedTargetPos) ?? default;
+            var target = camera?.Raycast(calculatedTargetPos) ?? default(MyDetectedEntityInfo);
 
             UpdateTarget(camera, target);
         }
