@@ -22,16 +22,20 @@ namespace SpaceEngineers
         private BlockArray<IMyCameraBlock> camArray;
 
         public MyDetectedEntityInfo CurrentTarget; // последняя захваченная цель
+        public Vector3D Offset; // смещение точки прицеливания относительно геометрического центра цели
         public DateTime LastLock; // время последнего обновления захвата
         public double ScanDelayMs; // время следующего сканирования
 
         const double DISTANCE_RESERVE = 50;
         const double DISTANCE_SCAN_DEFAULT = 10000;
 
-        static Vector3D CalculateTargetLocation(MyDetectedEntityInfo target, TimeSpan timePassed)
+        static Vector3D CalculateTargetLocation(
+            MyDetectedEntityInfo target, TimeSpan timePassed, Vector3D relativeOffset)
         {
             // прежние координаты + вектор скорости (м/с) * время с последнего захвата (с)
-            return target.Position + (target.Velocity * Convert.ToSingle(timePassed.TotalSeconds));
+            return target.Position +
+                (target.Velocity * Convert.ToSingle(timePassed.TotalSeconds)) +
+                Vector3D.Transform(relativeOffset, target.Orientation);
         }
 
         public int Count
@@ -53,6 +57,7 @@ namespace SpaceEngineers
         {
             CurrentTarget = default(MyDetectedEntityInfo);
             LastLock = default(DateTime);
+            Offset = default(Vector3D);
             ScanDelayMs = 0;
         }
 
@@ -65,11 +70,28 @@ namespace SpaceEngineers
                 CurrentTarget = target;
                 LastLock = now;
 
-                var distance = (target.Position - camera.GetPosition()).Length() + DISTANCE_RESERVE;
+                var camPos = camera.GetPosition();
+
+                var distance = (target.Position - camPos).Length() + DISTANCE_RESERVE;
 
                 // считаем, сколько мс нужно для накопления камерами дистанции до цели
                 // камера накапливает дистанцию 2 м/мс
                 ScanDelayMs = distance / camArray.Count / 2;
+
+                // hitpos
+                if (resetTarget && target.HitPosition.HasValue)
+                {
+                    var hitPos = target.HitPosition.Value;
+
+                    // ставим метку на 2 метра вперед от точки пересечения
+                    var relativeHitPos = hitPos - target.Position + Vector3D.Normalize(hitPos - camPos) * 2;
+                    var invertedMatrix = MatrixD.Invert(target.Orientation);
+
+                    Offset = Vector3D.Transform(relativeHitPos, invertedMatrix);
+                } else
+                {
+                    Offset = default(Vector3D);
+                }
             }
             else
             {
@@ -110,7 +132,7 @@ namespace SpaceEngineers
             }
 
             // вычисляем новую позицию цели
-            var calculatedTargetPos = CalculateTargetLocation(CurrentTarget, timePassed);
+            var calculatedTargetPos = CalculateTargetLocation(CurrentTarget, timePassed, Offset);
 
             var camera = camArray.GetNext(cam => cam.CanScan(calculatedTargetPos));
 
