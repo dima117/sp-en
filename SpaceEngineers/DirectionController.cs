@@ -38,36 +38,59 @@ namespace SpaceEngineers
             }
         }
 
-        public Directions GetNavAngle(Vector3D targetPos)
+        public static Directions GetNavAngle(MatrixD orientation, Vector3D directionForward, Vector3D directionDown = default(Vector3D))
+
+        {
+            var forward = orientation.Forward;
+            var up = orientation.Up;
+            var left = orientation.Left;
+
+            var pitch = Math.Acos(
+                Vector3D.Dot(up, Vector3D.Normalize(Vector3D.Reject(directionForward, left)))
+            ) - Math.PI / 2;
+
+            var yaw = Math.Acos(
+                Vector3D.Dot(left, Vector3D.Normalize(Vector3D.Reject(directionForward, up)))
+            ) - Math.PI / 2;
+
+            var roll = Math.Acos(
+                Vector3D.Dot(left, Vector3D.Normalize(Vector3D.Reject(directionDown, forward)))
+            ) - Math.PI / 2;
+
+            return new Directions
+            {
+                Pitch = pitch,
+                Yaw = yaw,
+                Roll = roll,
+            };
+        }
+
+        public Directions GetTargetAngle(Vector3D targetPos)
         {
             // TODO: проверить, можно ли считать проекцию векторов без промежуточного вектора
             // TODO: сделать методы: 1) выравнивание P+Y на точку, 2) выравниание P+R по вектору гравитации
-            var myPos = remoteControl.GetPosition();
+            // TODO: сделать компенсацию собственной скорости однонаправленным двигателем 
+
+            var ownPos = remoteControl.GetPosition();
             var gravity = remoteControl.GetNaturalGravity();
-            var forward = remoteControl.WorldMatrix.Forward;
-            var up = remoteControl.WorldMatrix.Up;
-            var left = remoteControl.WorldMatrix.Left;
+            var orientation = remoteControl.WorldMatrix;
+            var targetVector = targetPos - ownPos;
 
-            var targetVector = targetPos - myPos;
+            return GetNavAngle(orientation, targetVector, gravity);
+        }
 
-            var targetPitch = Math.Acos(
-                Vector3D.Dot(up, Vector3D.Normalize(Vector3D.Reject(targetVector, left)))
-            ) - Math.PI / 2;
+        public Directions GetInterceptAngle(double ownSpeed, MyDetectedEntityInfo target)
+        {
+            var ownPos = remoteControl.GetPosition();
+            var orientation = remoteControl.WorldMatrix;
 
-            var targetYaw = Math.Acos(
-                Vector3D.Dot(left, Vector3D.Normalize(Vector3D.Reject(targetVector, up)))
-            ) - Math.PI / 2;
+            var point = Helpers.CalculateInterceptPoint(ownPos, ownSpeed, target.Position, target.Velocity);
 
-            var targetRoll = Math.Acos(
-                Vector3D.Dot(left, Vector3D.Normalize(Vector3D.Reject(gravity, forward)))
-            ) - Math.PI / 2;
+            var direction = point == null
+                ? Vector3D.Normalize(target.Velocity) // если ракета не может догнать цель, то двигаемся параллельно 
+                : Vector3D.Normalize(point.Position - ownPos); // иначе крс на точку перехвата
 
-            return new Directions()
-            {
-                Pitch = targetPitch,
-                Yaw = targetYaw,
-                Roll = targetRoll,
-            };
+            return GetNavAngle(orientation, direction);
         }
     }
 }
