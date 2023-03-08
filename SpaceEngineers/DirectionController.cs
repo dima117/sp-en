@@ -38,24 +38,29 @@ namespace SpaceEngineers
             }
         }
 
+        const double pi2 = Math.PI / 2;
+
+        // вектора должны быть нормализованы
+        public static double GetAngle(Vector3D direction, Vector3D forward, Vector3D up) { 
+            var prj2up = Vector3D.Dot(direction, up);
+            var prj2forward = Vector3D.Dot(direction, forward);
+
+            var angle = pi2 - Math.Acos(Math.Abs(prj2up));
+            if (prj2forward < 0) {
+                angle += pi2;
+            }
+
+            return Math.Sign(prj2up) * angle;
+        }
+
         public static Directions GetNavAngle(MatrixD orientation, Vector3D directionForward, Vector3D directionDown = default(Vector3D))
-
         {
-            var forward = orientation.Forward;
-            var up = orientation.Up;
-            var left = orientation.Left;
+            var dir = Vector3D.Normalize(directionForward);
+            var dir2 = Vector3D.Normalize(directionDown.IsZero() ? orientation.Down : directionDown);
 
-            var pitch = Math.Acos(
-                Vector3D.Dot(up, Vector3D.Normalize(Vector3D.Reject(directionForward, left)))
-            ) - Math.PI / 2;
-
-            var yaw = Math.Acos(
-                Vector3D.Dot(left, Vector3D.Normalize(Vector3D.Reject(directionForward, up)))
-            ) - Math.PI / 2;
-
-            var roll = Math.Acos(
-                Vector3D.Dot(left, Vector3D.Normalize(Vector3D.Reject(directionDown, forward)))
-            ) - Math.PI / 2;
+            var pitch = GetAngle(dir, orientation.Forward, orientation.Up);
+            var yaw = GetAngle(dir, orientation.Forward, orientation.Right);
+            var roll = GetAngle(dir2, orientation.Down, orientation.Left);
 
             return new Directions
             {

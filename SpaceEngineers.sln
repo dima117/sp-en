@@ -5,6 +5,8 @@ VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceEngineers", "SpaceEngineers\SpaceEngineers.csproj", "{FF239FA7-3389-4723-9066-C109A58481A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{FF239FA7-3389-4723-9066-C109A58481A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF239FA7-3389-4723-9066-C109A58481A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF239FA7-3389-4723-9066-C109A58481A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
