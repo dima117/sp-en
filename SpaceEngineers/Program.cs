@@ -22,6 +22,10 @@ namespace SpaceEngineers
         #region Copy
 
         readonly TargetTracker tt;
+        readonly IMyRemoteControl remote;
+        readonly IMyShipMergeBlock slot;
+        readonly IMySoundBlock sound;
+
 
         public Program()
         {
@@ -29,6 +33,9 @@ namespace SpaceEngineers
         }
         public void Main(string argument, UpdateType updateSource)
         {
+            var vel = remote.GetShipVelocities().LinearVelocity;
+            sound.SelectedSound = "";
+            sound.Play();
 
         }
         public void Save()

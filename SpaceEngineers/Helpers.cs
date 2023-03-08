@@ -15,7 +15,6 @@ namespace SpaceEngineers
             public double TimeMs;
         }
 
-        // TODO: написать тесты
         public static InterceptResult CalculateInterceptPoint(
             Vector3D ownPosition,
             double interceptSpeed,

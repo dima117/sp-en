@@ -67,10 +67,6 @@ namespace SpaceEngineers
 
         public Directions GetTargetAngle(Vector3D targetPos)
         {
-            // TODO: проверить, можно ли считать проекцию векторов без промежуточного вектора
-            // TODO: сделать методы: 1) выравнивание P+Y на точку, 2) выравниание P+R по вектору гравитации
-            // TODO: сделать компенсацию собственной скорости однонаправленным двигателем 
-
             var ownPos = remoteControl.GetPosition();
             var gravity = remoteControl.GetNaturalGravity();
             var orientation = remoteControl.WorldMatrix;
