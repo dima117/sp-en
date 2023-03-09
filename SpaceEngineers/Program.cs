@@ -59,16 +59,13 @@ namespace SpaceEngineers
                 case "start":
                     slot.Enabled = false;
                     torpedo.Start();
-
-                    lcd.CustomData = "";
                     break;
                 default:
                     tt.Update();
 
                     if (torpedo != null)
                     {
-                        var info = torpedo.Update(tt.CurrentTarget);
-                        lcd.CustomData += "\n" + info;
+                        torpedo.Update(tt.CurrentTarget);
                     }
                     break;
             }
@@ -77,16 +74,17 @@ namespace SpaceEngineers
             sb.AppendLine($"Torpedo: {torpedo?.Id}");
             sb.AppendLine($"------------------------");
             sb.AppendLine($"Range: {cam.AvailableScanRange}");
-            sb.AppendLine($"Cam count: {tt.Count}\n------------------------");
-            sb.AppendLine($"Locked: ${!tt.CurrentTarget.IsEmpty()}");
+            sb.AppendLine($"Cam count: {tt.Count}");
+            sb.AppendLine($"------------------------");
+            sb.AppendLine($"Locked: {!tt.CurrentTarget.IsEmpty()}");
 
             if (!tt.CurrentTarget.IsEmpty())
             {
                 sb.AppendLine($"Pos X: {tt.CurrentTarget.Position.X}");
                 sb.AppendLine($"Pos Y: {tt.CurrentTarget.Position.Y}");
                 sb.AppendLine($"Pos Z: {tt.CurrentTarget.Position.Z}");
-                sb.AppendLine($"Speed: {tt.CurrentTarget.Velocity.Length()}");
-                sb.AppendLine($"Distance: {Vector3D.Distance(cam.GetPosition(), tt.CurrentTarget.Position)}");
+                sb.AppendLine($"Speed: {tt.CurrentTarget.Velocity.Length():0.000}");
+                sb.AppendLine($"Distance: {Vector3D.Distance(cam.GetPosition(), tt.CurrentTarget.Position):0.000}");
             }
 
             lcd.WriteText(sb.ToString());

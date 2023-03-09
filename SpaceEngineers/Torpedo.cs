@@ -20,7 +20,7 @@ namespace SpaceEngineers
 {
     public class Torpedo
     {
-        public long Id { get; private set; }
+        public readonly string Id = Guid.NewGuid().ToString("N");
 
         IMyGyro tGyro;
         IMyThrust tEngine;
@@ -29,8 +29,6 @@ namespace SpaceEngineers
 
         public Torpedo(MyGridProgram program, string prefix = "T_")
         {
-            Id = DateTime.UtcNow.Ticks;
-
             tEngine = program.GridTerminalSystem.GetBlockWithName($"{prefix}ENGINE") as IMyThrust;
             tGyro = program.GridTerminalSystem.GetBlockWithName($"{prefix}GYRO") as IMyGyro;
             tRemote = program.GridTerminalSystem.GetBlockWithName($"{prefix}REMOTE") as IMyRemoteControl;
@@ -47,7 +45,7 @@ namespace SpaceEngineers
         {
             if (target.IsEmpty())
             {
-                return "---";
+                return "";
             }
 
             var speed = tRemote.GetShipVelocities().LinearVelocity.Length();
@@ -57,7 +55,7 @@ namespace SpaceEngineers
 
             var sb = new StringBuilder();
 
-            sb.Append($"Id: {Id}");
+            sb.AppendLine($"Id: {Id}");
             sb.AppendLine($"Speed: {speed:0.00}");
             sb.AppendLine($"Target: {target.Position}");
             sb.AppendLine($"Missile pos: {tRemote.GetPosition()}");

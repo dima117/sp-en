@@ -40,56 +40,74 @@ namespace SpaceEngineers
 
         const double pi2 = Math.PI / 2;
 
-        // вектора должны быть нормализованы
-        public static double GetAngle(Vector3D direction, Vector3D forward, Vector3D up) { 
-            var prj2up = Vector3D.Dot(direction, up);
-            var prj2forward = Vector3D.Dot(direction, forward);
-
-            var angle = pi2 - Math.Acos(Math.Abs(prj2up));
-            if (prj2forward < 0) {
-                angle += pi2;
-            }
-
-            return Math.Sign(prj2up) * angle;
+        static double ApplySign(double sign, double value)
+        {
+            return sign >= 0 ? value : -value;
         }
 
-        public static Directions GetNavAngle(MatrixD orientation, Vector3D directionForward, Vector3D directionDown = default(Vector3D))
+        public static Directions GetNavAngle(MatrixD orientation, Vector3D directionTarget)
         {
-            var dir = Vector3D.Normalize(directionForward);
-            var dir2 = Vector3D.Normalize(directionDown.IsZero() ? orientation.Down : directionDown);
+            // нормализованное направление на цель
+            var dirTarget = Vector3D.Normalize(directionTarget);
 
-            var pitch = GetAngle(dir, orientation.Forward, orientation.Up);
-            var yaw = GetAngle(dir, orientation.Forward, orientation.Right);
-            var roll = GetAngle(dir2, orientation.Down, orientation.Left);
+            // проекции вектора цели на оси
+            var prj2forward = Vector3D.Dot(dirTarget, orientation.Forward);
+
+            var prj2up = Vector3D.Dot(dirTarget, orientation.Up);
+            var prj2upAbs = Math.Abs(prj2up);
+
+            var prj2right = Vector3D.Dot(dirTarget, orientation.Right);
+            var prj2rightAbs = Math.Abs(prj2right);
+
+            // вычисляем углы поворота
+            var anglePitch = pi2 - Math.Acos(prj2upAbs);
+            var angleYaw = pi2 - Math.Acos(prj2rightAbs);
+
+            // если ракета развернута в обратном направлении от цели
+            if (prj2forward < 0)
+            {
+                // корректируем угол по измерению где больше проекция на перпендикулярный вектор
+                if (prj2rightAbs <= prj2upAbs)
+                {
+                    anglePitch = Math.PI - anglePitch;
+                }
+                else
+                {
+                    angleYaw = Math.PI - angleYaw;
+                }
+            }
+
+            // определяем знак угла
+            var pitch = ApplySign(prj2up, anglePitch);
+            var yaw = ApplySign(prj2right, angleYaw);
 
             return new Directions
             {
                 Pitch = pitch,
                 Yaw = yaw,
-                Roll = roll,
             };
         }
 
         public Directions GetTargetAngle(Vector3D targetPos)
         {
             var ownPos = remoteControl.GetPosition();
-            var gravity = remoteControl.GetNaturalGravity();
             var orientation = remoteControl.WorldMatrix;
             var targetVector = targetPos - ownPos;
 
-            return GetNavAngle(orientation, targetVector, gravity);
+            return GetNavAngle(orientation, targetVector);
         }
 
-        public Directions GetInterceptAngle(double ownSpeed, MyDetectedEntityInfo target)
+        public Directions GetInterceptAngle(MyDetectedEntityInfo target)
         {
             var ownPos = remoteControl.GetPosition();
+            var ownSpeed = remoteControl.GetShipVelocities().LinearVelocity.Length();
             var orientation = remoteControl.WorldMatrix;
 
             var point = Helpers.CalculateInterceptPoint(ownPos, ownSpeed, target.Position, target.Velocity);
 
             var direction = point == null
-                ? Vector3D.Normalize(target.Velocity) // если ракета не может догнать цель, то двигаемся параллельно 
-                : Vector3D.Normalize(point.Position - ownPos); // иначе крс на точку перехвата
+                ? new Vector3D(target.Velocity) // если ракета не может догнать цель, то двигаемся параллельно 
+                : (point.Position - ownPos); // иначе курс на точку перехвата
 
             return GetNavAngle(orientation, direction);
         }
