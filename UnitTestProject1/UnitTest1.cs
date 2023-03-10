@@ -15,7 +15,6 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using SpaceEngineers;
 
 namespace UnitTestProject1
