@@ -20,7 +20,7 @@ namespace SpaceEngineers
 {
     public class Torpedo
     {
-        public readonly string Id = Guid.NewGuid().ToString("N");
+        public readonly string Id = DateTime.UtcNow.Ticks.ToString();
 
         IMyGyro tGyro;
         IMyThrust tEngine;
@@ -50,7 +50,7 @@ namespace SpaceEngineers
 
             var speed = tRemote.GetShipVelocities().LinearVelocity.Length();
             var d = tControl.GetTargetAngle(target.Position);
-            tGyro.Pitch = Convert.ToSingle(d.Pitch);
+            tGyro.Pitch = -Convert.ToSingle(d.Pitch);
             tGyro.Yaw = Convert.ToSingle(d.Yaw);
 
             var sb = new StringBuilder();

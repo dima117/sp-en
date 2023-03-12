@@ -17,57 +17,71 @@ using SpaceEngineers.Game.ModAPI.Ingame;
 
 namespace SpaceEngineers
 {
-    public sealed class Program : MyGridProgram
+    public sealed class Program222 : MyGridProgram
     {
+        // исходный скрипт, который не работает
+
         #region Copy
 
-        TargetTracker tt;
-        IMyTextPanel lcd1; // система
-        IMyTextPanel lcd2; // цель
-        IMyCameraBlock cam;
+        readonly TargetTracker tt;
+        readonly IMyTextPanel lcd;
+        readonly IMyCameraBlock cam;
+        readonly IMyShipMergeBlock slot;
 
-        public Program()
+        Torpedo torpedo;
+       
+        public Program222()
         {
             tt = new TargetTracker(this, "Камера");
-            lcd1 = GridTerminalSystem.GetBlockWithName("LCD1") as IMyTextPanel;
-            lcd2 = GridTerminalSystem.GetBlockWithName("LCD2") as IMyTextPanel;
-
+            lcd = GridTerminalSystem.GetBlockWithName("LCD") as IMyTextPanel;
+            slot = GridTerminalSystem.GetBlockWithName("SLOT") as IMyShipMergeBlock;
             cam = GridTerminalSystem.GetBlockWithName("MAIN_CAM") as IMyCameraBlock;
             cam.EnableRaycast = true;
 
-            Runtime.UpdateFrequency = UpdateFrequency.Update1;
+            Runtime.UpdateFrequency = UpdateFrequency.Update10;
         }
         public void Main(string argument, UpdateType updateSource)
         {
             switch (argument)
+
             {
-                case "lock":
+                case "capture":
                     var target = cam.Raycast(20000);
                     if (!target.IsEmpty())
                     {
                         tt.LockOn(target.Position);
                     }
                     break;
+                case "reload":
+                    torpedo = null;
+                    slot.Enabled = true;
+                    
+                    break;
+                case "prepare":
+                    torpedo = new Torpedo(this);
+                    break;
+                case "start":
+                    slot.Enabled = false;
+                    torpedo.Start();
+
+                    break;
                 default:
                     tt.Update();
+
+                    if (torpedo != null)
+                    {
+                        // сделать задержку
+                        torpedo.Update(tt.CurrentTarget);
+                    }
                     break;
             }
 
-            UpdateSystemLcd();
-            UpdateTargetLcd();
-        }
-
-        void UpdateSystemLcd()
-        {
             var sb = new StringBuilder();
+            sb.AppendLine($"Torpedo: {torpedo?.Id}");
+            sb.AppendLine($"------------------------");
             sb.AppendLine($"Range: {cam.AvailableScanRange}");
             sb.AppendLine($"Cam count: {tt.Count}");
-            lcd1.WriteText(sb.ToString());
-        }
-
-        void UpdateTargetLcd()
-        {
-            var sb = new StringBuilder();
+            sb.AppendLine($"------------------------");
             sb.AppendLine($"Locked: {!tt.CurrentTarget.IsEmpty()}");
 
             if (!tt.CurrentTarget.IsEmpty())
@@ -79,7 +93,11 @@ namespace SpaceEngineers
                 sb.AppendLine($"Distance: {Vector3D.Distance(cam.GetPosition(), tt.CurrentTarget.Position):0.000}");
             }
 
-            lcd2.WriteText(sb.ToString());
+            lcd.WriteText(sb.ToString());
+        }
+        public void Save()
+        {
+
         }
         #endregion
     }
