@@ -67,8 +67,6 @@
   <ItemGroup>
     <Compile Include="BlockArray.cs" />
     <Compile Include="Helpers.cs" />
-    <Compile Include="Program - Copy.cs" />
-    <Compile Include="Program222 - Copy.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="DirectionController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

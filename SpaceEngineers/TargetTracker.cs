@@ -67,30 +67,39 @@ namespace SpaceEngineers
 
             if (!target.IsEmpty())
             {
-                CurrentTarget = target;
-                LastLock = now;
+                // TODO: вместо фильтрациии по типу, сделать фильтрацию по entityId
+                var isEnemy = target.Relationship != MyRelationsBetweenPlayerAndBlock.FactionShare &&
+                    (target.Type == MyDetectedEntityType.SmallGrid || target.Type == MyDetectedEntityType.LargeGrid);
 
-                var camPos = camera.GetPosition();
-
-                var distance = (target.Position - camPos).Length() + DISTANCE_RESERVE;
-
-                // считаем, сколько мс нужно для накопления камерами дистанции до цели
-                // камера накапливает дистанцию 2 м/мс
-                ScanDelayMs = distance / camArray.Count / 2;
-
-                // hitpos
-                if (resetTarget && target.HitPosition.HasValue)
+                if (isEnemy)
                 {
-                    var hitPos = target.HitPosition.Value;
 
-                    // ставим метку на 2 метра вперед от точки пересечения
-                    var relativeHitPos = hitPos - target.Position + Vector3D.Normalize(hitPos - camPos) * 2;
-                    var invertedMatrix = MatrixD.Invert(target.Orientation);
+                    CurrentTarget = target;
+                    LastLock = now;
 
-                    Offset = Vector3D.Transform(relativeHitPos, invertedMatrix);
-                } else
-                {
-                    Offset = default(Vector3D);
+                    var camPos = camera.GetPosition();
+
+                    var distance = (target.Position - camPos).Length() + DISTANCE_RESERVE;
+
+                    // считаем, сколько мс нужно для накопления камерами дистанции до цели
+                    // камера накапливает дистанцию 2 м/мс
+                    ScanDelayMs = distance / camArray.Count / 2;
+
+                    // hitpos
+                    if (resetTarget && target.HitPosition.HasValue)
+                    {
+                        var hitPos = target.HitPosition.Value;
+
+                        // ставим метку на 2 метра вперед от точки пересечения
+                        var relativeHitPos = hitPos - target.Position + Vector3D.Normalize(hitPos - camPos) * 2;
+                        var invertedMatrix = MatrixD.Invert(target.Orientation);
+
+                        Offset = Vector3D.Transform(relativeHitPos, invertedMatrix);
+                    }
+                    else
+                    {
+                        Offset = default(Vector3D);
+                    }
                 }
             }
             else
@@ -114,6 +123,7 @@ namespace SpaceEngineers
 
         public void LockOn(Vector3D pos)
         {
+            // TODO: сделать работающий захват позиции
             var camera = camArray.GetNext(cam => cam.CanScan(pos));
 
             var target = camera?.Raycast(pos) ?? default(MyDetectedEntityInfo);
