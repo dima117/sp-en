@@ -49,11 +49,13 @@ namespace SpaceEngineers
             switch (argument)
             {
                 case "lock":
-                    var target = cam.Raycast(20000);
-                    if (!target.IsEmpty())
+                    var entity = TargetTracker.Scan(cam, 10000);
+
+                    if (entity.HasValue)
                     {
-                        tt.LockOn(target.Position);
+                        tt.LockOn(entity.Value);
                     }
+
                     break;
                 case "reload":
                     torpedo = null;
@@ -70,13 +72,14 @@ namespace SpaceEngineers
                 default:
                     tt.Update();
 
-                    var info = torpedo?.Update(tt.CurrentTarget);
-                    lcd3.WriteText(info ?? "--");
+                    torpedo?.Update(tt.Current);
+
                     break;
             }
 
             UpdateSystemLcd();
             UpdateTargetLcd();
+            UpdateTorpedoLcd(torpedo);
         }
 
         void UpdateSystemLcd()
@@ -90,19 +93,46 @@ namespace SpaceEngineers
         void UpdateTargetLcd()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Locked: {tt.CurrentTarget.IsEmpty()}");
+            sb.AppendLine($"Locked: {tt.Current.HasValue}");
 
-            if (!tt.CurrentTarget.IsEmpty())
+            if (tt.Current.HasValue)
             {
-                sb.AppendLine($"Type: {tt.CurrentTarget.Type}");
-                sb.AppendLine($"Pos X: {tt.CurrentTarget.Position.X:0.000}");
-                sb.AppendLine($"Pos Y: {tt.CurrentTarget.Position.Y:0.000}");
-                sb.AppendLine($"Pos Z: {tt.CurrentTarget.Position.Z:0.000}");
-                sb.AppendLine($"Speed: {tt.CurrentTarget.Velocity.Length():0.000}");
-                sb.AppendLine($"Distance: {Vector3D.Distance(cam.GetPosition(), tt.CurrentTarget.Position):0.000}");
+                var target = tt.Current.Value.Entity;
+                var distance = Vector3D.Distance(cam.GetPosition(), target.Position);
+
+                sb.AppendLine($"- type: {target.Type}");
+                sb.AppendLine($"- position: {target.Position}");
+                sb.AppendLine($"- speed: {target.Velocity.Length():0.000}");
+                sb.AppendLine($"- distance: {distance:0.000}");
             }
 
             lcd2.WriteText(sb.ToString());
+        }
+
+        void UpdateTorpedoLcd(Torpedo torpedo)
+        {
+            if (torpedo == null)
+            {
+                lcd3.WriteText(string.Empty);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            var myPos = torpedo.Position;
+
+            sb.AppendLine("Missile:");
+            sb.AppendLine($"- speed: {torpedo.Speed:0.00}");
+            sb.AppendLine($"- position: {myPos}");
+
+            if (tt.Current.HasValue)
+            {
+                var target = tt.Current.Value.Entity;
+                var distance = Vector3D.Distance(myPos, target.Position);
+
+                sb.AppendLine($"- target distance: {distance:0}");
+            }
+
+            lcd3.WriteText(sb.ToString());
         }
         #endregion
     }

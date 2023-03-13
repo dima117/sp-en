@@ -19,28 +19,79 @@ namespace SpaceEngineers
 {
     public class TargetTracker
     {
-        private BlockArray<IMyCameraBlock> camArray;
-
-        public MyDetectedEntityInfo CurrentTarget; // последняя захваченная цель
-        public Vector3D Offset; // смещение точки прицеливания относительно геометрического центра цели
-        public DateTime LastLock; // время последнего обновления захвата
-        public double ScanDelayMs; // время следующего сканирования
-
         const double DISTANCE_RESERVE = 50;
         const double DISTANCE_SCAN_DEFAULT = 10000;
 
-        static Vector3D CalculateTargetLocation(
-            MyDetectedEntityInfo target, TimeSpan timePassed, Vector3D relativeOffset)
+        public struct TargetInfo
         {
+            public readonly MyDetectedEntityInfo Entity;
+            public readonly Vector3D HitPos; // смещение точки прицеливания относительно геометрического центра цели
+            public readonly DateTime Timestamp; // время последнего обнаружения цели
+            public readonly double ScanDelayMs; // время до следующего сканирования
+
+            public TargetInfo(
+                MyDetectedEntityInfo entity = default(MyDetectedEntityInfo),
+                DateTime timestamp = default(DateTime),
+                double scanDelayMs = default(double),
+                Vector3D hitPos = default(Vector3D))
+            {
+                Entity = entity;
+                Timestamp = timestamp;
+                ScanDelayMs = scanDelayMs;
+                HitPos = hitPos;
+            }
+
+            public TargetInfo Update(MyDetectedEntityInfo entity, DateTime timestamp, double scanDelayMs)
+            {
+                return new TargetInfo(entity, timestamp, scanDelayMs, HitPos);
+            }
+        }
+
+        public static TargetInfo? Scan(IMyCameraBlock cam, double distance = DISTANCE_SCAN_DEFAULT)
+        {
+            if (cam == null)
+            {
+                return null;
+            }
+
+            var target = cam.Raycast(distance);
+
+            if (target.IsEmpty())
+            {
+                return null;
+            }
+
+            // hitpos
+            var relativeHitPos = default(Vector3D);
+
+            if (target.HitPosition.HasValue)
+            {
+                var hitPos = target.HitPosition.Value;
+                var camPos = cam.GetPosition();
+
+                // ставим метку на 1 метр вперед от точки пересечения
+                var correctedHitPos = hitPos + Vector3D.Normalize(hitPos - camPos);
+                var invertedMatrix = MatrixD.Invert(target.Orientation);
+
+                relativeHitPos = Vector3D.Transform(correctedHitPos - target.Position, invertedMatrix);
+            }
+
+            return new TargetInfo(target, DateTime.UtcNow, 0, relativeHitPos);
+        }
+
+        private BlockArray<IMyCameraBlock> camArray;
+
+        public TargetInfo? Current; // последняя захваченная цель
+
+        static Vector3D CalculateTargetLocation(
+            TargetInfo info, TimeSpan timePassed)
+        {
+            var target = info.Entity;
+
             // прежние координаты + вектор скорости (м/с) * время с последнего захвата (с)
             return target.Position +
                 (target.Velocity * Convert.ToSingle(timePassed.TotalSeconds)) +
-                Vector3D.Transform(relativeOffset, target.Orientation);
-        }
-
-        public int Count
-        {
-            get { return camArray.Count; }
+                Vector3D.Transform(info.HitPos, target.Orientation);
         }
 
         public TargetTracker(MyGridProgram program, string prefix = "Camera")
@@ -48,107 +99,86 @@ namespace SpaceEngineers
             camArray = new BlockArray<IMyCameraBlock>(program, prefix, cam => cam.EnableRaycast = true);
         }
 
+        public int Count
+        {
+            get { return camArray.Count; }
+        }
+
         public void UpdateCamArray()
         {
             camArray.UpdateBlocks();
         }
 
+        public void LockOn(TargetInfo target)
+        {
+            Current = target;
+        }
+
         public void Clear()
         {
-            CurrentTarget = default(MyDetectedEntityInfo);
-            LastLock = default(DateTime);
-            Offset = default(Vector3D);
-            ScanDelayMs = 0;
+            Current = null;
         }
 
-        private void UpdateTarget(IMyCameraBlock camera, MyDetectedEntityInfo target, bool resetTarget = false)
+        private TargetInfo? TryGetUpdatedEntity(TargetInfo prevTarget, TimeSpan timePassed, DateTime now)
         {
-            var now = DateTime.UtcNow;
+            // вычисляем новую позицию цели
+            var calculatedTargetPos = CalculateTargetLocation(prevTarget, timePassed);
 
-            if (!target.IsEmpty())
+            var camera = camArray.GetNext(cam => cam.CanScan(calculatedTargetPos));
+
+            if (camera == null)
             {
-                // TODO: вместо фильтрациии по типу, сделать фильтрацию по entityId
-                var isEnemy = target.Relationship != MyRelationsBetweenPlayerAndBlock.FactionShare &&
-                    (target.Type == MyDetectedEntityType.SmallGrid || target.Type == MyDetectedEntityType.LargeGrid);
-
-                if (isEnemy)
-                {
-
-                    CurrentTarget = target;
-                    LastLock = now;
-
-                    var camPos = camera.GetPosition();
-
-                    var distance = (target.Position - camPos).Length() + DISTANCE_RESERVE;
-
-                    // считаем, сколько мс нужно для накопления камерами дистанции до цели
-                    // камера накапливает дистанцию 2 м/мс
-                    ScanDelayMs = distance / camArray.Count / 2;
-
-                    // hitpos
-                    if (resetTarget && target.HitPosition.HasValue)
-                    {
-                        var hitPos = target.HitPosition.Value;
-
-                        // ставим метку на 2 метра вперед от точки пересечения
-                        var relativeHitPos = hitPos - target.Position + Vector3D.Normalize(hitPos - camPos) * 2;
-                        var invertedMatrix = MatrixD.Invert(target.Orientation);
-
-                        Offset = Vector3D.Transform(relativeHitPos, invertedMatrix);
-                    }
-                    else
-                    {
-                        Offset = default(Vector3D);
-                    }
-                }
+                return null;
             }
-            else
+
+            var target = camera.Raycast(calculatedTargetPos);
+
+            // если не удалось повторно отсканировать ту же цель
+            if (target.IsEmpty() || target.EntityId != prevTarget.Entity.EntityId)
             {
-                // если была смена цели или последнее успешное сканирование было больше 2 секунд назад
-                if (resetTarget || (now - LastLock).TotalSeconds > 2)
-                {
-                    Clear();
-                }
+                return null;
             }
-        }
 
-        public void LockOn(double distance = DISTANCE_SCAN_DEFAULT)
-        {
-            var camera = camArray.GetNext(cam => cam.CanScan(distance));
+            var camPos = camera.GetPosition();
 
-            var target = camera?.Raycast(distance) ?? default(MyDetectedEntityInfo);
+            var distance = (target.Position - camPos).Length() + DISTANCE_RESERVE;
 
-            UpdateTarget(camera, target, true);
-        }
+            // считаем, сколько мс нужно для накопления камерами дистанции до цели
+            // камера накапливает дистанцию 2 м/мс
+            var scanDelayMs = distance / camArray.Count / 2;
 
-        public void LockOn(Vector3D pos)
-        {
-            // TODO: сделать работающий захват позиции
-            var camera = camArray.GetNext(cam => cam.CanScan(pos));
-
-            var target = camera?.Raycast(pos) ?? default(MyDetectedEntityInfo);
-
-            UpdateTarget(camera, target, true);
+            return prevTarget.Update(target, now, scanDelayMs);
         }
 
         public void Update()
         {
-            var timePassed = DateTime.UtcNow - LastLock;
-
-            // если цель не захвачена или прошло мало времени, то ничего не делаем
-            if (CurrentTarget.IsEmpty() || timePassed.TotalMilliseconds < ScanDelayMs)
+            // если цель не захвачена, то ничего не делаем
+            if (!Current.HasValue)
             {
                 return;
             }
 
-            // вычисляем новую позицию цели
-            var calculatedTargetPos = CalculateTargetLocation(CurrentTarget, timePassed, Offset);
+            var now = DateTime.UtcNow;
+            var prevTarget = Current.Value;
+            var timePassed = now - prevTarget.Timestamp;
 
-            var camera = camArray.GetNext(cam => cam.CanScan(calculatedTargetPos));
+            // если прошло мало времени, то ничего не делаем
+            if (timePassed.TotalMilliseconds < prevTarget.ScanDelayMs)
+            {
+                return;
+            }
 
-            var target = camera?.Raycast(calculatedTargetPos) ?? default(MyDetectedEntityInfo);
+            var target = TryGetUpdatedEntity(prevTarget, timePassed, now);
 
-            UpdateTarget(camera, target);
+            if (target.HasValue)
+            {
+                Current = target.Value;
+            }
+            else if (timePassed.TotalSeconds > 2)
+            {
+                // если последнее успешное сканирование было больше 2 секунд назад
+                Clear();
+            }
         }
     }
 }
