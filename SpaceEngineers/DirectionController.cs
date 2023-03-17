@@ -19,6 +19,8 @@ namespace SpaceEngineers
 {
     public class DirectionController
     {
+        public const double MIN_SPEED = 30;
+
         IMyShipController remoteControl;
 
         public DirectionController(IMyShipController remoteControl)
@@ -100,7 +102,7 @@ namespace SpaceEngineers
         public Directions GetInterceptAngle(MyDetectedEntityInfo target)
         {
             var ownPos = remoteControl.GetPosition();
-            var ownSpeed = remoteControl.GetShipVelocities().LinearVelocity.Length();
+            var ownSpeed = Math.Max(remoteControl.GetShipSpeed(), MIN_SPEED);
             var orientation = remoteControl.WorldMatrix;
 
             var point = Helpers.CalculateInterceptPoint(ownPos, ownSpeed, target.Position, target.Velocity);

@@ -31,7 +31,7 @@ namespace SpaceEngineers
         DateTime startTime = DateTime.MaxValue;
 
         public Vector3D Position => tRemote.GetPosition();
-        public double Speed => tRemote.GetShipVelocities().LinearVelocity.Length();
+        public double Speed => tRemote.GetShipSpeed();
 
         public Torpedo(MyGridProgram program, string prefix = "T_", int delay = 1000)
         {
@@ -56,9 +56,15 @@ namespace SpaceEngineers
             if (info.HasValue && (DateTime.UtcNow - startTime).TotalMilliseconds > delay) {
                 var target = info.Value.Entity;
 
-                var d = tControl.GetTargetAngle(target.Position);
+                var d = tControl.GetInterceptAngle(target);
+                //var d = tControl.GetTargetAngle(target.Position);
                 tGyro.Pitch = -Convert.ToSingle(d.Pitch);
                 tGyro.Yaw = Convert.ToSingle(d.Yaw);
+
+                // если повернуты боком или задом, то выключаем двигатель
+                // чтобы уменьшить смещение в бок во время разворота 
+                var moveBack = Math.Abs(d.Pitch) > Math.PI / 3 && Speed > DirectionController.MIN_SPEED;
+                tEngine.Enabled = !moveBack;
             }
         }
     }
