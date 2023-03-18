@@ -23,6 +23,7 @@ namespace SpaceEngineers
         public readonly string Id = DateTime.UtcNow.Ticks.ToString();
         
         readonly int delay;
+        readonly float factor;
 
         IMyGyro tGyro;
         IMyThrust tEngine;
@@ -33,7 +34,7 @@ namespace SpaceEngineers
         public Vector3D Position => tRemote.GetPosition();
         public double Speed => tRemote.GetShipSpeed();
 
-        public Torpedo(MyGridProgram program, string prefix = "T_", int delay = 1000)
+        public Torpedo(MyGridProgram program, string prefix = "T_", int delay = 1000, float factor = 10)
         {
             tEngine = program.GridTerminalSystem.GetBlockWithName($"{prefix}ENGINE") as IMyThrust;
             tGyro = program.GridTerminalSystem.GetBlockWithName($"{prefix}GYRO") as IMyGyro;
@@ -41,6 +42,7 @@ namespace SpaceEngineers
             tControl = new DirectionController(tRemote);
 
             this.delay = delay;
+            this.factor = factor;
         }
 
         public void Start()
@@ -58,13 +60,8 @@ namespace SpaceEngineers
 
                 var d = tControl.GetInterceptAngle(target);
                 //var d = tControl.GetTargetAngle(target.Position);
-                tGyro.Pitch = -Convert.ToSingle(d.Pitch);
-                tGyro.Yaw = Convert.ToSingle(d.Yaw);
-
-                // если повернуты боком или задом, то выключаем двигатель
-                // чтобы уменьшить смещение в бок во время разворота 
-                var moveBack = Math.Abs(d.Pitch) > Math.PI / 3 && Speed > DirectionController.MIN_SPEED;
-                tEngine.Enabled = !moveBack;
+                tGyro.Pitch = -Convert.ToSingle(d.Pitch) * factor;
+                tGyro.Yaw = Convert.ToSingle(d.Yaw) * factor;
             }
         }
     }
