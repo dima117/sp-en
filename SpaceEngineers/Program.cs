@@ -22,26 +22,32 @@ namespace SpaceEngineers
         #region Copy
 
         TargetTracker tt;
+        IMyCameraBlock cam;
+
+        List<Torpedo> torpedos;
+        List<IMyShipWelder> welders;
+
         IMyTextPanel lcd1; // система
         IMyTextPanel lcd2; // цель
         IMyTextPanel lcd3; // торпеда
-        IMyCameraBlock cam;
-
-        IMyShipMergeBlock slot;
-        Torpedo torpedo;
 
         public Program()
         {
-            slot = GridTerminalSystem.GetBlockWithName("SLOT") as IMyShipMergeBlock;
-
+            // массив камер радара
             tt = new TargetTracker(this, "Камера");
+
+            // главная камера
+            cam = GridTerminalSystem.GetBlockWithName("MAIN_CAM") as IMyCameraBlock;
+            cam.EnableRaycast = true;
+
+            // сварщики
+            GridTerminalSystem.GetBlocksOfType(welders, w => w.Name.StartsWith("TW_"));
+
             lcd1 = GridTerminalSystem.GetBlockWithName("LCD1") as IMyTextPanel;
             lcd2 = GridTerminalSystem.GetBlockWithName("LCD2") as IMyTextPanel;
             lcd3 = GridTerminalSystem.GetBlockWithName("LCD3") as IMyTextPanel;
 
-            cam = GridTerminalSystem.GetBlockWithName("MAIN_CAM") as IMyCameraBlock;
-            cam.EnableRaycast = true;
-
+            Me.GetSurface(0).WriteText("TARGETING");
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
         public void Main(string argument, UpdateType updateSource)
@@ -58,28 +64,35 @@ namespace SpaceEngineers
 
                     break;
                 case "reload":
-                    torpedo = null;
-                    slot.Enabled = true;
+                    torpedos = null;
+                    welders.ForEach(w => w.Enabled = true);
                     break;
                 case "prepare":
-                    torpedo = new Torpedo(this);
+
+                    var groups = new List<IMyBlockGroup>();
+                    GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("TORPEDO"));
+
+                    torpedos = groups.Select(gr => new Torpedo(gr)).ToList();
+
+                    welders.ForEach(w => w.Enabled = false);
                     break;
                 case "start":
-                    slot.Enabled = false;
-                    torpedo.Start();
+                    // запускаем одну из торпед
+                    torpedos.FirstOrDefault(t => !t.Started)?.Start();
 
                     break;
                 default:
                     tt.Update();
 
-                    torpedo?.Update(tt.Current);
+                    // обновляем параметры цели на всех торпедах
+                    torpedos?.ForEach(t => t.Update(tt.Current));
 
                     break;
             }
 
             UpdateSystemLcd();
             UpdateTargetLcd();
-            UpdateTorpedoLcd(torpedo);
+            UpdateTorpedoLcd(torpedos);
         }
 
         void UpdateSystemLcd()
@@ -109,27 +122,29 @@ namespace SpaceEngineers
             lcd2.WriteText(sb.ToString());
         }
 
-        void UpdateTorpedoLcd(Torpedo torpedo)
+        void UpdateTorpedoLcd(List<Torpedo> torpedos)
         {
-            if (torpedo == null)
-            {
-                lcd3.WriteText(string.Empty);
-                return;
-            }
+            var targetPos = tt.Current?.Entity.Position;
 
             var sb = new StringBuilder();
-            var myPos = torpedo.Position;
 
-            sb.AppendLine("Missile:");
-            sb.AppendLine($"- speed: {torpedo.Speed:0.00}");
-            sb.AppendLine($"- position: {myPos}");
-
-            if (tt.Current.HasValue)
+            for(var i = 0; i < torpedos.Count; i++)
             {
-                var target = tt.Current.Value.Entity;
-                var distance = Vector3D.Distance(myPos, target.Position);
+                var t = torpedos[i];
+                var myPos = t.Position;
 
-                sb.AppendLine($"- target distance: {distance:0}");
+                var spd = t.Speed.ToString("0").PadLeft(3);
+
+                sb.AppendLine($"{i + 1} SPD {spd}");
+
+                if (targetPos != null)
+                {
+                    var distance = Vector3D.Distance(myPos, targetPos.Value);
+
+                    var dst = distance.ToString("0").PadLeft(5);
+
+                    sb.Append($" DST {dst}");
+                }
             }
 
             lcd3.WriteText(sb.ToString());
