@@ -25,7 +25,7 @@ namespace SpaceEngineers
         IMyCameraBlock cam;
 
         List<Torpedo> torpedos;
-        List<IMyShipWelder> welders;
+        List<IMyShipWelder> welders = new List<IMyShipWelder>();
 
         IMyTextPanel lcd1; // система
         IMyTextPanel lcd2; // цель
@@ -98,7 +98,7 @@ namespace SpaceEngineers
         void UpdateSystemLcd()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Range: {cam.AvailableScanRange}");
+            sb.AppendLine($"Range: {cam.AvailableScanRange:0.000}");
             sb.AppendLine($"Cam count: {tt.Count}");
             lcd1.WriteText(sb.ToString());
         }
@@ -128,22 +128,18 @@ namespace SpaceEngineers
 
             var sb = new StringBuilder();
 
-            for(var i = 0; i < torpedos.Count; i++)
+            for(var i = 0; i < torpedos?.Count; i++)
             {
                 var t = torpedos[i];
                 var myPos = t.Position;
 
-                var spd = t.Speed.ToString("0").PadLeft(3);
-
-                sb.AppendLine($"{i + 1} SPD {spd}");
+                sb.AppendLine($"{i + 1} SPD {t.Speed:0.000}");
 
                 if (targetPos != null)
                 {
                     var distance = Vector3D.Distance(myPos, targetPos.Value);
 
-                    var dst = distance.ToString("0").PadLeft(5);
-
-                    sb.Append($" DST {dst}");
+                    sb.Append($" DST {distance:0.000}");
                 }
             }
 
