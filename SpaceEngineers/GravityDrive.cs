@@ -15,11 +15,14 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.GameSystems;
+using static VRage.Game.MyObjectBuilder_ControllerSchemaDefinition;
 
 namespace SpaceEngineers
 {
     public class GravityDrive
     {
+        readonly IMyTextPanel lcd;
+        readonly IMyGyro gyro;
         readonly IMyShipController controller;
         readonly List<IMyArtificialMassBlock> massBlocks = new List<IMyArtificialMassBlock>();
 
@@ -33,9 +36,15 @@ namespace SpaceEngineers
         const float GRAVITY_RATIO = 9.8f;
         const float DAMPENERS_RATIO = 0.1f;
 
-        public GravityDrive(IMyShipController controller, IMyBlockGroup group)
+        public GravityDrive(
+            IMyShipController controller,
+            IMyBlockGroup group,
+            IMyGyro gyro,
+            IMyTextPanel lcd)
         {
             this.controller = controller;
+            this.gyro = gyro;
+            this.lcd = lcd;
 
             group.GetBlocksOfType(massBlocks);
 
@@ -65,10 +74,26 @@ namespace SpaceEngineers
 
         public void Update()
         {
-            Vector3 input = controller.MoveIndicator;
+            var matrix = MatrixD.Transpose(controller.WorldMatrix);
 
-            Vector3D worldVelocity = controller.GetShipVelocities().LinearVelocity;
-            Vector3 localVelocity = Vector3D.TransformNormal(worldVelocity, MatrixD.Transpose(controller.WorldMatrix));
+            MatrixD orientation = controller.WorldMatrix.GetOrientation();
+            //controller.Orientation.GetMatrix(out orientation);
+            var invertedMatrix = MatrixD.Invert(orientation);
+
+            Vector3 input = controller.MoveIndicator;
+            var velocities = controller.GetShipVelocities();
+
+            //var localAngularVelocity = Vector3D.Transform(
+            //    velocities.AngularVelocity,
+            //    invertedMatrix
+            //);
+
+            var localAngularVelocity = orientation.Forward;
+
+            lcd.WriteText($"X: {localAngularVelocity.X}\nY: {localAngularVelocity.Y}\nZ: {localAngularVelocity.Z}");
+
+            Vector3D worldVelocity = velocities.LinearVelocity;
+            Vector3 localVelocity = Vector3D.TransformNormal(worldVelocity, matrix);
 
             SetGravityAcceleration(input.X, localVelocity.X, rightGens, leftGens);
             SetGravityAcceleration(input.Y, localVelocity.Y, upGens, downGens);
@@ -79,22 +104,22 @@ namespace SpaceEngineers
 
         private void SetGravityAcceleration(float input, float velocity, IList<IMyGravityGenerator> positive, IList<IMyGravityGenerator> negative)
         {
-            var value = IsNone(input) && DampenersOverride ? -velocity : input;
+            var value = IsNone(input) && DampenersOverride ? -velocity * DAMPENERS_RATIO : input;
             var enabled = Enabled && !IsNone(value);
 
             var acceleration = value * GRAVITY_RATIO;
 
-            positive.ForEach(x =>
+            foreach (var x in positive)
             {
                 x.GravityAcceleration = acceleration;
                 x.Enabled = enabled;
-            });
+            }
 
-            negative.ForEach(x =>
+            foreach (var x in negative)
             {
                 x.GravityAcceleration = -acceleration;
                 x.Enabled = enabled;
-            });
+            }
         }
     }
 }
