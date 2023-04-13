@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BlockArray.cs" />
+    <Compile Include="Examples\GravDrive3.cs" />
     <Compile Include="Examples\TmpAngularVelocity.cs" />
     <Compile Include="Examples\TmpGravDrive.cs" />
     <Compile Include="GravityDrive.cs" />
