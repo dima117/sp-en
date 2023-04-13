@@ -25,10 +25,9 @@ namespace SpaceEngineers.Examples
         {
             var control = GridTerminalSystem.GetBlockWithName("CONTROL_01") as IMyShipController;
             var lcd = GridTerminalSystem.GetBlockWithName("LCD_01") as IMyTextPanel;
-            var gyro = GridTerminalSystem.GetBlockWithName("GYRO_01") as IMyGyro;
             var group = GridTerminalSystem.GetBlockGroupWithName("GD1");
             
-            drive = new GravityDrive(control, group, gyro, lcd);
+            drive = new GravityDrive(control, group, lcd);
 
             drive.Enabled = true;
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
