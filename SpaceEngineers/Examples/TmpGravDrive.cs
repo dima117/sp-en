@@ -24,18 +24,28 @@ namespace SpaceEngineers.Examples
         public Program()
         {
             var control = GridTerminalSystem.GetBlockWithName("CONTROL_01") as IMyShipController;
-            var lcd = GridTerminalSystem.GetBlockWithName("LCD_01") as IMyTextPanel;
             var group = GridTerminalSystem.GetBlockGroupWithName("GD1");
-            
-            drive = new GravityDrive(control, group, lcd);
 
-            drive.Enabled = true;
+            drive = new GravityDrive(control, group);
+
+
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
-            drive.Update();
+            switch (argument)
+            {
+                case "on":
+                    drive.Enabled = true;
+                    break;
+                case "off":
+                    drive.Enabled = false;
+                    break;
+                default:
+                    drive.Update();
+                    break;
+            }
         }
     }
 }

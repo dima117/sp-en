@@ -23,8 +23,6 @@ namespace SpaceEngineers
     {
         private bool enabled;
 
-        readonly IMyTextPanel lcd;
-
         readonly IMyShipController controller;
         readonly List<IMyArtificialMassBlock> massBlocks = new List<IMyArtificialMassBlock>();
         readonly List<IMyGyro> gyroBlocks = new List<IMyGyro>();
@@ -47,11 +45,9 @@ namespace SpaceEngineers
         {
             this.controller = controller;
 
-            bool filter<T>(T b) where T : IMyTerminalBlock => b.IsSameConstructAs(controller);
-
-            group.GetBlocksOfType(gyroBlocks, filter);
-            group.GetBlocksOfType(massBlocks, filter);
-            group.GetBlocksOfType(allGens, filter);
+            group.GetBlocksOfType(gyroBlocks, b => b.IsSameConstructAs(controller));
+            group.GetBlocksOfType(massBlocks, b => b.IsSameConstructAs(controller));
+            group.GetBlocksOfType(allGens, b => b.IsSameConstructAs(controller));
 
             foreach (var block in allGens)
             {
