@@ -91,6 +91,7 @@ namespace SpaceEngineers
             foreach ( var gyro in gyroBlocks)
             {
                 gyro.Enabled = Enabled;
+                gyro.GyroOverride = Enabled;
                 gyro.Pitch = -Convert.ToSingle(localAngularVelocity.X * ROTATION_RATIO);
                 gyro.Yaw = Convert.ToSingle(localAngularVelocity.Y * ROTATION_RATIO);
                 gyro.Roll = Convert.ToSingle(localAngularVelocity.Z * ROTATION_RATIO);
