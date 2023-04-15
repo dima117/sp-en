@@ -21,12 +21,15 @@ namespace SpaceEngineers
 {
     public class GravityDrive
     {
+        private bool enabled;
+
         readonly IMyTextPanel lcd;
 
         readonly IMyShipController controller;
         readonly List<IMyArtificialMassBlock> massBlocks = new List<IMyArtificialMassBlock>();
         readonly List<IMyGyro> gyroBlocks = new List<IMyGyro>();
 
+        readonly List<IMyGravityGenerator> allGens = new List<IMyGravityGenerator>();
         readonly List<IMyGravityGenerator> upGens = new List<IMyGravityGenerator>();
         readonly List<IMyGravityGenerator> downGens = new List<IMyGravityGenerator>();
         readonly List<IMyGravityGenerator> leftGens = new List<IMyGravityGenerator>();
@@ -36,23 +39,21 @@ namespace SpaceEngineers
 
         const float GRAVITY_RATIO = 9.8f;
         const float DAMPENERS_RATIO = 0.1f;
-        const float ROTATION_RATIO = 100f;
+        const float ROTATION_RATIO = 10f;
 
         public GravityDrive(
             IMyShipController controller,
-            IMyBlockGroup group,
-            IMyTextPanel lcd)
+            IMyBlockGroup group)
         {
             this.controller = controller;
-            this.lcd = lcd;
 
-            group.GetBlocksOfType(gyroBlocks);
-            group.GetBlocksOfType(massBlocks);
+            bool filter<T>(T b) where T : IMyTerminalBlock => b.IsSameConstructAs(controller);
 
-            var gravGens = new List<IMyGravityGenerator>();
-            group.GetBlocksOfType(gravGens);
+            group.GetBlocksOfType(gyroBlocks, filter);
+            group.GetBlocksOfType(massBlocks, filter);
+            group.GetBlocksOfType(allGens, filter);
 
-            foreach (var block in gravGens)
+            foreach (var block in allGens)
             {
                 if (controller.WorldMatrix.Forward == block.WorldMatrix.Down)
                     fowardGens.Add(block);
@@ -69,37 +70,42 @@ namespace SpaceEngineers
             }
         }
 
-        public bool Enabled { get; set; }
+        public bool Enabled
+        {
+            get { return enabled; }
+            set { ToggleEngine(value); }
+        }
 
         public bool DampenersOverride => controller.DampenersOverride;
 
         public void Update()
         {
-            Vector3 input = controller.MoveIndicator;
             MyShipVelocities velocities = controller.GetShipVelocities();
 
-            var matrix = MatrixD.Transpose(controller.WorldMatrix);
-
-            UpdateGenerators(input, velocities.LinearVelocity, matrix);
-            UpdateGyro(velocities.AngularVelocity, matrix);
+            UpdateGenerators(velocities.LinearVelocity);
+            UpdateGyro(velocities.AngularVelocity);
         }
 
-        private void UpdateGyro(Vector3D worldAngularVelocity, MatrixD matrix)
+        private void UpdateGyro(Vector3D worldAngularVelocity)
         {
-            var localAngularVelocity = Vector3D.TransformNormal(worldAngularVelocity, matrix);
+            Vector3D rot = worldAngularVelocity * 100 * worldAngularVelocity.LengthSquared();
+            rot += controller.WorldMatrix.Right * controller.RotationIndicator.X * ROTATION_RATIO;
+            rot += controller.WorldMatrix.Up * controller.RotationIndicator.Y * ROTATION_RATIO;
+            rot += controller.WorldMatrix.Backward * controller.RollIndicator * ROTATION_RATIO;
 
-            foreach ( var gyro in gyroBlocks)
+            foreach (var gyro in gyroBlocks)
             {
-                gyro.Enabled = Enabled;
-                gyro.GyroOverride = Enabled;
-                gyro.Pitch = -Convert.ToSingle(localAngularVelocity.X * ROTATION_RATIO);
-                gyro.Yaw = Convert.ToSingle(localAngularVelocity.Y * ROTATION_RATIO);
-                gyro.Roll = Convert.ToSingle(localAngularVelocity.Z * ROTATION_RATIO);
+                gyro.Yaw = (float)rot.Dot(gyro.WorldMatrix.Up);
+                gyro.Pitch = (float)rot.Dot(gyro.WorldMatrix.Right);
+                gyro.Roll = (float)rot.Dot(gyro.WorldMatrix.Backward);
             }
         }
 
-        private void UpdateGenerators(Vector3 input, Vector3D worldVelocity, MatrixD matrix)
+        private void UpdateGenerators(Vector3D worldVelocity)
         {
+            Vector3 input = controller.MoveIndicator;
+            MatrixD matrix = MatrixD.Transpose(controller.WorldMatrix);
+
             Vector3 localVelocity = Vector3D.TransformNormal(worldVelocity, matrix);
 
             SetGravityAcceleration(input.X, localVelocity.X, rightGens, leftGens);
@@ -126,6 +132,30 @@ namespace SpaceEngineers
             {
                 x.GravityAcceleration = -acceleration;
                 x.Enabled = enabled;
+            }
+        }
+
+        void ToggleEngine(bool enabled)
+        {
+            this.enabled = enabled;
+
+            foreach (IMyArtificialMassBlock b in massBlocks)
+            {
+                b.Enabled = enabled;
+            }
+
+            foreach (IMyGravityGenerator b in allGens)
+            {
+                b.Enabled = enabled;
+                b.GravityAcceleration = 0f;
+            }
+
+            foreach (IMyGyro b in gyroBlocks)
+            {
+                b.GyroOverride = enabled;
+                b.Yaw = 0f;
+                b.Pitch = 0f;
+                b.Roll = 0f;
             }
         }
     }
