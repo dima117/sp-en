@@ -36,9 +36,15 @@ namespace SpaceEngineers
         DateTime startTime = DateTime.MaxValue;
 
         public Vector3D Position => tRemote.GetPosition();
-        public double Speed => tRemote.GetShipSpeed();
+        public double Speed => Started && IsAlive ? tRemote.GetShipSpeed() : 0;
         public bool IsReady => listEngine.Any() && listGyro.Any() && tRemote != null && tClamp != null;
         public bool Started { get; private set; }
+
+        public bool IsAlive =>
+            tRemote.IsFunctional &&
+            listEngine.All(e => e.IsFunctional && e.CubeGrid.EntityId == tRemote.CubeGrid.EntityId) &&
+            listGyro.All(g => g.IsFunctional && g.CubeGrid.EntityId == tRemote.CubeGrid.EntityId);
+
 
         public Torpedo(IMyBlockGroup group, int delay = 3000, float factor = 20)
         {

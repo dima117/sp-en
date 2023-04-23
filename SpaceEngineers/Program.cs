@@ -128,19 +128,34 @@ namespace SpaceEngineers
 
             var sb = new StringBuilder();
 
-            for(var i = 0; i < torpedos?.Count; i++)
+            for (var i = 0; i < torpedos?.Count; i++)
             {
                 var t = torpedos[i];
                 var myPos = t.Position;
 
-                sb.AppendLine($"{i + 1} SPD {t.Speed:0.000}");
+                sb.Append($"{i + 1} SPD {t.Speed:0.0}");
+
+                if (!t.Started)
+                {
+                    sb.Append(" STE Ready");
+                }
+                else if (t.IsAlive)
+                {
+                    sb.Append(" STE Active");
+                }
+                else
+                {
+                    sb.Append(" STE Dead");
+                }
 
                 if (targetPos != null)
                 {
                     var distance = Vector3D.Distance(myPos, targetPos.Value);
 
-                    sb.Append($" DST {distance:0.000}");
+                    sb.Append($" DST {distance:0.0}");
                 }
+
+                sb.AppendLine();
             }
 
             lcd3.WriteText(sb.ToString());
