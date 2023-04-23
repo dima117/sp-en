@@ -29,6 +29,7 @@ namespace SpaceEngineers
 
         readonly List<IMyGyro> listGyro = new List<IMyGyro>();
         readonly List<IMyThrust> listEngine = new List<IMyThrust>();
+        readonly List<IMyArtificialMassBlock> listMass = new List<IMyArtificialMassBlock>();
         readonly IMyRemoteControl tRemote;
         readonly IMyShipMergeBlock tClamp;
 
@@ -39,9 +40,10 @@ namespace SpaceEngineers
         public bool IsReady => listEngine.Any() && listGyro.Any() && tRemote != null && tClamp != null;
         public bool Started { get; private set; }
 
-        public Torpedo(IMyBlockGroup group, int delay = 1000, float factor = 10)
+        public Torpedo(IMyBlockGroup group, int delay = 3000, float factor = 20)
         {
             group.GetBlocksOfType(listGyro);
+            group.GetBlocksOfType(listMass);
             group.GetBlocksOfType(listEngine);
 
             var tmp = new List<IMyTerminalBlock>();
@@ -62,11 +64,12 @@ namespace SpaceEngineers
             tClamp.Enabled = false;
 
             listGyro.ForEach(g => { g.GyroOverride = true; });
+            listMass.ForEach(m => { m.Enabled = true; });
 
             listEngine.ForEach(e =>
             {
                 e.Enabled = true;
-                e.ThrustOverridePercentage = 100;
+                e.ThrustOverridePercentage = 1;
             });
 
             Started = true;
@@ -74,19 +77,23 @@ namespace SpaceEngineers
 
         public void Update(TargetTracker.TargetInfo? info)
         {
-            if (info.HasValue && (DateTime.UtcNow - startTime).TotalMilliseconds > delay)
+            if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
             {
-                var target = info.Value.Entity;
-
-                var d = tControl.GetInterceptAngle(target);
-                //var d = tControl.GetTargetAngle(target.Position);
-
-                listGyro.ForEach(g =>
+                if (info.HasValue)
                 {
-                    g.Pitch = -Convert.ToSingle(d.Pitch) * factor;
-                    g.Yaw = Convert.ToSingle(d.Yaw) * factor;
-                });
+                    var target = info.Value.Entity;
 
+                    var d = tControl.GetInterceptAngle(target);
+                    //var d = tControl.GetTargetAngle(target.Position);
+
+                    listGyro.ForEach(g =>
+                    {
+                        g.Pitch = -Convert.ToSingle(d.Pitch) * factor;
+                        g.Yaw = Convert.ToSingle(d.Yaw) * factor;
+                    });
+                }
+
+                listMass.ForEach(m => { m.Enabled = false; });
             }
         }
     }
