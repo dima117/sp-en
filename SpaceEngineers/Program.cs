@@ -55,12 +55,17 @@ namespace SpaceEngineers
             switch (argument)
             {
                 case "lock":
-                    var entity = TargetTracker.Scan(cam, 10000);
+                    var entity = TargetTracker.Scan(cam, 5000);
 
                     if (entity.HasValue)
                     {
                         tt.LockOn(entity.Value);
                     }
+
+                    break;
+
+                case "reset":
+                    tt.Clear();
 
                     break;
                 case "reload":
