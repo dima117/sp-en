@@ -46,7 +46,7 @@ namespace SpaceEngineers
             listGyro.All(g => g.IsFunctional && g.CubeGrid.EntityId == tRemote.CubeGrid.EntityId);
 
 
-        public Torpedo(IMyBlockGroup group, int delay = 3000, float factor = 20)
+        public Torpedo(IMyBlockGroup group, int delay = 2000, float factor = 7)
         {
             group.GetBlocksOfType(listGyro);
             group.GetBlocksOfType(listMass);

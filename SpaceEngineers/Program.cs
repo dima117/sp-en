@@ -31,6 +31,8 @@ namespace SpaceEngineers
         IMyTextPanel lcd2; // цель
         IMyTextPanel lcd3; // торпеда
 
+        IMySoundBlock sound; // динамик
+
         public Program()
         {
             // массив камер радара
@@ -46,6 +48,7 @@ namespace SpaceEngineers
             lcd1 = GridTerminalSystem.GetBlockWithName("LCD1") as IMyTextPanel;
             lcd2 = GridTerminalSystem.GetBlockWithName("LCD2") as IMyTextPanel;
             lcd3 = GridTerminalSystem.GetBlockWithName("LCD3") as IMyTextPanel;
+            sound = GridTerminalSystem.GetBlockWithName("T_SOUND") as IMySoundBlock;
 
             Me.GetSurface(0).WriteText("TARGETING");
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
@@ -60,6 +63,8 @@ namespace SpaceEngineers
                     if (entity.HasValue)
                     {
                         tt.LockOn(entity.Value);
+
+                        sound?.Play();
                     }
 
                     break;
@@ -88,6 +93,10 @@ namespace SpaceEngineers
                     break;
                 default:
                     tt.Update();
+
+                    if (sound?.IsWorking == true && !tt.Current.HasValue) { 
+                        sound?.Stop();
+                    }
 
                     // обновляем параметры цели на всех торпедах
                     torpedos?.ForEach(t => t.Update(tt.Current));
@@ -138,19 +147,19 @@ namespace SpaceEngineers
                 var t = torpedos[i];
                 var myPos = t.Position;
 
-                sb.Append($"{i + 1} SPD {t.Speed:0.0}");
+                sb.Append($"{i + 1} SP {t.Speed:0.0}");
 
                 if (!t.Started)
                 {
-                    sb.Append(" STE Ready");
+                    sb.Append(" ST Ready");
                 }
                 else if (t.IsAlive)
                 {
-                    sb.Append(" STE Active");
+                    sb.Append(" ST Active");
                 }
                 else
                 {
-                    sb.Append(" STE Dead");
+                    sb.Append(" ST Dead");
                 }
 
                 if (targetPos != null)
