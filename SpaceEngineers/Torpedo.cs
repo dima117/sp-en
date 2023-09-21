@@ -89,8 +89,8 @@ namespace SpaceEngineers
                 {
                     var target = info.Value.Entity;
 
-                    var d = tControl.GetInterceptAngle(target);
-                    //var d = tControl.GetTargetAngle(target.Position);
+                    //var d = tControl.GetInterceptAngle(target);
+                    var d = tControl.GetTargetAngle(target.Position);
 
                     listGyro.ForEach(g =>
                     {

@@ -93,10 +93,17 @@ namespace SpaceEngineers
         public Directions GetTargetAngle(Vector3D targetPos)
         {
             var ownPos = remoteControl.GetPosition();
+            var velocity = remoteControl.GetShipVelocities().LinearVelocity;
             var orientation = remoteControl.WorldMatrix;
-            var targetVector = targetPos - ownPos;
+            var targetVector = CustomReflect(velocity, targetPos - ownPos, 3);
 
             return GetNavAngle(orientation, targetVector);
+        }
+
+        //отражение вектора с коэффициентом
+        public Vector3D CustomReflect(Vector3D V1, Vector3D V2, double Mult)
+        {
+            return V1 - Mult * Vector3D.Reject(V1, Vector3D.Normalize(V2));
         }
 
         public Directions GetInterceptAngle(MyDetectedEntityInfo target)

@@ -43,7 +43,7 @@ namespace SpaceEngineers
             cam.EnableRaycast = true;
 
             // сварщики
-            GridTerminalSystem.GetBlocksOfType(welders, w => w.CustomName.StartsWith("WELDER_"));
+            GridTerminalSystem.GetBlocksOfType(welders, w => w.CustomName.StartsWith("T_WELDER_"));
 
             lcd1 = GridTerminalSystem.GetBlockWithName("LCD1") as IMyTextPanel;
             lcd2 = GridTerminalSystem.GetBlockWithName("LCD2") as IMyTextPanel;
