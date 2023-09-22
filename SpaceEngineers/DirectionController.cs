@@ -19,9 +19,13 @@ namespace SpaceEngineers
 {
     public class DirectionController
     {
-        public const double MIN_SPEED = 30;
+        public const double MIN_SPEED = 50;
+        public const double UPD_PERIOD = 3000;
 
         IMyShipController remoteControl;
+
+        bool reflect = false;
+        DateTime updateLocked = DateTime.MinValue;
 
         public DirectionController(IMyShipController remoteControl)
         {
@@ -53,16 +57,29 @@ namespace SpaceEngineers
             return V1 - mult * Vector3D.Reject(V1, Vector3D.Normalize(V2));
         }
 
-        public static Directions GetNavAngle(
-            MatrixD orientation,
-            Vector3D targetVector,
-            Vector3D velocity)
+        public Directions GetNavAngle(Vector3D targetVector)
         {
+            var orientation = remoteControl.WorldMatrix;
+            var velocity = remoteControl.GetShipVelocities().LinearVelocity;
+
+            var now = DateTime.UtcNow;
             var reflectedVector = CustomReflect(velocity, targetVector, 2);
-            var prjReflected2forward = Vector3D.Dot(reflectedVector, targetVector);
+
+            // задержка, чтобы торпеда стабилизировалась
+            if (now > updateLocked) {
+                // гасим боковую скорость только если вектор гашения направлен в сторону цели
+                var sameDirection = Vector3D.Dot(reflectedVector, targetVector) > 0;
+
+                if (reflect != sameDirection) { 
+                    reflect = sameDirection;
+
+                    // переключаем гашение боковой скорости не чаще, чем UPD_PERIOD
+                    updateLocked = now.AddMilliseconds(UPD_PERIOD);
+                }
+            }
 
             // нормализованное направление на цель
-            var dirTarget = Vector3D.Normalize(prjReflected2forward > 0 ? reflectedVector : targetVector);
+            var dirTarget = Vector3D.Normalize(reflect ? reflectedVector : targetVector);
 
             // проекции вектора цели на оси
             var prj2forward = Vector3D.Dot(dirTarget, orientation.Forward);
@@ -105,19 +122,15 @@ namespace SpaceEngineers
         public Directions GetTargetAngle(Vector3D targetPos)
         {
             var ownPos = remoteControl.GetPosition();
-            var velocity = remoteControl.GetShipVelocities().LinearVelocity;
-            var orientation = remoteControl.WorldMatrix;
             var targetVector = targetPos - ownPos;
 
-            return GetNavAngle(orientation, targetVector, velocity);
+            return GetNavAngle(targetVector);
         }
 
         public Directions GetInterceptAngle(MyDetectedEntityInfo target)
         {
             var ownPos = remoteControl.GetPosition();
             var ownSpeed = Math.Max(remoteControl.GetShipSpeed(), MIN_SPEED);
-            var velocity = remoteControl.GetShipVelocities().LinearVelocity;
-            var orientation = remoteControl.WorldMatrix;
 
             var point = Helpers.CalculateInterceptPoint(ownPos, ownSpeed, target.Position, target.Velocity);
 
@@ -125,7 +138,7 @@ namespace SpaceEngineers
                 ? new Vector3D(target.Velocity) // если ракета не может догнать цель, то двигаемся параллельно 
                 : (point.Position - ownPos); // иначе курс на точку перехвата
 
-            return GetNavAngle(orientation, direction, velocity);
+            return GetNavAngle(direction);
         }
     }
 }

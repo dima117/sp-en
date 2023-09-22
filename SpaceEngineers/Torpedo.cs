@@ -24,6 +24,7 @@ namespace SpaceEngineers
 
         readonly int delay;
         readonly float factor;
+        readonly int lifespan;
 
         readonly DirectionController tControl;
 
@@ -33,19 +34,26 @@ namespace SpaceEngineers
         readonly IMyShipMergeBlock tClamp;
 
         DateTime startTime = DateTime.MaxValue;
+        DateTime deathTime = DateTime.MaxValue;
 
         public Vector3D Position => tRemote.GetPosition();
         public double Speed => Started && IsAlive ? tRemote.GetShipSpeed() : 0;
         public bool IsReady => listEngine.Any() && listGyro.Any() && tRemote != null && tClamp != null;
         public bool Started { get; private set; }
 
+        public long EntityId => (tRemote?.EntityId).GetValueOrDefault();
+
         public bool IsAlive =>
             tRemote.IsFunctional &&
             listEngine.All(e => e.IsFunctional && e.CubeGrid.EntityId == tRemote.CubeGrid.EntityId) &&
-            listGyro.All(g => g.IsFunctional && g.CubeGrid.EntityId == tRemote.CubeGrid.EntityId);
+            listGyro.All(g => g.IsFunctional && g.CubeGrid.EntityId == tRemote.CubeGrid.EntityId) &&
+            DateTime.UtcNow < deathTime;
 
-
-        public Torpedo(IMyBlockGroup group, int delay = 2000, float factor = 7)
+        public Torpedo(
+            IMyBlockGroup group,
+            int delay = 3000,  // задержка при старте
+            float factor = 7,   // коэффициент мощности гироскопа
+            int lifespan = 180) // длительность жизни в секундах
         {
             group.GetBlocksOfType(listGyro);
             group.GetBlocksOfType(listEngine);
@@ -59,11 +67,13 @@ namespace SpaceEngineers
 
             this.delay = delay;
             this.factor = factor;
+            this.lifespan = lifespan;
         }
 
         public void Start()
         {
             startTime = DateTime.UtcNow;
+            deathTime = startTime.AddSeconds(lifespan);
 
             tClamp.Enabled = false;
 

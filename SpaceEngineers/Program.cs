@@ -24,7 +24,7 @@ namespace SpaceEngineers
         TargetTracker tt;
         IMyCameraBlock cam;
 
-        List<Torpedo> torpedos;
+        List<Torpedo> torpedos = new List<Torpedo>();
         List<IMyShipWelder> welders = new List<IMyShipWelder>();
 
         IMyTextPanel lcd1; // система
@@ -74,15 +74,19 @@ namespace SpaceEngineers
 
                     break;
                 case "reload":
-                    torpedos = null;
                     welders.ForEach(w => w.Enabled = true);
                     break;
                 case "prepare":
+                    var ids = new HashSet<long>(torpedos.Select(t => t.EntityId));
 
                     var groups = new List<IMyBlockGroup>();
                     GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("TORPEDO"));
 
-                    torpedos = groups.Select(gr => new Torpedo(gr)).ToList();
+                    torpedos.AddRange(groups
+                        .Select(gr => new Torpedo(gr))
+                        .Where(t => !ids.Contains(t.EntityId)));
+                        
+                    torpedos.RemoveAll(t => !t.IsAlive);
 
                     welders.ForEach(w => w.Enabled = false);
                     break;
