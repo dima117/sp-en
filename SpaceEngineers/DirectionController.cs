@@ -47,10 +47,22 @@ namespace SpaceEngineers
             return sign >= 0 ? value : -value;
         }
 
-        public static Directions GetNavAngle(MatrixD orientation, Vector3D directionTarget)
+        //отражение вектора с коэффициентом
+        public static Vector3D CustomReflect(Vector3D V1, Vector3D V2, double mult)
         {
+            return V1 - mult * Vector3D.Reject(V1, Vector3D.Normalize(V2));
+        }
+
+        public static Directions GetNavAngle(
+            MatrixD orientation,
+            Vector3D targetVector,
+            Vector3D velocity)
+        {
+            var reflectedVector = CustomReflect(velocity, targetVector, 2);
+            var prjReflected2forward = Vector3D.Dot(reflectedVector, targetVector);
+
             // нормализованное направление на цель
-            var dirTarget = Vector3D.Normalize(directionTarget);
+            var dirTarget = Vector3D.Normalize(prjReflected2forward > 0 ? reflectedVector : targetVector);
 
             // проекции вектора цели на оси
             var prj2forward = Vector3D.Dot(dirTarget, orientation.Forward);
@@ -95,21 +107,16 @@ namespace SpaceEngineers
             var ownPos = remoteControl.GetPosition();
             var velocity = remoteControl.GetShipVelocities().LinearVelocity;
             var orientation = remoteControl.WorldMatrix;
-            var targetVector = CustomReflect(velocity, targetPos - ownPos, 3);
+            var targetVector = targetPos - ownPos;
 
-            return GetNavAngle(orientation, targetVector);
-        }
-
-        //отражение вектора с коэффициентом
-        public Vector3D CustomReflect(Vector3D V1, Vector3D V2, double Mult)
-        {
-            return V1 - Mult * Vector3D.Reject(V1, Vector3D.Normalize(V2));
+            return GetNavAngle(orientation, targetVector, velocity);
         }
 
         public Directions GetInterceptAngle(MyDetectedEntityInfo target)
         {
             var ownPos = remoteControl.GetPosition();
             var ownSpeed = Math.Max(remoteControl.GetShipSpeed(), MIN_SPEED);
+            var velocity = remoteControl.GetShipVelocities().LinearVelocity;
             var orientation = remoteControl.WorldMatrix;
 
             var point = Helpers.CalculateInterceptPoint(ownPos, ownSpeed, target.Position, target.Velocity);
@@ -118,7 +125,7 @@ namespace SpaceEngineers
                 ? new Vector3D(target.Velocity) // если ракета не может догнать цель, то двигаемся параллельно 
                 : (point.Position - ownPos); // иначе курс на точку перехвата
 
-            return GetNavAngle(orientation, direction);
+            return GetNavAngle(orientation, direction, velocity);
         }
     }
 }

@@ -29,7 +29,6 @@ namespace SpaceEngineers
 
         readonly List<IMyGyro> listGyro = new List<IMyGyro>();
         readonly List<IMyThrust> listEngine = new List<IMyThrust>();
-        readonly List<IMyArtificialMassBlock> listMass = new List<IMyArtificialMassBlock>();
         readonly IMyRemoteControl tRemote;
         readonly IMyShipMergeBlock tClamp;
 
@@ -49,7 +48,6 @@ namespace SpaceEngineers
         public Torpedo(IMyBlockGroup group, int delay = 2000, float factor = 7)
         {
             group.GetBlocksOfType(listGyro);
-            group.GetBlocksOfType(listMass);
             group.GetBlocksOfType(listEngine);
 
             var tmp = new List<IMyTerminalBlock>();
@@ -70,7 +68,6 @@ namespace SpaceEngineers
             tClamp.Enabled = false;
 
             listGyro.ForEach(g => { g.GyroOverride = true; });
-            listMass.ForEach(m => { m.Enabled = true; });
 
             listEngine.ForEach(e =>
             {
@@ -89,8 +86,8 @@ namespace SpaceEngineers
                 {
                     var target = info.Value.Entity;
 
-                    //var d = tControl.GetInterceptAngle(target);
-                    var d = tControl.GetTargetAngle(target.Position);
+                    var d = tControl.GetInterceptAngle(target);
+                    //var d = tControl.GetTargetAngle(target.Position);
 
                     listGyro.ForEach(g =>
                     {
@@ -98,8 +95,6 @@ namespace SpaceEngineers
                         g.Yaw = Convert.ToSingle(d.Yaw) * factor;
                     });
                 }
-
-                listMass.ForEach(m => { m.Enabled = false; });
             }
         }
     }
