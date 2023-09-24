@@ -24,9 +24,6 @@ namespace SpaceEngineers
 
         IMyShipController remoteControl;
 
-        bool reflect = false;
-        DateTime updateLocked = DateTime.MinValue;
-
         public DirectionController(IMyShipController remoteControl)
         {
             this.remoteControl = remoteControl;
@@ -52,9 +49,13 @@ namespace SpaceEngineers
         }
 
         //отражение вектора с коэффициентом
-        public static Vector3D CustomReflect(Vector3D V1, Vector3D V2, double mult)
+        public static Vector3D CustomReflect(Vector3D V1, Vector3D V2)
         {
-            return V1 - mult * Vector3D.Reject(V1, Vector3D.Normalize(V2));
+            var reflectedVector = V1 - 2 * Vector3D.Reject(V1, Vector3D.Normalize(V2));
+
+            var sameDirection = Vector3D.Dot(reflectedVector, V2) > 0;
+
+            return sameDirection ? reflectedVector : -V1;
         }
 
         public Directions GetNavAngle(Vector3D targetVector)
@@ -62,24 +63,11 @@ namespace SpaceEngineers
             var orientation = remoteControl.WorldMatrix;
             var velocity = remoteControl.GetShipVelocities().LinearVelocity;
 
-            var now = DateTime.UtcNow;
-            var reflectedVector = CustomReflect(velocity, targetVector, 2);
-
-            // задержка, чтобы торпеда стабилизировалась
-            if (now > updateLocked) {
-                // гасим боковую скорость только если вектор гашения направлен в сторону цели
-                var sameDirection = Vector3D.Dot(reflectedVector, targetVector) > 0;
-
-                if (reflect != sameDirection) { 
-                    reflect = sameDirection;
-
-                    // переключаем гашение боковой скорости не чаще, чем UPD_PERIOD
-                    updateLocked = now.AddMilliseconds(UPD_PERIOD);
-                }
-            }
+            // направление на цель с учетом гашения боковой скорости
+            var reflectedVector = CustomReflect(velocity, targetVector);
 
             // нормализованное направление на цель
-            var dirTarget = Vector3D.Normalize(reflect ? reflectedVector : targetVector);
+            var dirTarget = Vector3D.Normalize(reflectedVector);
 
             // проекции вектора цели на оси
             var prj2forward = Vector3D.Dot(dirTarget, orientation.Forward);

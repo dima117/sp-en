@@ -61,6 +61,12 @@ namespace SpaceEngineers
                 return null;
             }
 
+            if (target.Type != MyDetectedEntityType.SmallGrid &&
+                target.Type != MyDetectedEntityType.LargeGrid)
+            {
+                return null;
+            }
+
             // hitpos
             var relativeHitPos = default(Vector3D);
 
