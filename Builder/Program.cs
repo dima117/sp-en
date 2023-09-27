@@ -113,7 +113,7 @@ namespace Builder
 
             var content = GetContent(projectPath, "Program.cs");
 
-            File.WriteAllText(Path.Combine(builderPath, "DIST.cs"), content);
+            File.WriteAllText(Path.Combine(builderPath, "DIST.txt"), content);
         }
     }
 }
