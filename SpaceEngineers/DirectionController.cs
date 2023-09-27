@@ -17,6 +17,10 @@ using SpaceEngineers.Game.ModAPI.Ingame;
 
 namespace SpaceEngineers
 {
+    #region Copy
+
+    // import:Helpers.cs
+
     public class DirectionController
     {
         public const double MIN_SPEED = 50;
@@ -128,4 +132,6 @@ namespace SpaceEngineers
             return GetNavAngle(direction);
         }
     }
+
+    #endregion
 }

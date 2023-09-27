@@ -7,6 +7,8 @@ using VRageMath;
 
 namespace SpaceEngineers
 {
+    #region Copy
+
     public static class Helpers
     {
         public class InterceptResult
@@ -59,4 +61,6 @@ namespace SpaceEngineers
             return new InterceptResult { Position = point, TimeMs = timeS * 1000 };
         }
     }
+
+    #endregion
 }

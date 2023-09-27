@@ -8,6 +8,8 @@ using VRageMath;
 
 namespace SpaceEngineers
 {
+    #region Copy
+
     /// <summary>
     /// https://github.com/sstixrud/CoreSystems/blob/master/BaseData/Scripts/CoreSystems/Api/CoreSystemsPbApi.cs
     /// </summary>
@@ -248,4 +250,6 @@ namespace SpaceEngineers
             _unmonitorEvents?.Invoke(entity, partId, action);
 
     }
+
+    #endregion
 }

@@ -21,6 +21,9 @@ namespace SpaceEngineers
     {
         #region Copy
 
+        // import:Torpedo.cs
+        // import:TargetTracker.cs
+
         TargetTracker tt;
         IMyCameraBlock cam;
 

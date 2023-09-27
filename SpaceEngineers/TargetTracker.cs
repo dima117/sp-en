@@ -17,6 +17,10 @@ using SpaceEngineers.Game.ModAPI.Ingame;
 
 namespace SpaceEngineers
 {
+    #region Copy
+
+    // import:BlockArray.cs
+
     public class TargetTracker
     {
         const double DISTANCE_RESERVE = 50;
@@ -200,4 +204,6 @@ namespace SpaceEngineers
             }
         }
     }
+
+    #endregion
 }

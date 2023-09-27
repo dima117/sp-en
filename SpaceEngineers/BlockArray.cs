@@ -7,6 +7,7 @@ using Sandbox.ModAPI.Ingame;
 
 namespace SpaceEngineers
 {
+    #region Copy
     public class BlockArray<T> where T : class, IMyTerminalBlock
     {
         MyGridProgram program;
@@ -75,4 +76,6 @@ namespace SpaceEngineers
             return null;
         }
     }
+
+    #endregion
 }

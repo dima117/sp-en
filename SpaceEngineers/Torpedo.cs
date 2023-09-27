@@ -18,6 +18,11 @@ using Sandbox.Game.GameSystems;
 
 namespace SpaceEngineers
 {
+    #region Copy
+
+    // import:DirectionController.cs
+    // import:TargetTracker.cs
+
     public class Torpedo
     {
         public readonly string Id = DateTime.UtcNow.Ticks.ToString();
@@ -108,4 +113,6 @@ namespace SpaceEngineers
             }
         }
     }
+
+    #endregion
 }
