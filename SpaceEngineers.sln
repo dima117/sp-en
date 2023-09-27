@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceEngineers", "SpaceEngi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Builder", "Builder\Builder.csproj", "{7A781120-9187-4477-8527-FF099B2AABD3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CC83ED2B-BA6E-4FB6-A1AE-F3292F3CEDFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A781120-9187-4477-8527-FF099B2AABD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A781120-9187-4477-8527-FF099B2AABD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A781120-9187-4477-8527-FF099B2AABD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A781120-9187-4477-8527-FF099B2AABD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
