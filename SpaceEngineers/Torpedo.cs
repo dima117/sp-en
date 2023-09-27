@@ -58,7 +58,7 @@ namespace SpaceEngineers
             IMyBlockGroup group,
             int delay = 3000,  // задержка при старте
             float factor = 7,   // коэффициент мощности гироскопа
-            int lifespan = 180) // длительность жизни в секундах
+            int lifespan = 360) // длительность жизни в секундах
         {
             group.GetBlocksOfType(listGyro);
             group.GetBlocksOfType(listEngine);
