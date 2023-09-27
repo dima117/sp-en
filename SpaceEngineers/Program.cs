@@ -142,9 +142,11 @@ namespace SpaceEngineers
                 var distance = Vector3D.Distance(cam.GetPosition(), target.Position);
 
                 sb.AppendLine($"- type: {target.Type}");
-                sb.AppendLine($"- position: {target.Position}");
                 sb.AppendLine($"- speed: {target.Velocity.Length():0.0}");
                 sb.AppendLine($"- distance: {distance:0.0}");
+                sb.AppendLine($"- position X: {target.Position.X:0.0}");
+                sb.AppendLine($"- position Y: {target.Position.Y:0.0}");
+                sb.AppendLine($"- position Z: {target.Position.Z:0.0}");
             }
 
             lcd2.WriteText(sb.ToString());
@@ -176,7 +178,7 @@ namespace SpaceEngineers
                     sb.Append(" Status: Dead");
                 }
 
-                if (targetPos != null)
+                if (targetPos != null && t.IsAlive)
                 {
                     var distance = Vector3D.Distance(myPos, targetPos.Value);
 
