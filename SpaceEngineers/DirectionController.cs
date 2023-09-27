@@ -20,7 +20,6 @@ namespace SpaceEngineers
     public class DirectionController
     {
         public const double MIN_SPEED = 50;
-        public const double UPD_PERIOD = 3000;
 
         IMyShipController remoteControl;
 
@@ -37,7 +36,7 @@ namespace SpaceEngineers
 
             public override string ToString()
             {
-                return string.Format("Pitch: {0:0.00000}\nYaw: {1:0.00000}\nRoll: {2:0.00000}", Pitch, Yaw, Roll);
+                return string.Format("Pitch: {0:0.0}\nYaw: {1:0.0}\nRoll: {2:0.0}", Pitch, Yaw, Roll);
             }
         }
 
@@ -48,7 +47,7 @@ namespace SpaceEngineers
             return sign >= 0 ? value : -value;
         }
 
-        //отражение вектора с коэффициентом
+        //отражение вектора от заданного
         public static Vector3D CustomReflect(Vector3D V1, Vector3D V2)
         {
             var reflectedVector = V1 - 2 * Vector3D.Reject(V1, Vector3D.Normalize(V2));

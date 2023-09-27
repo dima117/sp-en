@@ -9,7 +9,6 @@ namespace SpaceEngineers
 {
     public class BlockArray<T> where T : class, IMyTerminalBlock
     {
-        string prefix;
         MyGridProgram program;
         Action<T> init;
 
@@ -18,10 +17,9 @@ namespace SpaceEngineers
 
         public int Count => list.Count;
 
-        public BlockArray(MyGridProgram program, string prefix, Action<T> init = null)
+        public BlockArray(MyGridProgram program, Action<T> init = null)
         {
             this.program = program;
-            this.prefix = prefix;
             this.init = init;
 
             UpdateBlocks();

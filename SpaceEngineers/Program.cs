@@ -33,10 +33,12 @@ namespace SpaceEngineers
 
         IMySoundBlock sound; // динамик
 
+        bool onlyEnemies = false;
+
         public Program()
         {
             // массив камер радара
-            tt = new TargetTracker(this, "Камера");
+            tt = new TargetTracker(this);
 
             // главная камера
             cam = GridTerminalSystem.GetBlockWithName("MAIN_CAM") as IMyCameraBlock;
@@ -57,8 +59,12 @@ namespace SpaceEngineers
         {
             switch (argument)
             {
+                case "filter":
+                    onlyEnemies = !onlyEnemies;
+
+                    break;
                 case "lock":
-                    var entity = TargetTracker.Scan(cam, 5000);
+                    var entity = TargetTracker.Scan(cam, 5000, onlyEnemies);
 
                     if (entity.HasValue)
                     {
@@ -76,7 +82,7 @@ namespace SpaceEngineers
                 case "reload":
                     welders.ForEach(w => w.Enabled = true);
                     break;
-                case "prepare":
+                case "init":
                     var ids = new HashSet<long>(torpedos.Select(t => t.EntityId));
 
                     var groups = new List<IMyBlockGroup>();
@@ -115,9 +121,13 @@ namespace SpaceEngineers
 
         void UpdateSystemLcd()
         {
+            var filter = onlyEnemies ? "Enemies" : "All";
+
             var sb = new StringBuilder();
-            sb.AppendLine($"Range: {cam.AvailableScanRange:0.000}");
+            sb.AppendLine($"Range: {cam.AvailableScanRange:0.0}");
             sb.AppendLine($"Cam count: {tt.Count}");
+            sb.AppendLine($"Welders count: {welders.Count}");
+            sb.AppendLine($"Filter: {filter}");
             lcd1.WriteText(sb.ToString());
         }
 
@@ -133,8 +143,8 @@ namespace SpaceEngineers
 
                 sb.AppendLine($"- type: {target.Type}");
                 sb.AppendLine($"- position: {target.Position}");
-                sb.AppendLine($"- speed: {target.Velocity.Length():0.000}");
-                sb.AppendLine($"- distance: {distance:0.000}");
+                sb.AppendLine($"- speed: {target.Velocity.Length():0.0}");
+                sb.AppendLine($"- distance: {distance:0.0}");
             }
 
             lcd2.WriteText(sb.ToString());
@@ -151,26 +161,26 @@ namespace SpaceEngineers
                 var t = torpedos[i];
                 var myPos = t.Position;
 
-                sb.Append($"{i + 1} SP {t.Speed:0.0}");
+                sb.Append($"{i + 1} Speed: {t.Speed:0.0}");
 
                 if (!t.Started)
                 {
-                    sb.Append(" ST Ready");
+                    sb.Append(" Status: Ready");
                 }
                 else if (t.IsAlive)
                 {
-                    sb.Append(" ST Active");
+                    sb.Append(" Status: Active");
                 }
                 else
                 {
-                    sb.Append(" ST Dead");
+                    sb.Append(" Status: Dead");
                 }
 
                 if (targetPos != null)
                 {
                     var distance = Vector3D.Distance(myPos, targetPos.Value);
 
-                    sb.Append($" DST {distance:0.0}");
+                    sb.Append($" Distance: {distance:0.0}");
                 }
 
                 sb.AppendLine();

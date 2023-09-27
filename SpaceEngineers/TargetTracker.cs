@@ -20,7 +20,13 @@ namespace SpaceEngineers
     public class TargetTracker
     {
         const double DISTANCE_RESERVE = 50;
-        const double DISTANCE_SCAN_DEFAULT = 10000;
+        const double DISTANCE_SCAN_DEFAULT = 5000;
+
+
+        static readonly HashSet<MyDetectedEntityType> targetTypes = new HashSet<MyDetectedEntityType> {
+            MyDetectedEntityType.SmallGrid,
+            MyDetectedEntityType.LargeGrid
+        };
 
         public struct TargetInfo
         {
@@ -47,7 +53,10 @@ namespace SpaceEngineers
             }
         }
 
-        public static TargetInfo? Scan(IMyCameraBlock cam, double distance = DISTANCE_SCAN_DEFAULT)
+        public static TargetInfo? Scan(
+            IMyCameraBlock cam,
+            double distance = DISTANCE_SCAN_DEFAULT,
+            bool onlyEnemies = false)
         {
             if (cam == null)
             {
@@ -61,8 +70,12 @@ namespace SpaceEngineers
                 return null;
             }
 
-            if (target.Type != MyDetectedEntityType.SmallGrid &&
-                target.Type != MyDetectedEntityType.LargeGrid)
+            if (!targetTypes.Contains(target.Type))
+            {
+                return null;
+            }
+
+            if (onlyEnemies && target.Relationship != MyRelationsBetweenPlayerAndBlock.Enemies)
             {
                 return null;
             }
@@ -100,9 +113,9 @@ namespace SpaceEngineers
                 Vector3D.Transform(info.HitPos, target.Orientation);
         }
 
-        public TargetTracker(MyGridProgram program, string prefix = "Camera")
+        public TargetTracker(MyGridProgram program)
         {
-            camArray = new BlockArray<IMyCameraBlock>(program, prefix, cam => cam.EnableRaycast = true);
+            camArray = new BlockArray<IMyCameraBlock>(program, cam => cam.EnableRaycast = true);
         }
 
         public int Count
