@@ -80,6 +80,7 @@
     <Compile Include="Tmp.cs" />
     <Compile Include="Torpedo.cs" />
     <Compile Include="WcPbApi.cs" />
+    <Compile Include="WcRadar.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" />

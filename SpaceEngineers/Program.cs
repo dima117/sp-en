@@ -23,6 +23,7 @@ namespace SpaceEngineers
 
         // import:Torpedo.cs
         // import:TargetTracker.cs
+        // import:WcRadar.cs
 
         TargetTracker tt;
         IMyCameraBlock cam;
@@ -33,15 +34,20 @@ namespace SpaceEngineers
         IMyTextPanel lcd1; // система
         IMyTextPanel lcd2; // цель
         IMyTextPanel lcd3; // торпеда
+        IMyTextPanel lcd4; // targets from pb
 
         IMySoundBlock sound; // динамик
+        WcRadar radar;
 
         bool onlyEnemies = false;
 
         public Program()
         {
+            WcPbApi.Instance.Activate(Me);
+
             // массив камер радара
             tt = new TargetTracker(this);
+            radar = new WcRadar();
 
             // главная камера
             cam = GridTerminalSystem.GetBlockWithName("MAIN_CAM") as IMyCameraBlock;
@@ -53,6 +59,7 @@ namespace SpaceEngineers
             lcd1 = GridTerminalSystem.GetBlockWithName("LCD1") as IMyTextPanel;
             lcd2 = GridTerminalSystem.GetBlockWithName("LCD2") as IMyTextPanel;
             lcd3 = GridTerminalSystem.GetBlockWithName("LCD3") as IMyTextPanel;
+            lcd4 = GridTerminalSystem.GetBlockWithName("LCD4") as IMyTextPanel;
             sound = GridTerminalSystem.GetBlockWithName("T_SOUND") as IMySoundBlock;
 
             Me.GetSurface(0).WriteText("TARGETING");
@@ -117,9 +124,17 @@ namespace SpaceEngineers
                     break;
             }
 
+
             UpdateSystemLcd();
             UpdateTargetLcd();
+            UpdateWcLcd();
             UpdateTorpedoLcd(torpedos);
+        }
+
+        private void UpdateWcLcd()
+        {
+            radar.Update();
+            lcd4.WriteText(radar.ToString());
         }
 
         void UpdateSystemLcd()
