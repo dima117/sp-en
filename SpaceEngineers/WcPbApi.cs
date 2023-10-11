@@ -17,7 +17,7 @@ namespace SpaceEngineers
     {
         public static WcPbApi Instance = new WcPbApi();
         
-        private IMyTerminalBlock pBlock;
+        public IMyTerminalBlock pBlock { get; private set; }
 
         private Action<ICollection<MyDefinitionId>> _getCoreWeapons;
         private Action<ICollection<MyDefinitionId>> _getCoreStaticLaunchers;

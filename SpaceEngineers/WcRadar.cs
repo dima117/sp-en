@@ -33,6 +33,7 @@ namespace SpaceEngineers
         }
 
         public void Update() {
+            threats.Clear();
             WcPbApi.Instance.GetSortedThreats(threats);
         }
 
@@ -42,12 +43,15 @@ namespace SpaceEngineers
 
         public override string ToString()
         {
+            var pos = WcPbApi.Instance.pBlock.GetPosition();
+
             var sb = new StringBuilder();
 
             foreach (var obj in threats) {
                 var entity = obj.Key;
+                var distance = (entity.Position - pos).Length();
 
-                sb.AppendFormat("{0} {1}: {2:0}m/s", entity.Type, entity.EntityId, entity.Velocity.Length());
+                sb.AppendFormat("{0} {1} :: D {2:0}m :: S {3:0}m/s\n", entity.Type, entity.EntityId, distance, entity.Velocity.Length());
             }
 
             return sb.ToString();

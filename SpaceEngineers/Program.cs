@@ -34,10 +34,10 @@ namespace SpaceEngineers
         IMyTextPanel lcd1; // система
         IMyTextPanel lcd2; // цель
         IMyTextPanel lcd3; // торпеда
-        IMyTextPanel lcd4; // targets from pb
+        IMyTextPanel lcd4; // цели из weapon core
 
         IMySoundBlock sound; // динамик
-        WcRadar radar;
+        WcRadar radar; // радар weapon core
 
         bool onlyEnemies = false;
 
