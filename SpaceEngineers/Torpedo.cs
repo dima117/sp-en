@@ -20,7 +20,7 @@ namespace SpaceEngineers
 {
     #region Copy
 
-    // import:DirectionController.cs
+    // import:DirectionController2.cs
     // import:TargetTracker.cs
 
     public class Torpedo
@@ -28,10 +28,9 @@ namespace SpaceEngineers
         public readonly string Id = DateTime.UtcNow.Ticks.ToString();
 
         readonly int delay;
-        readonly float factor;
         readonly int lifespan;
 
-        readonly DirectionController tControl;
+        readonly DirectionController2 tControl;
 
         readonly List<IMyGyro> listGyro = new List<IMyGyro>();
         readonly List<IMyThrust> listEngine = new List<IMyThrust>();
@@ -68,10 +67,9 @@ namespace SpaceEngineers
 
             tClamp = tmp.FirstOrDefault(b => b is IMyShipMergeBlock) as IMyShipMergeBlock;
             tRemote = tmp.FirstOrDefault(b => b is IMyRemoteControl) as IMyRemoteControl;
-            tControl = new DirectionController(tRemote);
+            tControl = new DirectionController2(tRemote, listGyro, factor);
 
             this.delay = delay;
-            this.factor = factor;
             this.lifespan = lifespan;
         }
 
@@ -101,14 +99,8 @@ namespace SpaceEngineers
                 {
                     var target = info.Value.Entity;
 
-                    var d = tControl.GetInterceptAngle(target);
-                    //var d = tControl.GetTargetAngle(target.Position);
-
-                    listGyro.ForEach(g =>
-                    {
-                        g.Pitch = -Convert.ToSingle(d.Pitch) * factor;
-                        g.Yaw = Convert.ToSingle(d.Yaw) * factor;
-                    });
+                    tControl.Intercept(target);
+                    // tControl.Aim(target.Position);
                 }
             }
         }
