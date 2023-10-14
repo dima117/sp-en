@@ -109,11 +109,21 @@ namespace Builder
         {
             var cwd = Directory.GetCurrentDirectory();
             var projectPath = Path.GetFullPath(Path.Combine(cwd, "..\\..\\..\\SpaceEngineers"));
-            var builderPath = Path.GetFullPath(Path.Combine(cwd, "..\\.."));
+            var builderPath = Path.GetFullPath(Path.Combine(cwd, "..\\..\\Dist"));
 
-            var content = GetContent(projectPath, "Program.cs");
+            var files = new string[] {
+                "Program.cs",
+                "Examples\\Icbm.cs"
+            };
 
-            File.WriteAllText(Path.Combine(builderPath, "DIST.txt"), content);
+            foreach (var filePath in files)
+            {
+                var fileName = Path.GetFileName(filePath);
+
+                var content = GetContent(projectPath, filePath);
+
+                File.WriteAllText(Path.Combine(builderPath, fileName + ".txt"), content);
+            }
         }
     }
 }

@@ -56,5 +56,8 @@
   <ItemGroup>
     <Content Include="DIST.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Dist\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
