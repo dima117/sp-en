@@ -113,7 +113,7 @@ namespace Builder
 
             var files = new string[] {
                 "Program.cs",
-                "Examples\\Icbm.cs"
+                "Examples\\IcbmExample.cs"
             };
 
             foreach (var filePath in files)

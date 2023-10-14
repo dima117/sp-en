@@ -33,13 +33,41 @@ namespace SpaceEngineers
         readonly float factor; // множитель мощности гироскопа
 
         public DirectionController2(
-            IMyShipController remoteControl, 
+            IMyShipController remoteControl,
             IEnumerable<IMyGyro> gyroList,
             float factor)
         {
             this.remoteControl = remoteControl;
             this.gyroList = gyroList;
             this.factor = factor;
+        }
+
+        public void ICBM(Vector3D targetPos)
+        {
+            var grav = remoteControl.GetNaturalGravity();
+
+            if (!grav.IsZero())
+            {
+                var ownPos = remoteControl.GetPosition();
+                var targetVector = targetPos - ownPos;
+
+                Vector3D direction;
+
+                if (targetVector.Length() > 3500)
+                {
+                    // компенсируем гравитацию
+                    direction = CompensateSideVelocity(grav, targetVector);
+                }
+                else
+                {
+                    // на финальном участке пути компенсируем боковую скорость
+                    var velocity = remoteControl.GetShipVelocities().LinearVelocity;
+                    direction = CompensateSideVelocity(velocity, targetVector, 1.5f);
+                }
+
+                var axis = GetAxis(remoteControl.WorldMatrix.Forward, direction);
+                SetGyroByAxis(axis);
+            }
         }
 
         public void KeepHorizon()

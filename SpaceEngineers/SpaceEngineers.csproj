@@ -69,7 +69,9 @@
     <Compile Include="BlockArray.cs" />
     <Compile Include="DirectionController2.cs" />
     <Compile Include="Examples\Class1.cs" />
+    <Compile Include="Examples\IcbmExample.cs" />
     <Compile Include="Examples\GravDrive3.cs" />
+    <Compile Include="Icbm.cs" />
     <Compile Include="Examples\TmpAngularVelocity.cs" />
     <Compile Include="Examples\TmpGravDrive.cs" />
     <Compile Include="GravityDrive.cs" />
