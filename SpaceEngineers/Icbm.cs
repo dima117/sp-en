@@ -28,11 +28,13 @@ namespace SpaceEngineers.Examples
         public readonly string Id = DateTime.UtcNow.Ticks.ToString();
 
         readonly int delay;
+        readonly string name;
 
         readonly DirectionController2 tControl;
 
         readonly List<IMyGyro> listGyro = new List<IMyGyro>();
         readonly List<IMyThrust> listEngine = new List<IMyThrust>();
+        readonly List<IMyGasGenerator> listH2Gen = new List<IMyGasGenerator>();
         readonly IMyRemoteControl tRemote;
         readonly IMyShipMergeBlock tClamp;
 
@@ -54,8 +56,12 @@ namespace SpaceEngineers.Examples
             int delay = 1000,  // задержка при старте
             float factor = 4)  // коэффициент мощности гироскопа
         {
+            name = group.Name;
+            this.delay = delay;
+
             group.GetBlocksOfType(listGyro);
             group.GetBlocksOfType(listEngine);
+            group.GetBlocksOfType(listH2Gen);
 
             var tmp = new List<IMyTerminalBlock>();
             group.GetBlocks(tmp);
@@ -63,8 +69,6 @@ namespace SpaceEngineers.Examples
             tClamp = tmp.FirstOrDefault(b => b is IMyShipMergeBlock) as IMyShipMergeBlock;
             tRemote = tmp.FirstOrDefault(b => b is IMyRemoteControl) as IMyRemoteControl;
             tControl = new DirectionController2(tRemote, listGyro, factor);
-
-            this.delay = delay;
         }
 
         public void Start(Vector3D targetPos)
@@ -74,7 +78,13 @@ namespace SpaceEngineers.Examples
 
             tClamp.Enabled = false;
 
-            listGyro.ForEach(g => { g.GyroOverride = true; });
+            listGyro.ForEach(g =>
+            {
+                g.Enabled = true;
+                g.GyroOverride = true;
+            });
+
+            listH2Gen.ForEach(g => { g.Enabled = true; });
 
             listEngine.ForEach(e =>
             {
@@ -98,10 +108,31 @@ namespace SpaceEngineers.Examples
             var sb = new StringBuilder();
 
             var dist = (TargetPos - Position).Length();
+
+            sb.AppendLine($"name: {name}");
             sb.AppendLine($"target: {TargetPos}");
             sb.AppendLine($"dist: {dist}m");
 
-            sb.AppendLine($"gyro cnt: {listGyro.Count}");
+            if (IsAlive)
+            {
+                if (Started)
+                {
+                    sb.AppendLine($"status: STARTED");
+                }
+                else if (IsReady)
+                {
+                    sb.AppendLine($"status: READY");
+                }
+                else
+                {
+                    sb.AppendLine($"status: INVALID");
+                }
+            }
+            else
+            {
+                sb.AppendLine($"status: DEAD");
+            }
+
 
             return sb.ToString();
         }
