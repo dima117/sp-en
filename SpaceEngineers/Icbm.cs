@@ -23,6 +23,14 @@ namespace SpaceEngineers.Examples
 
     // import:DirectionController2.cs
 
+    public enum MissileState
+    {
+        Ready,
+        Started,
+        Dead,
+        Invalid
+    }
+
     public class Icbm
     {
         public readonly string Id = DateTime.UtcNow.Ticks.ToString();
@@ -40,11 +48,18 @@ namespace SpaceEngineers.Examples
 
         DateTime startTime = DateTime.MaxValue;
 
+        MissileState State =>
+            !IsAlive ? MissileState.Dead :
+            Started ? MissileState.Started :
+            IsReady ? MissileState.Ready : MissileState.Invalid;
+
         public Vector3D Position => tRemote.GetPosition();
         public double Speed => Started && IsAlive ? tRemote.GetShipSpeed() : 0;
         public bool IsReady => listEngine.Any() && listGyro.Any() && tRemote != null && tClamp != null;
         public bool Started { get; private set; }
         public Vector3D TargetPos { get; private set; }
+
+        public long EntityId => (tRemote?.EntityId).GetValueOrDefault();
 
         public bool IsAlive =>
             tRemote.IsFunctional &&
@@ -105,36 +120,11 @@ namespace SpaceEngineers.Examples
 
         public override string ToString()
         {
-            var sb = new StringBuilder();
-
             var dist = (TargetPos - Position).Length();
 
-            sb.AppendLine($"name: {name}");
-            sb.AppendLine($"target: {TargetPos}");
-            sb.AppendLine($"dist: {dist}m");
-
-            if (IsAlive)
-            {
-                if (Started)
-                {
-                    sb.AppendLine($"status: STARTED");
-                }
-                else if (IsReady)
-                {
-                    sb.AppendLine($"status: READY");
-                }
-                else
-                {
-                    sb.AppendLine($"status: INVALID");
-                }
-            }
-            else
-            {
-                sb.AppendLine($"status: DEAD");
-            }
-
-
-            return sb.ToString();
+            return State == MissileState.Started
+                ? $"{name}: {State} => {dist}m"
+                : $"{name}: {State}";
         }
     }
 

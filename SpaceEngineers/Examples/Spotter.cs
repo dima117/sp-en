@@ -40,7 +40,7 @@ namespace SpaceEngineers.Examples.Spotter
                         var text = target.Position.ToString();
                         var distance = (target.Position - cam.GetPosition()).Length();
 
-                        cockpit.GetSurface(1).WriteText(type + $"\ndist: {distance:0}\n" + text.Replace(" ", "\n"));
+                        cockpit.GetSurface(1).WriteText(type + $"\ndist: {distance:0}m\n" + text.Replace(" ", "\n"));
                         Me.CustomData = text;
                     }
 

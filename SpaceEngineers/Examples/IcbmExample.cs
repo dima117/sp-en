@@ -14,7 +14,6 @@ using VRage.Collections;
 using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
-using static Sandbox.Game.Weapons.MyDrillBase;
 
 namespace SpaceEngineers.Examples.IcbmExample
 {
@@ -24,54 +23,76 @@ namespace SpaceEngineers.Examples.IcbmExample
 
         // import:Icbm.cs
 
-        Vector3D target;
-        IMyTextPanel lcd1;
-        IMyTextPanel lcd2;
-        Icbm missile;
+        string BROAD_CAST_TAG = "start_icbm";
+
+        List<Icbm> missiles = new List<Icbm>();
+        IMyBroadcastListener listener;
+
+        IMyTextSurface LCD => Me.GetSurface(0);
 
         public Program()
         {
-            lcd1 = GridTerminalSystem.GetBlockWithName("LCD1") as IMyTextPanel; // система
-            lcd2 = GridTerminalSystem.GetBlockWithName("LCD2") as IMyTextPanel; // статус ракеты
+            listener = IGC.RegisterBroadcastListener(BROAD_CAST_TAG);
+            listener.SetMessageCallback();
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
-            switch (argument)
+            if (updateSource == UpdateType.IGC)
             {
-                case "init":
-                    var groups = new List<IMyBlockGroup>();
-                    GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("ICBM"));
+                while (listener.HasPendingMessage)
+                {
+                    var message = listener.AcceptMessage();
 
-                    missile = new Icbm(groups.First());
-                    break;
-                case "start":
-                    if (missile != null && !target.IsZero())
-                    {
-                        missile.Start(target);
-                    }
+                    StartNextMissile(message.Data);
+                }
+            }
+            else
+            {
+                switch (argument)
+                {
+                    case "init":
+                        var ids = new HashSet<long>(missiles.Select(t => t.EntityId));
+                        var groups = new List<IMyBlockGroup>();
+                        GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("ICBM"));
 
-                    break;
-                default:
+                        missiles.AddRange(groups
+                            .Select(gr => new Icbm(gr))
+                            .Where(t => !ids.Contains(t.EntityId)));
 
-                    if (missile?.Started == true)
-                    {
-                        missile.Update();
-                        lcd2.WriteText(missile.ToString());
-                    }
-                    else {
-                        var text = Me.CustomData;
-                        Vector3D pos;
-                        if (!string.IsNullOrEmpty(text) && Vector3D.TryParse(text, out pos)) { 
-                            target = pos;
-                        }
+                        missiles.RemoveAll(m => !m.IsAlive);
 
-                        lcd1.WriteText(target.ToString());
-                    }
+                        break;
+                    case "start":
+                        StartNextMissile(Me.CustomData);
 
-                    break;
+                        break;
+                }
+
+                foreach (var m in missiles.Where(m => m.IsAlive && m.Started))
+                {
+                    m.Update();
+                }
+
+                // missiles states
+                LCD.WriteText(string.Join("\n\n", missiles));
+            }
+        }
+
+        private void StartNextMissile(object value)
+        {
+            Vector3D target;
+
+            if (Vector3D.TryParse(value.ToString(), out target))
+            {
+                var missile = missiles.FirstOrDefault(m => m.IsReady && !m.Started);
+
+                if (missile != null && !target.IsZero())
+                {
+                    missile.Start(target);
+                }
             }
         }
 
