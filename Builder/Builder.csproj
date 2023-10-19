@@ -54,9 +54,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dist\IcbmExample.cs.txt" />
-    <Content Include="Dist\Program.cs.txt" />
+    <Folder Include="Dist\" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

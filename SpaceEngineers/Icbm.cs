@@ -16,7 +16,7 @@ using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.GameSystems;
 
-namespace SpaceEngineers.Examples
+namespace SpaceEngineers
 {
 
     #region Copy

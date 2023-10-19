@@ -69,8 +69,9 @@
     <Compile Include="BlockArray.cs" />
     <Compile Include="DirectionController2.cs" />
     <Compile Include="Examples\Class1.cs" />
-    <Compile Include="Examples\IcbmExample.cs" />
+    <Compile Include="Scripts\IcbmLauncher.cs" />
     <Compile Include="Examples\GravDrive3.cs" />
+    <Compile Include="Examples\Spotter.cs" />
     <Compile Include="Icbm.cs" />
     <Compile Include="Examples\TmpAngularVelocity.cs" />
     <Compile Include="Examples\TmpGravDrive.cs" />
@@ -91,5 +92,6 @@
   <ItemGroup>
     <Content Include="TextFile1.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -15,7 +15,7 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 
-namespace SpaceEngineers.Examples.IcbmExample
+namespace SpaceEngineers.Scripts.IcbmLauncher
 {
     public class Program : MyGridProgram
     {
@@ -24,7 +24,9 @@ namespace SpaceEngineers.Examples.IcbmExample
         // import:Icbm.cs
 
         string BROAD_CAST_TAG = "start_icbm";
+        string ECHO_TAG = "icbm_was_launched";
 
+        IMyRadioAntenna antenna;
         List<Icbm> missiles = new List<Icbm>();
         IMyBroadcastListener listener;
 
@@ -32,6 +34,10 @@ namespace SpaceEngineers.Examples.IcbmExample
 
         public Program()
         {
+            antenna = GridTerminalSystem.GetBlockWithName("ANTENNA") as IMyRadioAntenna;
+            antenna.Radius = 10;
+            antenna.Enabled = true;
+
             listener = IGC.RegisterBroadcastListener(BROAD_CAST_TAG);
             listener.SetMessageCallback();
 
@@ -46,7 +52,11 @@ namespace SpaceEngineers.Examples.IcbmExample
                 {
                     var message = listener.AcceptMessage();
 
-                    StartNextMissile(message.Data);
+                    if (StartNextMissile(message.Data)) {
+                        antenna.Radius = 50000;
+                        IGC.SendUnicastMessage(message.Source, ECHO_TAG, message.Data);
+                        antenna.Radius = 10;
+                    }
                 }
             }
             else
@@ -81,7 +91,7 @@ namespace SpaceEngineers.Examples.IcbmExample
             }
         }
 
-        private void StartNextMissile(object value)
+        private bool StartNextMissile(object value)
         {
             Vector3D target;
 
@@ -92,8 +102,11 @@ namespace SpaceEngineers.Examples.IcbmExample
                 if (missile != null && !target.IsZero())
                 {
                     missile.Start(target);
+                    return true;
                 }
             }
+
+            return false;
         }
 
         #endregion
