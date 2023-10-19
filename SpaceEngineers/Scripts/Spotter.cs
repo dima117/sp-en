@@ -15,6 +15,8 @@ namespace SpaceEngineers.Scripts.Spotter
 {
     public sealed class Program : MyGridProgram
     {
+        #region Copy
+
         IMyCameraBlock cam;
         IMyCockpit cockpit;
 
@@ -58,5 +60,7 @@ namespace SpaceEngineers.Scripts.Spotter
                     break;
             }
         }
+
+        #endregion
     }
 }

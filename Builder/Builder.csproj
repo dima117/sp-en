@@ -53,8 +53,11 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Dist\" />
+    <Content Include="Dist\IcbmLauncher.cs.txt" />
+    <Content Include="Dist\Program.cs.txt" />
+    <Content Include="Dist\Spotter.cs.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
