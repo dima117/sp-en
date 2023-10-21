@@ -27,6 +27,7 @@ namespace SpaceEngineers.Scripts.Spotter
         MyDetectedEntityInfo? target;
         DateTime stopBroadcast = DateTime.MinValue;
         Stack<MyDetectedEntityInfo> messages = new Stack<MyDetectedEntityInfo>();
+        IMyBroadcastListener listener;
 
         public Program()
         {
@@ -39,12 +40,20 @@ namespace SpaceEngineers.Scripts.Spotter
             // экран
             var list2 = new List<IMyCockpit>();
             GridTerminalSystem.GetBlocksOfType(list2);
-            lcd = list2.FirstOrDefault()?.GetSurface(1);
+            lcd = list2.FirstOrDefault()?.GetSurface(3);
 
             // антенна
             var list3 = new List<IMyRadioAntenna>();
             GridTerminalSystem.GetBlocksOfType(list3);
             antenna = list3.FirstOrDefault();
+            if (antenna != null)
+            {
+                antenna.Radius = 10;
+                antenna.Enabled = true;
+
+                listener = IGC.RegisterBroadcastListener("icbm_was_launched");
+                listener.SetMessageCallback("icbm_was_launched");
+            }
 
             Runtime.UpdateFrequency = UpdateFrequency.Update100;
         }
@@ -63,6 +72,9 @@ namespace SpaceEngineers.Scripts.Spotter
 
             switch (argument)
             {
+                case "icbm_was_launched":
+
+                    break;
                 case "shot":
                     var entity = cam.Raycast(5000);
 
@@ -80,10 +92,9 @@ namespace SpaceEngineers.Scripts.Spotter
                             // update lcd
                             if (lcd != null)
                             {
-                                var pos = entity.Position.ToString().Replace(" ", "\n");
                                 var dist = (entity.Position - cam.GetPosition()).Length();
 
-                                lcd.WriteText($"{type}\ndist: {dist:0}m\n{pos}");
+                                lcd.WriteText($"{type}\ndist: {dist:0}m");
                             }
                         }
                     }
@@ -98,7 +109,7 @@ namespace SpaceEngineers.Scripts.Spotter
                 case "start":
                     if (target.HasValue)
                     {
-                        stopBroadcast = DateTime.UtcNow.AddMilliseconds(500);
+                        stopBroadcast = DateTime.UtcNow.AddSeconds(1);
                         messages.Push(target.Value);
                     }
 

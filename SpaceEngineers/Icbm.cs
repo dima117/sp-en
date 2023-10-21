@@ -68,7 +68,7 @@ namespace SpaceEngineers
 
         public Icbm(
             IMyBlockGroup group,
-            int delay = 1000,  // задержка при старте
+            int delay = 3000,  // задержка при старте
             float factor = 4)  // коэффициент мощности гироскопа
         {
             name = group.Name;

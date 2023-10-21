@@ -23,7 +23,7 @@ namespace SpaceEngineers.Scripts.IcbmLauncher
 
         // import:Icbm.cs
 
-        string BROAD_CAST_TAG = "start_icbm";
+        string BROAD_CAST_TAG = "TARGET_POSITION";
         string ECHO_TAG = "icbm_was_launched";
 
         IMyRadioAntenna antenna;
@@ -34,12 +34,19 @@ namespace SpaceEngineers.Scripts.IcbmLauncher
 
         public Program()
         {
-            antenna = GridTerminalSystem.GetBlockWithName("ANTENNA") as IMyRadioAntenna;
-            antenna.Radius = 10;
-            antenna.Enabled = true;
+            // антенна
+            var list3 = new List<IMyRadioAntenna>();
+            GridTerminalSystem.GetBlocksOfType(list3);
+            antenna = list3.FirstOrDefault();
+
+            if (antenna != null)
+            {
+                antenna.Radius = 10;
+                antenna.Enabled = true;
+            }
 
             listener = IGC.RegisterBroadcastListener(BROAD_CAST_TAG);
-            listener.SetMessageCallback();
+            listener.SetMessageCallback(BROAD_CAST_TAG);
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
