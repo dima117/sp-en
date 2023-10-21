@@ -10,6 +10,9 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using static System.Net.Mime.MediaTypeNames;
+using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace SpaceEngineers.Scripts.Spotter
 {
@@ -18,44 +21,86 @@ namespace SpaceEngineers.Scripts.Spotter
         #region Copy
 
         IMyCameraBlock cam;
-        IMyCockpit cockpit;
+        IMyTextSurface lcd;
+        IMyRadioAntenna antenna;
+
+        MyDetectedEntityInfo? target;
+        DateTime stopBroadcast = DateTime.MinValue;
+        Stack<MyDetectedEntityInfo> messages = new Stack<MyDetectedEntityInfo>();
 
         public Program()
         {
             // главная камера
-            cam = GridTerminalSystem.GetBlockWithName("MAIN_CAM") as IMyCameraBlock;
+            var list1 = new List<IMyCameraBlock>();
+            GridTerminalSystem.GetBlocksOfType(list1);
+            cam = list1.First();
             cam.EnableRaycast = true;
 
-            cockpit = GridTerminalSystem.GetBlockWithName("MAIN_COCKPIT") as IMyCockpit;
+            // экран
+            var list2 = new List<IMyCockpit>();
+            GridTerminalSystem.GetBlocksOfType(list2);
+            lcd = list2.FirstOrDefault()?.GetSurface(1);
+
+            // антенна
+            var list3 = new List<IMyRadioAntenna>();
+            GridTerminalSystem.GetBlocksOfType(list3);
+            antenna = list3.FirstOrDefault();
+
+            Runtime.UpdateFrequency = UpdateFrequency.Update100;
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
+            // устанавливаем радиус антенны
+            antenna.Radius = DateTime.UtcNow > stopBroadcast ? 10 : 50000;
+
+            while (messages.Any())
+            {
+                var message = messages.Pop();
+
+                IGC.SendBroadcastMessage("TARGET_POSITION", message.Position);
+            }
+
             switch (argument)
             {
                 case "shot":
-                    var target = cam.Raycast(5000);
+                    var entity = cam.Raycast(5000);
 
-                    if (!target.IsEmpty())
+                    if (!entity.IsEmpty())
                     {
-                        var type = target.Type;
+                        var type = entity.Type;
 
                         var isGrid = type == MyDetectedEntityType.LargeGrid || type == MyDetectedEntityType.SmallGrid;
 
                         if (isGrid)
                         {
-                            var text = target.Position.ToString();
-                            var distance = (target.Position - cam.GetPosition()).Length();
+                            target = entity;
+                            Me.CustomData = entity.Position.ToString();
 
-                            cockpit.GetSurface(1).WriteText($"{type}\ndist: {distance:0}m\n" + text.Replace(" ", "\n"));
-                            Me.CustomData = text;
+                            // update lcd
+                            if (lcd != null)
+                            {
+                                var pos = entity.Position.ToString().Replace(" ", "\n");
+                                var dist = (entity.Position - cam.GetPosition()).Length();
+
+                                lcd.WriteText($"{type}\ndist: {dist:0}m\n{pos}");
+                            }
                         }
                     }
 
                     break;
                 case "reset":
-                    cockpit.GetSurface(1).WriteText("");
+                    target = null;
                     Me.CustomData = "";
+                    lcd?.WriteText("NO TARGET");
+                    
+                    break;
+                case "start":
+                    if (target.HasValue)
+                    {
+                        stopBroadcast = DateTime.UtcNow.AddMilliseconds(500);
+                        messages.Push(target.Value);
+                    }
 
                     break;
             }
