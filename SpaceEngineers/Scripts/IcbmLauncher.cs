@@ -84,7 +84,7 @@ namespace SpaceEngineers.Scripts.IcbmLauncher
 
             // missiles states
             var state = string.Join("\n", missiles);
-            lcd.WriteText(state);
+            lcd.WriteText($"{spotters.Count}\n" + state);
 
             var now = DateTime.UtcNow;
             if (now > nextUpdate) {

@@ -18,6 +18,8 @@ namespace SpaceEngineers
 {
     #region Copy
 
+    // import:BlockArray.cs
+
     public class Transmitter
     {
         public const string TAG_ICBM_STATE = "TAG_ICBM_STATE";
@@ -26,6 +28,8 @@ namespace SpaceEngineers
 
         public const int MIN_RANGE = 10;
         public const int MAX_RANGE = 50000;
+
+        private int seq = 0;
 
         private BlockArray<IMyRadioAntenna> blocks;
         private IMyIntergridCommunicationSystem igc;
@@ -43,22 +47,24 @@ namespace SpaceEngineers
                 a.EnableBroadcasting = true;
                 a.Enabled = true;
             });
+
+            igc.UnicastListener.SetMessageCallback();
         }
 
         public void Subscribe(string tag, Action<MyIGCMessage> fn, bool broadcast = false)
         {
             if (broadcast) {
                 var listener = igc.RegisterBroadcastListener(tag);
-                var listenerId = Guid.NewGuid().ToString();
+                var listenerId = (DateTime.UtcNow.Ticks - (seq++)).ToString();
 
                 listener.SetMessageCallback(listenerId);
-                listeners.Add(listenerId, listener);
+                listeners[listenerId] = listener;
             }
 
-            actions.Add(tag, fn);
+            actions[tag] = fn;
         }
 
-        public void Send(string tag, object data, long? destination = null)
+        public void Send<T>(string tag, T data, long? destination = null)
         {
             blocks.ForEach(a => a.Radius = MAX_RANGE);
 

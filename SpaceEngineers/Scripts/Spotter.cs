@@ -58,6 +58,8 @@ namespace SpaceEngineers.Scripts.Spotter
 
         public void UpdateIcbmState(MyIGCMessage message)
         {
+            Echo(message.Data.ToString());
+
             if (lcdIcbm != null)
             {
                 lcdIcbm.WriteText(message.Data.ToString());
