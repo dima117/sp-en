@@ -94,7 +94,7 @@ namespace SpaceEngineers.Scripts.IcbmLauncher
                 }
 
                 // missiles states
-                LCD.WriteText(string.Join("\n\n", missiles));
+                LCD.WriteText(string.Join("\n", missiles));
             }
         }
 
