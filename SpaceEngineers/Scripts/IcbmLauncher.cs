@@ -22,79 +22,77 @@ namespace SpaceEngineers.Scripts.IcbmLauncher
         #region Copy
 
         // import:Icbm.cs
+        // import:Transmitter.cs
 
-        string BROAD_CAST_TAG = "TARGET_POSITION";
-        string ECHO_TAG = "icbm_was_launched";
+        IMyTextSurface lcd => Me.GetSurface(0);
 
-        IMyRadioAntenna antenna;
+        Transmitter tsm;
+        HashSet<long> spotters = new HashSet<long>();
         List<Icbm> missiles = new List<Icbm>();
-        IMyBroadcastListener listener;
-
-        IMyTextSurface LCD => Me.GetSurface(0);
+        DateTime nextUpdate = DateTime.MinValue;
 
         public Program()
         {
             // антенна
-            var list3 = new List<IMyRadioAntenna>();
-            GridTerminalSystem.GetBlocksOfType(list3);
-            antenna = list3.FirstOrDefault();
-
-            if (antenna != null)
-            {
-                antenna.Radius = 10;
-                antenna.Enabled = true;
-            }
-
-            listener = IGC.RegisterBroadcastListener(BROAD_CAST_TAG);
-            listener.SetMessageCallback(BROAD_CAST_TAG);
+            tsm = new Transmitter(this);
+            tsm.Subscribe(Transmitter.TAG_ICBM_CONNECT, Connect, true);
+            tsm.Subscribe(Transmitter.TAG_TARGET_POSITION, Launch, true);
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
+        private void Connect(MyIGCMessage message)
+        {
+            spotters.Add(message.Source);
+            nextUpdate = DateTime.MinValue;
+        }
+
+        private void Launch(MyIGCMessage message)
+        {
+            StartNextMissile(message.Data);
+            nextUpdate = DateTime.MinValue;
+        }
+
         public void Main(string argument, UpdateType updateSource)
         {
-            if (updateSource == UpdateType.IGC)
-            {
-                while (listener.HasPendingMessage)
-                {
-                    var message = listener.AcceptMessage();
+            tsm.Update(argument, updateSource);
 
-                    if (StartNextMissile(message.Data)) {
-                        antenna.Radius = 50000;
-                        IGC.SendUnicastMessage(message.Source, ECHO_TAG, message.Data);
-                        antenna.Radius = 10;
-                    }
-                }
+            switch (argument)
+            {
+                case "init":
+                    var ids = new HashSet<long>(missiles.Select(t => t.EntityId));
+                    var groups = new List<IMyBlockGroup>();
+                    GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("ICBM"));
+
+                    missiles.AddRange(groups
+                        .Select(gr => new Icbm(gr))
+                        .Where(t => !ids.Contains(t.EntityId)));
+
+                    missiles.RemoveAll(m => !m.IsAlive);
+
+                    break;
+                case "start":
+                    StartNextMissile(Me.CustomData);
+
+                    break;
             }
-            else
+
+            foreach (var m in missiles.Where(m => m.IsAlive && m.Started))
             {
-                switch (argument)
-                {
-                    case "init":
-                        var ids = new HashSet<long>(missiles.Select(t => t.EntityId));
-                        var groups = new List<IMyBlockGroup>();
-                        GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("ICBM"));
+                m.Update();
+            }
 
-                        missiles.AddRange(groups
-                            .Select(gr => new Icbm(gr))
-                            .Where(t => !ids.Contains(t.EntityId)));
+            // missiles states
+            var state = string.Join("\n", missiles);
+            lcd.WriteText(state);
 
-                        missiles.RemoveAll(m => !m.IsAlive);
-
-                        break;
-                    case "start":
-                        StartNextMissile(Me.CustomData);
-
-                        break;
+            var now = DateTime.UtcNow;
+            if (now > nextUpdate) {
+                foreach (var address in spotters) {
+                    tsm.Send(Transmitter.TAG_ICBM_STATE, state, address);
                 }
 
-                foreach (var m in missiles.Where(m => m.IsAlive && m.Started))
-                {
-                    m.Update();
-                }
-
-                // missiles states
-                LCD.WriteText(string.Join("\n", missiles));
+                nextUpdate = now.AddSeconds(10);
             }
         }
 
