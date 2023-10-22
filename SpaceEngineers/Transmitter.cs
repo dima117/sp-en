@@ -22,13 +22,20 @@ namespace SpaceEngineers
 
     public class Transmitter
     {
+        // 1. предоставляет лаконичный API для отправки и получения сообщений
+        // 2. включает антенну на короткое время при отправке сообщений
         public const string TAG_ICBM_STATE = "TAG_ICBM_STATE";
         public const string TAG_TARGET_POSITION = "TAG_TARGET_POSITION";
         public const string TAG_ICBM_CONNECT = "TAG_ICBM_CONNECT";
 
+        const int TIMEOUT_SWITCH_ON = 200;
+        const int TIMEOUT_SWITCH_OFF = 200;
+
         public const int MIN_RANGE = 10;
         public const int MAX_RANGE = 50000;
-        private DateTime limit = DateTime.MinValue;
+
+        private DateTime? timestampSwitchOn = null;
+        private DateTime? timestampSwitchOff = null;
 
         private int seq = 0;
 
@@ -79,7 +86,20 @@ namespace SpaceEngineers
                 messageQueue.Enqueue(() => igc.SendBroadcastMessage(tag, data));
             }
 
-            blocks.ForEach(a => a.Radius = MAX_RANGE);
+            // если сейчас идет включение, то ничего не делаем
+            if (!timestampSwitchOn.HasValue)
+            {
+                // если сейчас идет выключение, то обнуляем период выключения
+                if (timestampSwitchOff.HasValue)
+                {
+                    timestampSwitchOff = DateTime.UtcNow.AddMilliseconds(TIMEOUT_SWITCH_OFF);
+                } else
+                {
+                    // если всё было выключено, то включаем
+                    blocks.ForEach(a => a.Radius = MAX_RANGE);
+                    timestampSwitchOn = DateTime.UtcNow.AddMilliseconds(TIMEOUT_SWITCH_ON);
+                }                
+            }
         }
 
         public void Update(string listenerId, UpdateType updateSource)
@@ -108,12 +128,20 @@ namespace SpaceEngineers
                 case UpdateType.Update100:
                     var now = DateTime.UtcNow;
 
-                    if (messageQueue.Any()) {
-                        messageQueue.Dequeue()();
-                        limit = now.AddMilliseconds(500);
-                    }
+                    if (timestampSwitchOn.HasValue && now > timestampSwitchOn)
+                    {
+                        // switch on
+                        timestampSwitchOn = null;
+                        timestampSwitchOff = now.AddMilliseconds(TIMEOUT_SWITCH_OFF);
 
-                    if (now > limit) {
+                        while (messageQueue.Any())
+                        {
+                            messageQueue.Dequeue()();
+                        }
+                    }
+                    else if (timestampSwitchOff.HasValue && now > timestampSwitchOff)
+                    {
+                        timestampSwitchOff = null;
                         blocks.ForEach(a => a.Radius = MIN_RANGE);
                     }
 

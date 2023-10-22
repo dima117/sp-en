@@ -92,7 +92,7 @@ namespace SpaceEngineers.Scripts.IcbmLauncher
                     tsm.Send(Transmitter.TAG_ICBM_STATE, state, address);
                 }
 
-                nextUpdate = now.AddSeconds(10);
+                nextUpdate = now.AddSeconds(30);
             }
         }
 
