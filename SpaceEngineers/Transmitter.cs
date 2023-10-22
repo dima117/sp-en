@@ -28,6 +28,7 @@ namespace SpaceEngineers
 
         public const int MIN_RANGE = 10;
         public const int MAX_RANGE = 50000;
+        private DateTime limit = DateTime.MinValue;
 
         private int seq = 0;
 
@@ -37,6 +38,8 @@ namespace SpaceEngineers
             new Dictionary<string, Action<MyIGCMessage>>();
         private Dictionary<string, IMyBroadcastListener> listeners =
             new Dictionary<string, IMyBroadcastListener>();
+
+        private readonly Queue<Action> messageQueue = new Queue<Action>();
 
         public Transmitter(MyGridProgram program)
         {
@@ -53,7 +56,8 @@ namespace SpaceEngineers
 
         public void Subscribe(string tag, Action<MyIGCMessage> fn, bool broadcast = false)
         {
-            if (broadcast) {
+            if (broadcast)
+            {
                 var listener = igc.RegisterBroadcastListener(tag);
                 var listenerId = (DateTime.UtcNow.Ticks - (seq++)).ToString();
 
@@ -66,39 +70,54 @@ namespace SpaceEngineers
 
         public void Send<T>(string tag, T data, long? destination = null)
         {
-            blocks.ForEach(a => a.Radius = MAX_RANGE);
-
             if (destination.HasValue)
             {
-                igc.SendUnicastMessage(destination.Value, tag, data);
+                messageQueue.Enqueue(() => igc.SendUnicastMessage(destination.Value, tag, data));
             }
             else
             {
-                igc.SendBroadcastMessage(tag, data);
+                messageQueue.Enqueue(() => igc.SendBroadcastMessage(tag, data));
             }
 
-
-            blocks.ForEach(a => a.Radius = MIN_RANGE);
+            blocks.ForEach(a => a.Radius = MAX_RANGE);
         }
 
         public void Update(string listenerId, UpdateType updateSource)
         {
-            if (updateSource == UpdateType.IGC) {
-                IMyMessageProvider listener = igc.UnicastListener;
+            switch (updateSource)
+            {
+                case UpdateType.IGC:
+                    IMyMessageProvider listener = igc.UnicastListener;
 
-                if (listeners.ContainsKey(listenerId))
-                {
-                    listener = listeners[listenerId];
-                }
-
-                while (listener.HasPendingMessage)
-                {
-                    var message = listener.AcceptMessage();
-                    if (actions.ContainsKey(message.Tag))
+                    if (listeners.ContainsKey(listenerId))
                     {
-                        actions[message.Tag](message);
+                        listener = listeners[listenerId];
                     }
-                }
+
+                    while (listener.HasPendingMessage)
+                    {
+                        var message = listener.AcceptMessage();
+                        if (actions.ContainsKey(message.Tag))
+                        {
+                            actions[message.Tag](message);
+                        }
+                    }
+                    break;
+                case UpdateType.Update1:
+                case UpdateType.Update10:
+                case UpdateType.Update100:
+                    var now = DateTime.UtcNow;
+
+                    if (messageQueue.Any()) {
+                        messageQueue.Dequeue()();
+                        limit = now.AddMilliseconds(500);
+                    }
+
+                    if (now > limit) {
+                        blocks.ForEach(a => a.Radius = MIN_RANGE);
+                    }
+
+                    break;
             }
         }
     }
