@@ -45,25 +45,19 @@ namespace SpaceEngineers
         public void ICBM(Vector3D targetPos)
         {
             var grav = remoteControl.GetNaturalGravity();
+            var ownPos = remoteControl.GetPosition();
+            var targetVector = targetPos - ownPos;
 
-            if (!grav.IsZero())
+            if (grav.IsZero() || targetVector.Length() < 3500)
             {
-                var ownPos = remoteControl.GetPosition();
-                var targetVector = targetPos - ownPos;
-
-                Vector3D direction;
-
-                if (targetVector.Length() > 3500)
-                {
-                    // компенсируем гравитацию
-                    direction = CompensateSideVelocity(grav, targetVector);
-                }
-                else
-                {
-                    // на финальном участке пути компенсируем боковую скорость
-                    var velocity = remoteControl.GetShipVelocities().LinearVelocity;
-                    direction = CompensateSideVelocity(velocity, targetVector, 1.5f);
-                }
+                // если нет гравитации или мы на финальном участке пути,
+                // то нацеливаемся на заданную точку и компенсируем боковую скорость
+                Aim(targetPos);
+            }
+            else
+            {
+                // иначе компенсируем гравитацию
+                Vector3D direction = CompensateSideVelocity(grav, targetVector);
 
                 var axis = GetAxis(remoteControl.WorldMatrix.Forward, direction);
                 SetGyroByAxis(axis);
