@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RotorTurret.cs" />
     <Compile Include="Transmitter.cs" />
     <Compile Include="BlockArray.cs" />
     <Compile Include="DirectionController2.cs" />
