@@ -24,8 +24,9 @@ namespace SpaceEngineers2
         IMyMotorStator RotorElevationL;
         IMyMotorStator RotorElevationR;
         IMyTerminalBlock Container;
+        IMyCockpit Cockpit;
 
-        IMyLargeMissileTurret Turret;
+        IMyLargeTurretBase Turret;
 
         int delay = 0;
         DateTime nextShot = DateTime.MinValue;
@@ -33,14 +34,18 @@ namespace SpaceEngineers2
 
         List<IMySmallMissileLauncher> Launchers = new List<IMySmallMissileLauncher>();
 
+        double min_aaa = -20 * Math.PI / 180;
+        double max_aaa = Math.PI;
+
         public Program()
         {
-            Turret = GridTerminalSystem.GetBlockWithName("TTT") as IMyLargeMissileTurret;
+            Turret = GridTerminalSystem.GetBlockWithName("TTT") as IMyLargeTurretBase;
 
             RotorAzimuth = GridTerminalSystem.GetBlockWithName("AAA") as IMyMotorStator;
             RotorElevationL = GridTerminalSystem.GetBlockWithName("LLL") as IMyMotorStator;
             RotorElevationR = GridTerminalSystem.GetBlockWithName("RRR") as IMyMotorStator;
             Container = GridTerminalSystem.GetBlockWithName("CCC");
+            Cockpit = GridTerminalSystem.GetBlockWithName("PPP") as IMyCockpit;
 
             GridTerminalSystem.GetBlocksOfType(Launchers);
 
@@ -62,11 +67,25 @@ namespace SpaceEngineers2
 
             var target = Turret.GetTargetedEntity();
 
-            if (!target.IsEmpty()) {
+            var pi2 = Math.PI * 2;
+
+            var angleL = (RotorElevationL.Angle + pi2 + Math.PI) % pi2 - Math.PI;
+            var angleR = (-RotorElevationR.Angle + pi2 + +Math.PI) % pi2 - Math.PI;
+
+            Cockpit.GetSurface(0).WriteText($"L: {angleL:0.00}\n R: {angleR:0.00}");
+
+
+            if (!target.IsEmpty())
+            {
                 var rotorPos = Container.GetPosition();
                 var targetVector = target.Position - rotorPos;
 
                 Turn(targetVector);
+            }
+            else { 
+                RotorAzimuth.TargetVelocityRad = 0;
+                RotorElevationL.TargetVelocityRad = 0;
+                RotorElevationR.TargetVelocityRad = 0;
             }
         }
 
@@ -85,10 +104,18 @@ namespace SpaceEngineers2
             RotorAzimuth.TargetVelocityRad = azimuthDiff * 5;
             RotorElevationL.TargetVelocityRad = elevationLDiff * 5;
             RotorElevationR.TargetVelocityRad = elevationRDiff * 5;
- 
+
+            var pi2 = Math.PI * 2;
+
+            var angleL = (RotorElevationL.Angle + pi2 + Math.PI) % pi2 - Math.PI;
+            var angleR = (-RotorElevationR.Angle + pi2 + +Math.PI) % pi2 - Math.PI;
+
             if (Launchers.Any() && targetVector.Length() < 800)
             {
-                if (Math.Abs(azimuthDiff) + Math.Abs(elevationLDiff) + Math.Abs(elevationRDiff) < 0.1)
+                var diffSum = Math.Abs(azimuthDiff) + Math.Abs(elevationLDiff) + Math.Abs(elevationRDiff);
+                var isInSector = (angleL > min_aaa && angleL < max_aaa) && (angleR > min_aaa && angleR < max_aaa);
+
+                if (diffSum < 0.1 && isInSector)
                 {
                     var now = DateTime.UtcNow;
                     if (now > nextShot) {
