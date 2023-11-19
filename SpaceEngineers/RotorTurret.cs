@@ -14,41 +14,146 @@ using VRage.Collections;
 using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
+using VRage.Noise.Modifiers;
+using System.ComponentModel;
 
 namespace SpaceEngineers2
 {
+    #region Copy
+
     public class RotorTurret
     {
+        const int LAUNCHER_RELOAD_TIME = 1000;
+        const int ROTATION_RATIO = 1000;
+        const int MAX_DISTANCE = 800;
+        const float THRESHOLD = 0.1f;
+
+        private IMyMotorStator rotorAzimuth;
+        private IMyMotorStator rotorElevationL;
+        private IMyMotorStator rotorElevationR;
+        private IMyTerminalBlock container;
+
+        private IMyLargeTurretBase designator;
+
+        private int delay = 0;
+        private DateTime nextShot = DateTime.MinValue;
+        private int nextLauncher = 0;
+
+        private List<IMySmallMissileLauncher> launchers = new List<IMySmallMissileLauncher>();
+
+        private double pi2 = Math.PI * 2;
+
+        public double AngleL => NormalizeAngle(rotorElevationL.Angle);
+        public double AngleR => NormalizeAngle(-rotorElevationR.Angle);
+
+        public bool Enabled { get; set; }
         public double MinElevationRad { get; set; } = 0;
         public double MaxElevationRad { get; set; } = Math.PI;
 
-        public RotorTurret()
+        private T GetBlock<T>(IEnumerable<IMyTerminalBlock> list, string prefix = null) where T : class, IMyTerminalBlock
         {
+            return list.FirstOrDefault(b => b is T && (prefix == null || b.CustomName.StartsWith(prefix, StringComparison.CurrentCultureIgnoreCase))) as T;
+        }
+
+        public RotorTurret(IMyBlockGroup group)
+        {
+            group.GetBlocksOfType(launchers);
+            if (launchers.Any())
+            {
+                delay = LAUNCHER_RELOAD_TIME / launchers.Count;
+            }
+
+            var tmp = new List<IMyTerminalBlock>();
+            group.GetBlocks(tmp);
+
+            rotorAzimuth = GetBlock<IMyMotorStator>(tmp, "AZIMUTH");
+            rotorElevationL = GetBlock<IMyMotorStator>(tmp, "LEFT");
+            rotorElevationR = GetBlock<IMyMotorStator>(tmp, "RIGHT");
+            container = GetBlock<IMyTerminalBlock>(tmp, "BODY");
+            designator = GetBlock<IMyLargeTurretBase>(tmp, "DESIGNATOR");
         }
 
         public void Update()
         {
+            // todo: останавливать вращение, если нет цели
+            // todo: сектор стрельбы
+            // todo: расчет упреждения
+            // todo: собственный радар
+            // todo: определять ориентацию вертикальных роторов
 
+            var target = designator.GetTargetedEntity();
+
+            if (target.IsEmpty())
+            {
+                rotorAzimuth.TargetVelocityRad = 0;
+                rotorElevationL.TargetVelocityRad = 0;
+                rotorElevationR.TargetVelocityRad = 0;
+            }
+            else
+            {
+                var rotorPos = container.GetPosition();
+                var targetVector = target.Position - rotorPos;
+
+                SetDirection(targetVector);
+            }
         }
-    }
 
-    internal class Program : MyGridProgram
-    {
-        #region Copy
+        private void SetDirection(Vector3 targetVector)
+        {
+            var invertedMatrix = MatrixD.Invert(rotorAzimuth.WorldMatrix.GetOrientation());
+            var relativePos = Vector3D.Transform(targetVector, invertedMatrix);
 
-        IMyMotorStator RotorAzimuth;
-        IMyMotorStator RotorElevationL;
-        IMyMotorStator RotorElevationR;
-        IMyTerminalBlock Container;
-        IMyCockpit Cockpit;
+            var azimuth = Math.Atan2(-relativePos.X, relativePos.Z);
+            var elevation = Math.Asin(relativePos.Y / relativePos.Length());
 
-        IMyLargeTurretBase Turret;
+            var azimuthDiff = NormalizeAngle(azimuth - rotorAzimuth.Angle);
+            var elevationLDiff = NormalizeAngle(elevation - rotorElevationL.Angle);
+            var elevationRDiff = NormalizeAngle(-elevation - rotorElevationR.Angle);
 
-        int delay = 0;
-        DateTime nextShot = DateTime.MinValue;
-        int nextLauncher = 0;
+            rotorAzimuth.TargetVelocityRad = (float)(azimuthDiff * ROTATION_RATIO);
+            rotorElevationL.TargetVelocityRad = (float)(elevationLDiff * ROTATION_RATIO);
+            rotorElevationR.TargetVelocityRad = (float)(elevationRDiff * ROTATION_RATIO);
 
-        List<IMySmallMissileLauncher> Launchers = new List<IMySmallMissileLauncher>();
+            var angleL = AngleL;
+            var angleR = AngleR;
+
+            if (launchers.Any() && targetVector.Length() < MAX_DISTANCE)
+            {
+                // вынести наружу
+                var sameDirection = (Math.Abs(azimuthDiff) + Math.Abs(elevationLDiff) + Math.Abs(elevationRDiff)) < THRESHOLD;
+                var isInSector = (angleL >= MinElevationRad && angleL < MaxElevationRad) && (angleR >= MinElevationRad && angleR < MaxElevationRad);
+
+                if (sameDirection && isInSector)
+                {
+                    var now = DateTime.UtcNow;
+
+                    if (now > nextShot)
+                    {
+                        launchers[nextLauncher].ShootOnce();
+                        nextShot = now.AddMilliseconds(delay);
+                        nextLauncher = (nextLauncher + 1) % launchers.Count;
+                    }
+                }
+            }
+        }
+
+        private double NormalizeAngle(double angle)
+        {
+            if (double.IsNaN(angle))
+            {
+                return 0;
+            }
+            else if (angle < -Math.PI)
+            {
+                return angle + pi2;
+            }
+            else if (angle > Math.PI)
+            {
+                return angle - pi2;
+            }
+
+            return angle;
+        }
 
         public static Vector3D GetAngularVelocities(
             Vector3D myLinearSpeed, // линейная скорость своего грида
@@ -62,110 +167,7 @@ namespace SpaceEngineers2
 
             return myAngularSpeed - Vector3D.Cross(targetVector, targetLinearSpeed - myLinearSpeed) / sqR;
         }
-
-        double min_aaa = -20 * Math.PI / 180;
-        double max_aaa = Math.PI;
-
-        public Program()
-        {
-            Turret = GridTerminalSystem.GetBlockWithName("TTT") as IMyLargeTurretBase;
-
-            RotorAzimuth = GridTerminalSystem.GetBlockWithName("AAA") as IMyMotorStator;
-            RotorElevationL = GridTerminalSystem.GetBlockWithName("LLL") as IMyMotorStator;
-            RotorElevationR = GridTerminalSystem.GetBlockWithName("RRR") as IMyMotorStator;
-            Container = GridTerminalSystem.GetBlockWithName("CCC");
-            Cockpit = GridTerminalSystem.GetBlockWithName("PPP") as IMyCockpit;
-
-            GridTerminalSystem.GetBlocksOfType(Launchers);
-
-            if (Launchers.Any())
-            {
-                delay = 1000 / Launchers.Count;
-            }
-
-            Runtime.UpdateFrequency = UpdateFrequency.Update1;
-        }
-
-        public void Main(string argument, UpdateType uType)
-        {
-            // todo: останавливать вращение, если нет цели
-            // todo: сектор стрельбы
-            // todo: расчет упреждения
-            // todo: собственный радар
-            // todo: определять ориентацию вертикальных роторов
-
-            var target = Turret.GetTargetedEntity();
-
-            var pi2 = Math.PI * 2;
-
-            var angleL = (RotorElevationL.Angle + pi2 + Math.PI) % pi2 - Math.PI;
-            var angleR = (-RotorElevationR.Angle + pi2 + +Math.PI) % pi2 - Math.PI;
-
-            Cockpit.GetSurface(0).WriteText($"L: {angleL:0.00}\n R: {angleR:0.00}");
-
-
-            if (!target.IsEmpty())
-            {
-                var rotorPos = Container.GetPosition();
-                var targetVector = target.Position - rotorPos;
-
-                Turn(targetVector);
-            }
-            else
-            {
-                RotorAzimuth.TargetVelocityRad = 0;
-                RotorElevationL.TargetVelocityRad = 0;
-                RotorElevationR.TargetVelocityRad = 0;
-            }
-        }
-
-        void Turn(Vector3D targetVector)
-        {
-            var invertedMatrix = MatrixD.Invert(RotorAzimuth.WorldMatrix.GetOrientation());
-            var relativePos = Vector3D.Transform(targetVector, invertedMatrix);
-
-            float azimuth = (float)Math.Atan2(-relativePos.X, relativePos.Z);
-            float elevation = (float)Math.Asin(relativePos.Y / relativePos.Length());
-
-            float azimuthDiff = CutTurn(azimuth - RotorAzimuth.Angle);
-            float elevationLDiff = CutTurn(elevation - RotorElevationL.Angle);
-            float elevationRDiff = CutTurn(-elevation - RotorElevationR.Angle);
-
-            RotorAzimuth.TargetVelocityRad = azimuthDiff * 5;
-            RotorElevationL.TargetVelocityRad = elevationLDiff * 5;
-            RotorElevationR.TargetVelocityRad = elevationRDiff * 5;
-
-            var pi2 = Math.PI * 2;
-
-            var angleL = (RotorElevationL.Angle + pi2 + Math.PI) % pi2 - Math.PI;
-            var angleR = (-RotorElevationR.Angle + pi2 + +Math.PI) % pi2 - Math.PI;
-
-            if (Launchers.Any() && targetVector.Length() < 800)
-            {
-                var diffSum = Math.Abs(azimuthDiff) + Math.Abs(elevationLDiff) + Math.Abs(elevationRDiff);
-                var isInSector = (angleL > min_aaa && angleL < max_aaa) && (angleR > min_aaa && angleR < max_aaa);
-
-                if (diffSum < 0.1 && isInSector)
-                {
-                    var now = DateTime.UtcNow;
-                    if (now > nextShot)
-                    {
-                        Launchers[nextLauncher].ShootOnce();
-                        nextShot = now.AddMilliseconds(delay);
-                        nextLauncher = (nextLauncher + 1) % Launchers.Count;
-                    }
-                }
-            }
-
-
-        }
-
-        private float CutTurn(float Turn)
-        {
-            if (float.IsNaN(Turn)) Turn = 0;
-            if (Turn < -Math.PI) Turn += 2 * (float)Math.PI;
-            else if (Turn > Math.PI) Turn -= 2 * (float)Math.PI;
-            return Turn;
-        }
     }
+
+    #endregion
 }
