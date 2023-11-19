@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sandbox.ModAPI.Ingame;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,13 +7,11 @@ using System.Threading.Tasks;
 
 namespace SpaceEngineers
 {
-    /// <summary>
-    /// Class that tracks runtime history.
-    /// </summary>
+    #region Copy
+
     public class RuntimeTracker
     {
         public int Capacity { get; set; }
-        public double Sensitivity { get; set; }
         public double MaxRuntime { get; private set; }
         public double MaxInstructions { get; private set; }
         public double AverageRuntime { get; private set; }
@@ -20,79 +19,64 @@ namespace SpaceEngineers
         public double LastRuntime { get; private set; }
         public double LastInstructions { get; private set; }
 
-        readonly Queue<double> _runtimes = new Queue<double>();
-        readonly Queue<double> _instructions = new Queue<double>();
-        readonly int _instructionLimit;
-        readonly Program _program;
-        const double MS_PER_TICK = 16.6666;
+        readonly Queue<double> runtimes = new Queue<double>();
+        readonly Queue<double> instructions = new Queue<double>();
+        readonly int instructionLimit;
+        readonly MyGridProgram program;
 
-        const string Format = "General Runtime Info\n"
-                + "- Avg runtime: {0:n4} ms\n"
-                + "- Last runtime: {1:n4} ms\n"
-                + "- Max runtime: {2:n4} ms\n"
-                + "- Avg instructions: {3:n2}\n"
-                + "- Last instructions: {4:n0}\n"
-                + "- Max instructions: {5:n0}\n"
-                + "- Avg complexity: {6:0.000}%";
+        double runtimeSum = 0;
+        double instructionsSum = 0;
 
-        public RuntimeTracker(Program program, int capacity = 100, double sensitivity = 0.005)
+        public RuntimeTracker(MyGridProgram program, int capacity = 120)
         {
-            _program = program;
+            this.program = program;
             Capacity = capacity;
-            Sensitivity = sensitivity;
-            _instructionLimit = _program.Runtime.MaxInstructionCount;
+            instructionLimit = program.Runtime.MaxInstructionCount;
         }
 
         public void AddRuntime()
         {
-            double runtime = _program.Runtime.LastRunTimeMs;
-            LastRuntime = runtime;
-            AverageRuntime += (Sensitivity * runtime);
-            int roundedTicksSinceLastRuntime = (int)Math.Round(_program.Runtime.TimeSinceLastRun.TotalMilliseconds / MS_PER_TICK);
-            if (roundedTicksSinceLastRuntime == 1)
+            LastRuntime = program.Runtime.LastRunTimeMs;
+
+            runtimes.Enqueue(LastRuntime);
+            runtimeSum += LastRuntime;
+
+            if (runtimes.Count > Capacity)
             {
-                AverageRuntime *= (1 - Sensitivity);
-            }
-            else if (roundedTicksSinceLastRuntime > 1)
-            {
-                AverageRuntime *= Math.Pow((1 - Sensitivity), roundedTicksSinceLastRuntime);
+                var firstRuntime = runtimes.Dequeue();
+                runtimeSum -= firstRuntime;
             }
 
-            _runtimes.Enqueue(runtime);
-            if (_runtimes.Count == Capacity)
-            {
-                _runtimes.Dequeue();
-            }
+            AverageRuntime = runtimeSum / runtimes.Count();
 
-            MaxRuntime = _runtimes.Max();
+            MaxRuntime = runtimes.Max();
         }
 
         public void AddInstructions()
         {
-            double instructions = _program.Runtime.CurrentInstructionCount;
-            LastInstructions = instructions;
-            AverageInstructions = Sensitivity * (instructions - AverageInstructions) + AverageInstructions;
+            LastInstructions = program.Runtime.CurrentInstructionCount;
 
-            _instructions.Enqueue(instructions);
-            if (_instructions.Count == Capacity)
+            instructions.Enqueue(LastInstructions);
+            instructionsSum += LastInstructions;
+
+            if (instructions.Count > Capacity)
             {
-                _instructions.Dequeue();
+                var firstInstructions = instructions.Dequeue();
+                instructionsSum -= firstInstructions;
             }
 
-            MaxInstructions = _instructions.Max();
+            AverageInstructions = instructionsSum / instructions.Count();
+
+            MaxInstructions = instructions.Max();
         }
 
-        public string Write()
+        public override string ToString()
         {
-            return string.Format(
-                Format,
-                AverageRuntime,
-                LastRuntime,
-                MaxRuntime,
-                AverageInstructions,
-                LastInstructions,
-                MaxInstructions,
-                AverageInstructions / _instructionLimit);
+            return $"Runtime: {LastRuntime:0.00}ms/{AverageRuntime:0.00}ms/{MaxRuntime:0.00}ms\n" +
+                $"Instructions: {LastInstructions:0}/{AverageInstructions:0}/{MaxInstructions:0}\n" +
+                $"Complexity: {AverageInstructions:0}/{instructionLimit:0} ({AverageInstructions / instructionLimit:0.00}%)";
         }
     }
+
+    #endregion
 }

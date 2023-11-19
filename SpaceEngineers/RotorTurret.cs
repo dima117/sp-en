@@ -17,9 +17,25 @@ using SpaceEngineers.Game.ModAPI.Ingame;
 
 namespace SpaceEngineers2
 {
-    //internal class RotorTurret
+    public class RotorTurret
+    {
+        public double MinElevationRad { get; set; } = 0;
+        public double MaxElevationRad { get; set; } = Math.PI;
+
+        public RotorTurret()
+        {
+        }
+
+        public void Update()
+        {
+
+        }
+    }
+
     internal class Program : MyGridProgram
     {
+        #region Copy
+
         IMyMotorStator RotorAzimuth;
         IMyMotorStator RotorElevationL;
         IMyMotorStator RotorElevationR;
@@ -33,6 +49,19 @@ namespace SpaceEngineers2
         int nextLauncher = 0;
 
         List<IMySmallMissileLauncher> Launchers = new List<IMySmallMissileLauncher>();
+
+        public static Vector3D GetAngularVelocities(
+            Vector3D myLinearSpeed, // линейная скорость своего грида
+            Vector3D myAngularSpeed, // угловая скорость своего грида
+            Vector3D targetLinearSpeed, // линейная скорость цели
+            Vector3D targetVector) // направление до цели
+        {
+            double sqR = Vector3D.Dot(targetVector, targetVector);
+
+            if (sqR == 0) return Vector3D.Zero;
+
+            return myAngularSpeed - Vector3D.Cross(targetVector, targetLinearSpeed - myLinearSpeed) / sqR;
+        }
 
         double min_aaa = -20 * Math.PI / 180;
         double max_aaa = Math.PI;
@@ -82,7 +111,8 @@ namespace SpaceEngineers2
 
                 Turn(targetVector);
             }
-            else { 
+            else
+            {
                 RotorAzimuth.TargetVelocityRad = 0;
                 RotorElevationL.TargetVelocityRad = 0;
                 RotorElevationR.TargetVelocityRad = 0;
@@ -118,7 +148,8 @@ namespace SpaceEngineers2
                 if (diffSum < 0.1 && isInSector)
                 {
                     var now = DateTime.UtcNow;
-                    if (now > nextShot) {
+                    if (now > nextShot)
+                    {
                         Launchers[nextLauncher].ShootOnce();
                         nextShot = now.AddMilliseconds(delay);
                         nextLauncher = (nextLauncher + 1) % Launchers.Count;
