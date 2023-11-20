@@ -24,7 +24,7 @@ namespace SpaceEngineers2
     public class RotorTurret
     {
         const int LAUNCHER_RELOAD_TIME = 1000;
-        const int ROTATION_RATIO = 1000;
+        const int ROTATION_RATIO = 5;
         const int MAX_DISTANCE = 800;
         const float THRESHOLD = 0.1f;
 
@@ -35,34 +35,28 @@ namespace SpaceEngineers2
 
         private IMyLargeTurretBase designator;
 
-        private int delay = 0;
-        private DateTime nextShot = DateTime.MinValue;
+        private int nextShotDelay;
+        private DateTime nextShotTime = DateTime.MinValue;
         private int nextLauncher = 0;
 
         private List<IMySmallMissileLauncher> launchers = new List<IMySmallMissileLauncher>();
 
         private double pi2 = Math.PI * 2;
 
-        public double AngleL => NormalizeAngle(rotorElevationL.Angle);
-        public double AngleR => NormalizeAngle(-rotorElevationR.Angle);
-
         public bool Enabled { get; set; }
+        public bool ShootingEnabled { get; set; }
         public double MinElevationRad { get; set; } = 0;
         public double MaxElevationRad { get; set; } = Math.PI;
 
         private T GetBlock<T>(IEnumerable<IMyTerminalBlock> list, string prefix = null) where T : class, IMyTerminalBlock
         {
-            return list.FirstOrDefault(b => b is T && (prefix == null || b.CustomName.StartsWith(prefix, StringComparison.CurrentCultureIgnoreCase))) as T;
+            return list.FirstOrDefault(b => b is T &&
+                (string.IsNullOrEmpty(prefix) || b.CustomName.StartsWith(prefix, StringComparison.CurrentCultureIgnoreCase))) as T;
         }
 
         public RotorTurret(IMyBlockGroup group)
         {
-            group.GetBlocksOfType(launchers);
-            if (launchers.Any())
-            {
-                delay = LAUNCHER_RELOAD_TIME / launchers.Count;
-            }
-
+            // turret base
             var tmp = new List<IMyTerminalBlock>();
             group.GetBlocks(tmp);
 
@@ -71,40 +65,53 @@ namespace SpaceEngineers2
             rotorElevationR = GetBlock<IMyMotorStator>(tmp, "RIGHT");
             container = GetBlock<IMyTerminalBlock>(tmp, "BODY");
             designator = GetBlock<IMyLargeTurretBase>(tmp, "DESIGNATOR");
+
+            // launchers
+            group.GetBlocksOfType(launchers);
+            nextShotDelay = launchers.Any() ? (LAUNCHER_RELOAD_TIME / launchers.Count) : 0;
         }
 
         public void Update()
         {
             // todo: останавливать вращение, если нет цели
-            // todo: сектор стрельбы
             // todo: расчет упреждения
             // todo: собственный радар
+            // todo: компенсация угловой скорости
             // todo: определять ориентацию вертикальных роторов
+
+            var invertedMatrix = MatrixD.Invert(rotorAzimuth.WorldMatrix.GetOrientation());
 
             var target = designator.GetTargetedEntity();
 
-            if (target.IsEmpty())
+            if (Enabled && !target.IsEmpty())
             {
-                rotorAzimuth.TargetVelocityRad = 0;
-                rotorElevationL.TargetVelocityRad = 0;
-                rotorElevationR.TargetVelocityRad = 0;
+                var myPos = container.GetPosition();
+                var targetVector = target.Position - myPos;
+                var targetVectorLocal = Vector3D.Transform(targetVector, invertedMatrix);
+
+                bool isAimed = SetDirection(targetVectorLocal);
+                bool isInRange = targetVectorLocal.Length() < MAX_DISTANCE;
+                bool isInSector = CheckSector();
+
+                if (ShootingEnabled && isAimed && isInRange && isInSector)
+                {
+                    TryToShoot();
+                }
             }
             else
             {
-                var rotorPos = container.GetPosition();
-                var targetVector = target.Position - rotorPos;
+                //rotorAzimuth.TargetVelocityRad = 0;
+                //rotorElevationL.TargetVelocityRad = 0;
+                //rotorElevationR.TargetVelocityRad = 0;
 
-                SetDirection(targetVector);
+                SetDirection(new Vector3D(0, 0, -1));
             }
         }
 
-        private void SetDirection(Vector3 targetVector)
+        private bool SetDirection(Vector3 targetVectorLocal)
         {
-            var invertedMatrix = MatrixD.Invert(rotorAzimuth.WorldMatrix.GetOrientation());
-            var relativePos = Vector3D.Transform(targetVector, invertedMatrix);
-
-            var azimuth = Math.Atan2(-relativePos.X, relativePos.Z);
-            var elevation = Math.Asin(relativePos.Y / relativePos.Length());
+            var azimuth = Math.Atan2(-targetVectorLocal.X, targetVectorLocal.Z);
+            var elevation = Math.Asin(targetVectorLocal.Y / targetVectorLocal.Length());
 
             var azimuthDiff = NormalizeAngle(azimuth - rotorAzimuth.Angle);
             var elevationLDiff = NormalizeAngle(elevation - rotorElevationL.Angle);
@@ -114,31 +121,39 @@ namespace SpaceEngineers2
             rotorElevationL.TargetVelocityRad = (float)(elevationLDiff * ROTATION_RATIO);
             rotorElevationR.TargetVelocityRad = (float)(elevationRDiff * ROTATION_RATIO);
 
-            var angleL = AngleL;
-            var angleR = AngleR;
+            var sameDirection = (Math.Abs(azimuthDiff) + Math.Abs(elevationLDiff) + Math.Abs(elevationRDiff)) < THRESHOLD;
 
-            if (launchers.Any() && targetVector.Length() < MAX_DISTANCE)
+            return sameDirection;
+        }
+
+        private void TryToShoot()
+        {
+            var now = DateTime.UtcNow;
+
+            if (now > nextShotTime)
             {
-                // вынести наружу
-                var sameDirection = (Math.Abs(azimuthDiff) + Math.Abs(elevationLDiff) + Math.Abs(elevationRDiff)) < THRESHOLD;
-                var isInSector = (angleL >= MinElevationRad && angleL < MaxElevationRad) && (angleR >= MinElevationRad && angleR < MaxElevationRad);
-
-                if (sameDirection && isInSector)
-                {
-                    var now = DateTime.UtcNow;
-
-                    if (now > nextShot)
-                    {
-                        launchers[nextLauncher].ShootOnce();
-                        nextShot = now.AddMilliseconds(delay);
-                        nextLauncher = (nextLauncher + 1) % launchers.Count;
-                    }
-                }
+                launchers[nextLauncher].ShootOnce();
+                nextShotTime = now.AddMilliseconds(nextShotDelay);
+                nextLauncher = (nextLauncher + 1) % launchers.Count;
             }
         }
 
-        private double NormalizeAngle(double angle)
+        private bool CheckSector()
         {
+            var angleL = NormalizeAngle(rotorElevationL?.Angle);
+            var angleR = NormalizeAngle(rotorElevationR?.Angle, true);
+
+            var isInSector =
+                angleL >= MinElevationRad && angleL < MaxElevationRad &&
+                angleR >= MinElevationRad && angleR < MaxElevationRad;
+
+            return isInSector;
+        }
+
+        private double NormalizeAngle(double? value, bool invert = false)
+        {
+            var angle = invert ? -value.GetValueOrDefault() : value.GetValueOrDefault();
+
             if (double.IsNaN(angle))
             {
                 return 0;
