@@ -31,6 +31,8 @@ namespace SpaceEngineers.Scripts.Draft
             tracker = new RuntimeTracker(this);
             lcd = Me.GetSurface(1);
             lcd.ContentType = ContentType.TEXT_AND_IMAGE;
+
+            Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
         public void Main(string argument, UpdateType updateSource)

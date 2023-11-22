@@ -38,7 +38,13 @@ namespace SpaceEngineers.Scripts.BattleCruiser
             var groups = new List<IMyBlockGroup>();
             GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("TURRET"));
 
-            turrets = groups.Select(gr => new RotorTurret(gr) { Enabled = true, ShootingEnabled = true }).ToList();
+            turrets = groups.Select(gr => new RotorTurret(gr) { 
+                Enabled = true, 
+                ShootingEnabled = true,
+                MinElevationRad = -Math.PI / 12,
+            }).ToList();
+
+            Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
         public void Main(string argument, UpdateType updateSource)

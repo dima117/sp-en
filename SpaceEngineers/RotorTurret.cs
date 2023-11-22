@@ -16,17 +16,21 @@ using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using VRage.Noise.Modifiers;
 using System.ComponentModel;
+using static VRageMath.Base6Directions;
+using SpaceEngineers;
 
 namespace SpaceEngineers2
 {
     #region Copy
+
+    // import:Helpers.cs
 
     public class RotorTurret
     {
         const int LAUNCHER_RELOAD_TIME = 1000;
         const int ROTATION_RATIO = 5;
         const int MAX_DISTANCE = 800;
-        const float THRESHOLD = 0.1f;
+        const float THRESHOLD = 0.2f;
 
         private IMyMotorStator rotorAzimuth;
         private IMyMotorStator rotorElevationL;
@@ -34,12 +38,14 @@ namespace SpaceEngineers2
         private IMyTerminalBlock container;
 
         private IMyLargeTurretBase designator;
+        private IMyShipController control;
 
         private int nextShotDelay;
         private DateTime nextShotTime = DateTime.MinValue;
         private int nextLauncher = 0;
 
         private List<IMySmallMissileLauncher> launchers = new List<IMySmallMissileLauncher>();
+        private List<IMySmallGatlingGun> gatlings = new List<IMySmallGatlingGun>();
 
         private double pi2 = Math.PI * 2;
 
@@ -65,9 +71,12 @@ namespace SpaceEngineers2
             rotorElevationR = GetBlock<IMyMotorStator>(tmp, "RIGHT");
             container = GetBlock<IMyTerminalBlock>(tmp, "BODY");
             designator = GetBlock<IMyLargeTurretBase>(tmp, "DESIGNATOR");
+            control = GetBlock<IMyShipController>(tmp, "PPP");
 
             // launchers
             group.GetBlocksOfType(launchers);
+            group.GetBlocksOfType(gatlings);
+
             nextShotDelay = launchers.Any() ? (LAUNCHER_RELOAD_TIME / launchers.Count) : 0;
         }
 
@@ -86,30 +95,44 @@ namespace SpaceEngineers2
             if (Enabled && !target.IsEmpty())
             {
                 var myPos = container.GetPosition();
-                var targetVector = target.Position - myPos;
-                var targetVectorLocal = Vector3D.Transform(targetVector, invertedMatrix);
+				// XXX: вычисляем точку упреждения с учетом собственной скорости
+                var interceptPos = Helpers.CalculateInterceptPoint(
+                    myPos, 198, target.Position, target.Velocity - control.GetShipVelocities().LinearVelocity);
 
-                bool isAimed = SetDirection(targetVectorLocal);
+                var targetVector = interceptPos.Position - myPos;
+                var targetVectorLocal = Vector3D.Transform(targetVector, invertedMatrix);
+                var targetVelocityLocal = Vector3D.Transform(target.Velocity, invertedMatrix);
+
+                bool isAimed = SetDirection(targetVectorLocal, targetVelocityLocal);
                 bool isInRange = targetVectorLocal.Length() < MAX_DISTANCE;
                 bool isInSector = CheckSector();
 
                 if (ShootingEnabled && isAimed && isInRange && isInSector)
                 {
                     TryToShoot();
+					// XXX: переделать улеметы на стрельбу по очереди
+					// починить равномерность стрельбы ракетами
+                    gatlings.ForEach(x => x.Shoot = true);
+                }
+                else
+                {
+                    gatlings.ForEach(x => x.Shoot = false);
                 }
             }
             else
             {
-                //rotorAzimuth.TargetVelocityRad = 0;
-                //rotorElevationL.TargetVelocityRad = 0;
-                //rotorElevationR.TargetVelocityRad = 0;
+                rotorAzimuth.TargetVelocityRad = 0;
+                rotorElevationL.TargetVelocityRad = 0;
+                rotorElevationR.TargetVelocityRad = 0;
 
-                SetDirection(new Vector3D(0, 0, -1));
+                //SetDirection(new Vector3D(0, 0, -1));
             }
         }
 
-        private bool SetDirection(Vector3 targetVectorLocal)
+        private bool SetDirection(Vector3D targetVectorLocal, Vector3D targetVelocityLocal)
         {
+            var invertedMatrix = MatrixD.Invert(rotorAzimuth.WorldMatrix.GetOrientation());
+
             var azimuth = Math.Atan2(-targetVectorLocal.X, targetVectorLocal.Z);
             var elevation = Math.Asin(targetVectorLocal.Y / targetVectorLocal.Length());
 
@@ -117,9 +140,24 @@ namespace SpaceEngineers2
             var elevationLDiff = NormalizeAngle(elevation - rotorElevationL.Angle);
             var elevationRDiff = NormalizeAngle(-elevation - rotorElevationR.Angle);
 
-            rotorAzimuth.TargetVelocityRad = (float)(azimuthDiff * ROTATION_RATIO);
-            rotorElevationL.TargetVelocityRad = (float)(elevationLDiff * ROTATION_RATIO);
-            rotorElevationR.TargetVelocityRad = (float)(elevationRDiff * ROTATION_RATIO);
+			// XXX: компенсация угловой скорости не сработала, нужо разобраться, почему
+            var v = control.GetShipVelocities();
+            var myLinearVelocityLocal = Vector3D.Transform(v.LinearVelocity, invertedMatrix);
+            var myAngularVelocityLocal = Vector3D.Transform(v.AngularVelocity, invertedMatrix);
+            //var targetAngularVelocity = v.AngularVelocity;
+            var targetAngularVelocity = GetAngularVelocities(myLinearVelocityLocal, myAngularVelocityLocal, targetVelocityLocal, targetVectorLocal);
+
+            rotorAzimuth.TargetVelocityRad =
+                (float)(azimuthDiff * ROTATION_RATIO) +
+                Convert.ToSingle(targetAngularVelocity.Dot(rotorAzimuth.WorldMatrix.Up));
+
+            rotorElevationL.TargetVelocityRad =
+                (float)(elevationLDiff * ROTATION_RATIO) +
+                Convert.ToSingle(targetAngularVelocity.Dot(rotorElevationL.WorldMatrix.Up));
+
+            rotorElevationR.TargetVelocityRad =
+                (float)(elevationRDiff * ROTATION_RATIO) +
+                Convert.ToSingle(targetAngularVelocity.Dot(rotorElevationR.WorldMatrix.Up));
 
             var sameDirection = (Math.Abs(azimuthDiff) + Math.Abs(elevationLDiff) + Math.Abs(elevationRDiff)) < THRESHOLD;
 
