@@ -23,6 +23,11 @@ namespace SpaceEngineers2
 {
     #region Copy
 
+    // турель на роторах
+    // - поворот по двум осям в сторону цели
+    // - учет собственного движения и движения цели
+    // - учет собственной угловой скорости
+
     // import:Helpers.cs
 
     public class RotorTurret
