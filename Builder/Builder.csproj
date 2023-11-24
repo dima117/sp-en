@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Dist\BattleCruiser.cs.txt" />
     <Content Include="Dist\IcbmLauncher.cs.txt" />
     <Content Include="Dist\Program.cs.txt" />
     <Content Include="Dist\Spotter.cs.txt" />
