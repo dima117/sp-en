@@ -15,7 +15,7 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 
-namespace SpaceEngineers.Scripts.Debug
+namespace SpaceEngineers.Scripts.RotorTest
 {
     public class Program : MyGridProgram
     {

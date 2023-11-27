@@ -83,7 +83,8 @@
   <ItemGroup>
     <Compile Include="RotorTurret.cs" />
     <Compile Include="RuntimeTracker.cs" />
-    <Compile Include="Scripts\Debug.cs" />
+    <Compile Include="Scripts\Debug\GravDriveBalancing.cs" />
+    <Compile Include="Scripts\Debug\RotorTest.cs" />
     <Compile Include="Scripts\Draft.cs" />
     <Compile Include="Scripts\BattleCruiser.cs" />
     <Compile Include="Transmitter.cs" />
