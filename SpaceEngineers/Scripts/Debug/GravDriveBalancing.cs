@@ -14,6 +14,7 @@ using VRage.Collections;
 using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
+using static VRage.Game.MyObjectBuilder_ControllerSchemaDefinition;
 
 namespace SpaceEngineers.Scripts.GravDriveBalancing
 {
@@ -22,34 +23,74 @@ namespace SpaceEngineers.Scripts.GravDriveBalancing
         #region Copy
 
         readonly IMyTextPanel lcd;
-        readonly IMyShipController controller;
+        readonly IMyShipController remote;
+        readonly List<IMyGravityGenerator> generators = new List<IMyGravityGenerator>();
+        readonly List<IMyArtificialMassBlock> massBlocks = new List<IMyArtificialMassBlock>();
 
         public Program()
         {
-            
-            controller = GridTerminalSystem.GetBlockWithName("CONTROL") as IMyShipController;
+
+            remote = GridTerminalSystem.GetBlockWithName("CONTROL") as IMyShipController;
             lcd = GridTerminalSystem.GetBlockWithName("LCD") as IMyTextPanel;
+
+            GridTerminalSystem.GetBlocksOfType(generators);
+            GridTerminalSystem.GetBlocksOfType(massBlocks);
 
             //Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
+        // матрица преобразования в локальные координаты
+        private MatrixD invertedMatrix;
+
+        private Vector3D ToLocal(Vector3D value)
+        {
+            return Vector3D.Transform(value, invertedMatrix);
+        }
+
+        private Vector3D GetVirtualCenterOfMass(IMyArtificialMassBlock[] massBlocks)
+        {
+            var sumPos = Vector3D.Zero;
+
+            foreach (var b in massBlocks)
+            {
+                sumPos += b.GetPosition();
+            }
+
+            return sumPos / massBlocks.Length;
+        }
+
         public void Main(string argument, UpdateType updateSource)
         {
-            var invertedMatrix = MatrixD.Invert(controller.WorldMatrix.GetOrientation());
-            var centerOfMassLocal = Vector3D.Transform(controller.CenterOfMass, invertedMatrix);
+            // обновляем кэш матрицы преобразования в локальные координаты
+            invertedMatrix = MatrixD.Invert(remote.WorldMatrix.GetOrientation());
 
-            var massBlocks = new List<IMyArtificialMassBlock>();
-            GridTerminalSystem.GetBlocksOfType(massBlocks);
+            // включенные блоки искусственной массы
+            var tmp = new List<IMyArtificialMassBlock>();
+            GridTerminalSystem.GetBlocksOfType(tmp);
+
+            var massBlocks = tmp.Where(b => b.Enabled && b.IsFunctional).ToArray();
+
+            MyShipVelocities velocities = remote.GetShipVelocities();
+
+
+            var centerOfMass = remote.CenterOfMass;
+            var centerOfMassLocal = ToLocal(remote.CenterOfMass);
+
+            // gravity generators
+            Vector3 localLinearVelocity = ToLocal(velocities.LinearVelocity);
+
+
+
 
             var sb = new StringBuilder();
 
-            sb.AppendLine($"center: {controller.CenterOfMass}");
+            sb.AppendLine($"center: {remote.CenterOfMass}");
             sb.AppendLine($"local center: {centerOfMassLocal}");
 
-            sb.AppendLine($"---\n{controller.CustomName}");
-            sb.AppendLine($"grid pos: {controller.Position}");
+            sb.AppendLine($"---\n{remote.CustomName}");
+            sb.AppendLine($"grid pos: {remote.Position}");
 
-            var pos1 = controller.GetPosition();
+            var pos1 = remote.GetPosition();
             var localPos1 = Vector3D.Transform(pos1, invertedMatrix);
             sb.AppendLine($"global pos: {pos1}");
             sb.AppendLine($"local pos: {localPos1}");
@@ -59,7 +100,7 @@ namespace SpaceEngineers.Scripts.GravDriveBalancing
             var localSum = Vector3D.Zero;
             double totalMass = 0;
 
-            foreach ( var block in massBlocks )
+            foreach (var block in massBlocks)
             {
                 sb.AppendLine($"---\n{block.CustomName}");
                 sb.AppendLine($"virtual mass: {block.VirtualMass}");
