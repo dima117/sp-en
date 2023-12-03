@@ -23,8 +23,8 @@ namespace SpaceEngineers.Examples
 
         public Program()
         {
-            var control = GridTerminalSystem.GetBlockWithName("CONTROL_01") as IMyShipController;
-            var group = GridTerminalSystem.GetBlockGroupWithName("GD1");
+            var control = GridTerminalSystem.GetBlockWithName("CONTROL") as IMyShipController;
+            var group = GridTerminalSystem.GetBlockGroupWithName("GDRIVE");
 
             drive = new GravityDrive(control, group);
 

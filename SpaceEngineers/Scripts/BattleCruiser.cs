@@ -23,11 +23,11 @@ namespace SpaceEngineers.Scripts.BattleCruiser
         #region Copy
 
         // import:RuntimeTracker.cs
-        // import:RotorTurret.cs
+        // import:GravityDrive.cs
 
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
-        readonly List<RotorTurret> turrets;
+        readonly GravityDrive drive;
 
         public Program()
         {
@@ -35,14 +35,10 @@ namespace SpaceEngineers.Scripts.BattleCruiser
             lcd = Me.GetSurface(1);
             lcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
-            var groups = new List<IMyBlockGroup>();
-            GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("TURRET"));
+            var control = GridTerminalSystem.GetBlockWithName("CONTROL") as IMyShipController;
+            var group = GridTerminalSystem.GetBlockGroupWithName("GDRIVE");
 
-            turrets = groups.Select(gr => new RotorTurret(gr) { 
-                Enabled = true, 
-                ShootingEnabled = true,
-                MinElevationRad = -Math.PI / 12,
-            }).ToList();
+            drive = new GravityDrive(control, group);
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
@@ -52,18 +48,18 @@ namespace SpaceEngineers.Scripts.BattleCruiser
             // track runtime
             tracker.AddRuntime();
 
-            switch (argument.ToLower())
+            switch (argument)
             {
-                case "enable":
-                    turrets.ForEach(t => t.Enabled = true);
+                case "on":
+                    drive.Enabled = true;
                     break;
-                case "disable":
-                    turrets.ForEach(t => t.Enabled = false);
+                case "off":
+                    drive.Enabled = false;
+                    break;
+                default:
+                    drive.Update();
                     break;
             }
-
-            // update all
-            turrets.ForEach(t => t.Update());
 
             // track instructions
             tracker.AddInstructions();

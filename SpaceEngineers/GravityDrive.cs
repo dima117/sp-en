@@ -19,6 +19,8 @@ using static VRage.Game.MyObjectBuilder_ControllerSchemaDefinition;
 
 namespace SpaceEngineers
 {
+    #region Copy
+
     public class GravityDrive
     {
         private bool enabled;
@@ -155,4 +157,6 @@ namespace SpaceEngineers
             }
         }
     }
+
+    #endregion
 }
