@@ -87,6 +87,7 @@
     <Compile Include="Scripts\Debug\RotorTest.cs" />
     <Compile Include="Scripts\Draft.cs" />
     <Compile Include="Scripts\BattleCruiser.cs" />
+    <Compile Include="Serializer.cs" />
     <Compile Include="Transmitter.cs" />
     <Compile Include="BlockArray.cs" />
     <Compile Include="DirectionController2.cs" />

@@ -21,6 +21,7 @@ namespace SpaceEngineers.Scripts.Spotter
         #region Copy
 
         // import:Transmitter.cs
+        // import:Serializer.cs
 
         private static readonly HashSet<MyDetectedEntityType> gridTypes =
             new HashSet<MyDetectedEntityType> {
@@ -58,12 +59,11 @@ namespace SpaceEngineers.Scripts.Spotter
 
         public void UpdateIcbmState(MyIGCMessage message)
         {
-            Echo(message.Data.ToString());
+            var text = message.Data.ToString();
 
-            if (lcdIcbm != null)
-            {
-                lcdIcbm.WriteText(message.Data.ToString());
-            }
+            Echo(text);
+
+            lcdIcbm?.WriteText(text);
         }
 
         public void UpdateTargetState()
@@ -93,19 +93,23 @@ namespace SpaceEngineers.Scripts.Spotter
                     tsm.Send(Transmitter.TAG_ICBM_CONNECT, string.Empty);
 
                     break;
-                case "shot":
-                    var entity = cam.Raycast(5000);
+                case "scan":
+                    var entity = cam.Raycast(15000);
 
                     if (gridTypes.Contains(entity.Type))
                     {
                         target = entity;
-                    }
 
-                    break;
-                case "start":
-                    if (target.HasValue)
-                    {
-                        tsm.Send(Transmitter.TAG_TARGET_POSITION, target.Value.Position);
+                        var message = Serializer.SerializeMyDetectedEntityInfo(entity);
+
+                        tsm.Send(Transmitter.TAG_TARGET_POSITION, message);
+
+                        MyDetectedEntityInfo tmp;
+                        Serializer.TryParseMyDetectedEntityInfo(message.Split('\n'), out tmp);
+
+                        var message2 = Serializer.SerializeMyDetectedEntityInfo(tmp);
+
+                        Me.CustomData = message + "\n----\n" + message2;
                     }
 
                     break;
