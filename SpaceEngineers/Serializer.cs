@@ -38,11 +38,11 @@ namespace SpaceEngineers
 
             SerializeMatrixD(entity.Orientation, sb); // 3
 
-            sb.AppendLine(entity.Velocity.ToString()); // 4
+            sb.AppendLine(new Vector3D(entity.Velocity).ToString()); // 4
             sb.AppendLine(entity.Relationship.ToString()); // 5
             sb.AppendLine(entity.BoundingBox.Min.ToString()); // 6
             sb.AppendLine(entity.BoundingBox.Max.ToString()); // 7
-            sb.AppendLine(entity.TimeStamp.ToString()); // 8
+            sb.Append(entity.TimeStamp.ToString()); // 8
 
             return sb.ToString();
         }
@@ -110,7 +110,7 @@ namespace SpaceEngineers
 
         public static bool TryParseMyDetectedEntityInfo(string[] lines, out MyDetectedEntityInfo entity)
         {
-            var success = false;
+            var success = true;
 
             // 0 - entity id
             long entityId;

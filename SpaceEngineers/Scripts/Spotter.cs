@@ -103,13 +103,6 @@ namespace SpaceEngineers.Scripts.Spotter
                         var message = Serializer.SerializeMyDetectedEntityInfo(entity);
 
                         tsm.Send(Transmitter.TAG_TARGET_POSITION, message);
-
-                        MyDetectedEntityInfo tmp;
-                        Serializer.TryParseMyDetectedEntityInfo(message.Split('\n'), out tmp);
-
-                        var message2 = Serializer.SerializeMyDetectedEntityInfo(tmp);
-
-                        Me.CustomData = message + "\n----\n" + message2;
                     }
 
                     break;
