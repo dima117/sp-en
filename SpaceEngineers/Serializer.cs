@@ -70,7 +70,7 @@ namespace SpaceEngineers
             sb.AppendLine(entity.Relationship.ToString()); // 5
             sb.AppendLine(entity.BoundingBox.Min.ToString()); // 6
             sb.AppendLine(entity.BoundingBox.Max.ToString()); // 7
-            sb.Append(entity.TimeStamp.ToString()); // 8
+            sb.AppendLine(entity.TimeStamp.ToString()); // 8
         }
 
         public static void SerializeTargetInfo(TargetInfo t, StringBuilder sb)
@@ -145,7 +145,10 @@ namespace SpaceEngineers
             return false;
         }
 
-        public static bool TryParseMyDetectedEntityInfo(StringReader reader, out MyDetectedEntityInfo entity)
+        public static bool TryParseMyDetectedEntityInfo(
+            StringReader reader,
+            out MyDetectedEntityInfo entity
+        )
         {
             var success = true;
 
@@ -177,7 +180,6 @@ namespace SpaceEngineers
             BoundingBoxD boundingBox;
             success &= TryParseBoundingBoxD(reader, out boundingBox);
 
-
             // 8 - timestamp
             long timestamp;
             success &= long.TryParse(reader.GetNextLine(), out timestamp);
@@ -187,7 +189,6 @@ namespace SpaceEngineers
                     entityId, string.Empty, type, hitPosition, orientation,
                     velocity, relationship, boundingBox, timestamp
                 ) : new MyDetectedEntityInfo();
-
 
             return success;
         }
@@ -212,7 +213,9 @@ namespace SpaceEngineers
             return false;
         }
 
-        public static bool TryParseTargetInfo(StringReader reader, out TargetInfo targetInfo)
+        public static bool TryParseTargetInfo(
+            StringReader reader, 
+            out TargetInfo targetInfo)
         {
             targetInfo = new TargetInfo();
 

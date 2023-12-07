@@ -50,8 +50,10 @@ namespace SpaceEngineers.Scripts.Spotter
             // экран
             var list2 = new List<IMyCockpit>();
             GridTerminalSystem.GetBlocksOfType(list2);
-            lcdTarget = list2.FirstOrDefault()?.GetSurface(0);
-            lcdIcbm = list2.FirstOrDefault()?.GetSurface(3);
+
+            var control = list2.FirstOrDefault(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId);
+            lcdTarget = control?.GetSurface(0);
+            lcdIcbm = control?.GetSurface(3);
 
             // антенна
             tsm = new Transmitter(this);
@@ -107,6 +109,8 @@ namespace SpaceEngineers.Scripts.Spotter
                         var message = sb.ToString();
 
                         tsm.Send(Transmitter.TAG_TARGET_POSITION, message);
+
+                        Me.CustomData = message;
                     }
 
                     break;

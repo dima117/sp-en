@@ -36,6 +36,7 @@ namespace SpaceEngineers.Scripts.TowShip
 
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
+        IMyTextSurface lcdTarget;
 
         readonly Transmitter tsm;
         readonly TargetTracker tt;
@@ -61,6 +62,13 @@ namespace SpaceEngineers.Scripts.TowShip
             cam = GridTerminalSystem.GetBlockWithName("CAMERA") as IMyCameraBlock;
             cam.EnableRaycast = true;
 
+            // lcd
+            var list2 = new List<IMyCockpit>();
+            GridTerminalSystem.GetBlocksOfType(list2);
+
+            var control = list2.FirstOrDefault(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId);
+            lcdTarget = control?.GetSurface(0);
+
             // динамик
             sound = GridTerminalSystem.GetBlockWithName("SOUND") as IMySoundBlock;
 
@@ -78,16 +86,20 @@ namespace SpaceEngineers.Scripts.TowShip
                 {
                     tt.LockOn(target);
                 }
+
+                Me.CustomData = data;
             }
             catch (Exception ex)
             {
-                Me.CustomData = ex.Message;
+                Me.CustomData = ex.Message + "\n" + ex.StackTrace;
             }
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
             tracker.AddRuntime();
+
+            tsm.Update(argument, updateSource);
 
             switch (argument)
             {
@@ -143,9 +155,26 @@ namespace SpaceEngineers.Scripts.TowShip
                     break;
             }
 
+            UpdateTargetLcd();
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());
+        }
+
+        void UpdateTargetLcd()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine($"Locked: {tt.Current.HasValue}");
+
+            if (tt.Current.HasValue)
+            {
+                var target = tt.Current.Value.Entity;
+                var distance = Vector3D.Distance(cam.GetPosition(), target.Position);
+
+                sb.AppendLine($"{target.Type}\nV={target.Velocity.Length():0.0}\nS={distance:0.0}");
+            }
+
+            lcdTarget?.WriteText(sb.ToString());
         }
 
         #endregion
