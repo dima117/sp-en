@@ -61,6 +61,7 @@
     <Content Include="Dist\Program.cs.txt" />
     <Content Include="Dist\RotorTest.cs.txt" />
     <Content Include="Dist\Spotter.cs.txt" />
+    <Content Include="Dist\TowShip.cs.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

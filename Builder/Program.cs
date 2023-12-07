@@ -115,6 +115,7 @@ namespace Builder
                 "Program.cs",
                 "Scripts\\IcbmLauncher.cs",
                 "Scripts\\Spotter.cs",
+                "Scripts\\TowShip.cs",
                 "Scripts\\BattleCruiser.cs",
                 "Scripts\\Debug\\RotorTest.cs",
                 "Scripts\\Debug\\GravDriveBalancing.cs"

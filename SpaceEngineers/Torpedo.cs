@@ -23,6 +23,14 @@ namespace SpaceEngineers
     // import:DirectionController2.cs
     // import:TargetTracker.cs
 
+    public enum TorpedoState
+    {
+        Ready,
+        Started,
+        Dead,
+        Invalid
+    }
+
     public class Torpedo
     {
         public readonly string Id = DateTime.UtcNow.Ticks.ToString();
@@ -44,6 +52,11 @@ namespace SpaceEngineers
         public double Speed => Started && IsAlive ? tRemote.GetShipSpeed() : 0;
         public bool IsReady => listEngine.Any() && listGyro.Any() && tRemote != null && tClamp != null;
         public bool Started { get; private set; }
+
+        TorpedoState State =>
+            !IsAlive ? TorpedoState.Dead :
+            Started ? TorpedoState.Started :
+            IsReady ? TorpedoState.Ready : TorpedoState.Invalid;
 
         public long EntityId => (tRemote?.EntityId).GetValueOrDefault();
 

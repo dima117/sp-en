@@ -102,6 +102,26 @@ namespace SpaceEngineers
             return new TargetInfo(target, DateTime.UtcNow, 0, relativeHitPos);
         }
 
+        public TargetInfo GetTargetInfo(MyDetectedEntityInfo entity, DateTime timestamp)
+        {
+            // hitpos
+            var relativeHitPos = default(Vector3D);
+
+            if (entity.HitPosition.HasValue)
+            {
+                var hitPos = entity.HitPosition.Value;
+                var camPos = cam.GetPosition();
+
+                // ставим метку на 1 метр вперед от точки пересечения
+                var correctedHitPos = hitPos + Vector3D.Normalize(hitPos - camPos);
+                var invertedMatrix = MatrixD.Invert(target.Orientation);
+
+                relativeHitPos = Vector3D.Transform(correctedHitPos - target.Position, invertedMatrix);
+            }
+
+            return new TargetInfo(target, DateTime.UtcNow, 0, relativeHitPos);
+        }
+
         private BlockArray<IMyCameraBlock> camArray;
 
         public TargetInfo? Current; // последняя захваченная цель
