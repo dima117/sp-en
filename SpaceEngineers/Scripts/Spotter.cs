@@ -9,10 +9,12 @@ using VRage.Collections;
 using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
+using SpaceEngineers.Lib;
 using static System.Net.Mime.MediaTypeNames;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Text;
 
 namespace SpaceEngineers.Scripts.Spotter
 {
@@ -22,6 +24,7 @@ namespace SpaceEngineers.Scripts.Spotter
 
         // import:Transmitter.cs
         // import:Serializer.cs
+        // import:Lib/TargetInfo.cs
 
         private static readonly HashSet<MyDetectedEntityType> gridTypes =
             new HashSet<MyDetectedEntityType> {
@@ -89,10 +92,6 @@ namespace SpaceEngineers.Scripts.Spotter
 
             switch (argument)
             {
-                case "connect":
-                    tsm.Send(Transmitter.TAG_ICBM_CONNECT, string.Empty);
-
-                    break;
                 case "scan":
                     var entity = cam.Raycast(15000);
 
@@ -100,7 +99,12 @@ namespace SpaceEngineers.Scripts.Spotter
                     {
                         target = entity;
 
-                        var message = Serializer.SerializeMyDetectedEntityInfo(entity);
+                        var obj = TargetInfo.CreateTargetInfo(entity, DateTime.UtcNow, cam.GetPosition());
+
+                        var sb = new StringBuilder();
+
+                        Serializer.SerializeTargetInfo(obj, sb);
+                        var message = sb.ToString();
 
                         tsm.Send(Transmitter.TAG_TARGET_POSITION, message);
                     }

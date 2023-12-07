@@ -22,6 +22,7 @@ namespace Builder
 
         static MyModule ReadModule(string filePath)
         {
+            Console.WriteLine(filePath);
             var source = File.ReadAllLines(filePath);
 
             var copy = false;

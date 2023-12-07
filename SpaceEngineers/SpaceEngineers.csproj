@@ -81,6 +81,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Lib\TargetInfo.cs" />
     <Compile Include="RotorTurret.cs" />
     <Compile Include="RuntimeTracker.cs" />
     <Compile Include="Scripts\Debug\GravDriveBalancing.cs" />

@@ -14,7 +14,7 @@ using VRage.Collections;
 using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
-using static Sandbox.Game.Weapons.MyDrillBase;
+using SpaceEngineers.Lib;
 
 namespace SpaceEngineers.Scripts.TowShip
 {
@@ -27,8 +27,10 @@ namespace SpaceEngineers.Scripts.TowShip
         // import:Torpedo.cs
         // import:TargetTracker.cs
         // import:Serializer.cs
+        // import:Lib\TargetInfo.cs
 
         const int LIFESPAN = 540;
+        const int DISTANCE = 15000;
 
         bool onlyEnemies = false;
 
@@ -66,14 +68,20 @@ namespace SpaceEngineers.Scripts.TowShip
         }
         private void RemoteLock(MyIGCMessage message)
         {
-            var strData = message.Data.ToString().Split('\n');
-            
-            MyDetectedEntityInfo entity;
-            if (Serializer.TryParseMyDetectedEntityInfo(strData, out entity))
+            try
             {
-                var target = new TargetTracker.TargetInfo(entity, )
+                var data = message.Data.ToString();
+                var reader = new Serializer.StringReader(data);
 
-                tt.LockOn(target);
+                TargetInfo target;
+                if (Serializer.TryParseTargetInfo(reader, out target))
+                {
+                    tt.LockOn(target);
+                }
+            }
+            catch (Exception ex)
+            {
+                Me.CustomData = ex.Message;
             }
         }
 
@@ -88,11 +96,11 @@ namespace SpaceEngineers.Scripts.TowShip
 
                     break;
                 case "lock":
-                    var entity = TargetTracker.Scan(cam, 15000, onlyEnemies);
+                    var target = TargetTracker.Scan(cam, DISTANCE, onlyEnemies);
 
-                    if (entity.HasValue)
+                    if (target.HasValue)
                     {
-                        tt.LockOn(entity.Value);
+                        tt.LockOn(target.Value);
 
                         sound?.Play();
                     }

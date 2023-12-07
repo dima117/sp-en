@@ -14,12 +14,14 @@ using VRage.Collections;
 using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
+using SpaceEngineers.Lib;
 
 namespace SpaceEngineers
 {
     #region Copy
 
     // import:BlockArray.cs
+    // import:Lib/TargetInfo.cs
 
     public class TargetTracker
     {
@@ -31,31 +33,6 @@ namespace SpaceEngineers
             MyDetectedEntityType.SmallGrid,
             MyDetectedEntityType.LargeGrid
         };
-
-        public struct TargetInfo
-        {
-            public readonly MyDetectedEntityInfo Entity;
-            public readonly Vector3D HitPos; // смещение точки прицеливания относительно геометрического центра цели
-            public readonly DateTime Timestamp; // время последнего обнаружения цели
-            public readonly double ScanDelayMs; // время до следующего сканирования
-
-            public TargetInfo(
-                MyDetectedEntityInfo entity = default(MyDetectedEntityInfo),
-                DateTime timestamp = default(DateTime),
-                double scanDelayMs = default(double),
-                Vector3D hitPos = default(Vector3D))
-            {
-                Entity = entity;
-                Timestamp = timestamp;
-                ScanDelayMs = scanDelayMs;
-                HitPos = hitPos;
-            }
-
-            public TargetInfo Update(MyDetectedEntityInfo entity, DateTime timestamp, double scanDelayMs)
-            {
-                return new TargetInfo(entity, timestamp, scanDelayMs, HitPos);
-            }
-        }
 
         public static TargetInfo? Scan(
             IMyCameraBlock cam,
@@ -84,42 +61,9 @@ namespace SpaceEngineers
                 return null;
             }
 
-            // hitpos
-            var relativeHitPos = default(Vector3D);
+            var camPos = cam.GetPosition();
 
-            if (target.HitPosition.HasValue)
-            {
-                var hitPos = target.HitPosition.Value;
-                var camPos = cam.GetPosition();
-
-                // ставим метку на 1 метр вперед от точки пересечения
-                var correctedHitPos = hitPos + Vector3D.Normalize(hitPos - camPos);
-                var invertedMatrix = MatrixD.Invert(target.Orientation);
-
-                relativeHitPos = Vector3D.Transform(correctedHitPos - target.Position, invertedMatrix);
-            }
-
-            return new TargetInfo(target, DateTime.UtcNow, 0, relativeHitPos);
-        }
-
-        public TargetInfo GetTargetInfo(MyDetectedEntityInfo entity, DateTime timestamp)
-        {
-            // hitpos
-            var relativeHitPos = default(Vector3D);
-
-            if (entity.HitPosition.HasValue)
-            {
-                var hitPos = entity.HitPosition.Value;
-                var camPos = cam.GetPosition();
-
-                // ставим метку на 1 метр вперед от точки пересечения
-                var correctedHitPos = hitPos + Vector3D.Normalize(hitPos - camPos);
-                var invertedMatrix = MatrixD.Invert(target.Orientation);
-
-                relativeHitPos = Vector3D.Transform(correctedHitPos - target.Position, invertedMatrix);
-            }
-
-            return new TargetInfo(target, DateTime.UtcNow, 0, relativeHitPos);
+            return TargetInfo.CreateTargetInfo(target, DateTime.UtcNow, camPos);
         }
 
         private BlockArray<IMyCameraBlock> camArray;

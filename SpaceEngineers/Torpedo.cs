@@ -15,12 +15,14 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.GameSystems;
+using SpaceEngineers.Lib;
 
 namespace SpaceEngineers
 {
     #region Copy
 
     // import:DirectionController2.cs
+    // import:Lib\TargetInfo.cs
     // import:TargetTracker.cs
 
     public enum TorpedoState
@@ -104,7 +106,7 @@ namespace SpaceEngineers
             Started = true;
         }
 
-        public void Update(TargetTracker.TargetInfo? info)
+        public void Update(TargetInfo? info)
         {
             if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
             {
