@@ -92,7 +92,7 @@
     <Compile Include="Serializer.cs" />
     <Compile Include="Transmitter.cs" />
     <Compile Include="BlockArray.cs" />
-    <Compile Include="DirectionController2.cs" />
+    <Compile Include="Lib\DirectionController2.cs" />
     <Compile Include="Examples\Class1.cs" />
     <Compile Include="Scripts\IcbmLauncher.cs" />
     <Compile Include="Examples\GravDrive3.cs" />
@@ -101,13 +101,12 @@
     <Compile Include="Examples\TmpAngularVelocity.cs" />
     <Compile Include="Examples\TmpGravDrive.cs" />
     <Compile Include="GravityDrive.cs" />
-    <Compile Include="Helpers.cs" />
+    <Compile Include="Lib\Helpers.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="DirectionController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TargetTracker.cs" />
     <Compile Include="Tmp.cs" />
-    <Compile Include="Torpedo.cs" />
+    <Compile Include="Lib\Torpedo.cs" />
     <Compile Include="WcPbApi.cs" />
     <Compile Include="WcRadar.cs" />
   </ItemGroup>

@@ -18,6 +18,8 @@ namespace SpaceEngineers
 
         public int Count => list.Count;
 
+        public T1 Aggregate<T1>(T1 a, Func<T1, T, T1> fn) => list.Aggregate(a, fn);
+
         public BlockArray(MyGridProgram program, Action<T> init = null)
         {
             this.program = program;

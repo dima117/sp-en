@@ -21,7 +21,7 @@ namespace SpaceEngineers
 
     #region Copy
 
-    // import:DirectionController2.cs
+    // import:Lib\DirectionController2.cs
 
     public enum MissileState
     {

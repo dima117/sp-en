@@ -21,7 +21,7 @@ namespace SpaceEngineers
     {
         #region Copy
 
-        // import:Torpedo.cs
+        // import:Lib\Torpedo.cs
         // import:TargetTracker.cs
         // import:WcRadar.cs
 

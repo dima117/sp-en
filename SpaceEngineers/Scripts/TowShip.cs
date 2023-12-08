@@ -24,10 +24,10 @@ namespace SpaceEngineers.Scripts.TowShip
 
         // import:RuntimeTracker.cs
         // import:Transmitter.cs
-        // import:Torpedo.cs
         // import:TargetTracker.cs
         // import:Serializer.cs
         // import:Lib\TargetInfo.cs
+        // import:Lib\Torpedo.cs
 
         const int LIFESPAN = 540;
         const int DISTANCE = 15000;
@@ -37,6 +37,8 @@ namespace SpaceEngineers.Scripts.TowShip
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
         IMyTextSurface lcdTarget;
+        IMyTextSurface lcdTorpedos;
+        IMyTextSurface lcdSystem;
 
         readonly Transmitter tsm;
         readonly TargetTracker tt;
@@ -67,7 +69,9 @@ namespace SpaceEngineers.Scripts.TowShip
             GridTerminalSystem.GetBlocksOfType(list2);
 
             var control = list2.FirstOrDefault(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId);
-            lcdTarget = control?.GetSurface(0);
+            lcdTorpedos = control?.GetSurface(0);
+            lcdTarget = control?.GetSurface(1);
+            lcdSystem = control?.GetSurface(2);
 
             // динамик
             sound = GridTerminalSystem.GetBlockWithName("SOUND") as IMySoundBlock;
@@ -150,12 +154,16 @@ namespace SpaceEngineers.Scripts.TowShip
                     }
 
                     // обновляем параметры цели на всех торпедах
-                    torpedos?.ForEach(t => t.Update(tt.Current));
+                    var state = torpedos?.Select(t => t.Update(tt.Current));
+                    var text = String.Join("\n", state?.Select(s => s.ToString()));
+
+                    lcdTorpedos.WriteText(text);
 
                     break;
             }
 
             UpdateTargetLcd();
+            UpdateSystemLcd();
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());
@@ -175,6 +183,19 @@ namespace SpaceEngineers.Scripts.TowShip
             }
 
             lcdTarget?.WriteText(sb.ToString());
+        }
+
+        void UpdateSystemLcd()
+        {
+            var filter = onlyEnemies ? "Enemies" : "All";
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"Range: {cam.AvailableScanRange:0.0}");
+            sb.AppendLine($"Total range: {tt.TotalRange:0.0}");
+            sb.AppendLine($"Cam count: {tt.Count}");
+            sb.AppendLine($"Filter: {filter}");
+
+            lcdSystem.WriteText(sb.ToString());
         }
 
         #endregion

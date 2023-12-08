@@ -91,6 +91,14 @@ namespace SpaceEngineers
             get { return camArray.Count; }
         }
 
+        public double TotalRange
+        {
+            get
+            {
+                return camArray.Aggregate<double>(0, (a, c) => a + c.AvailableScanRange);
+            }
+        }
+
         public void UpdateCamArray()
         {
             camArray.UpdateBlocks();

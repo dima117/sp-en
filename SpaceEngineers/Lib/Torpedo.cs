@@ -17,20 +17,33 @@ using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.GameSystems;
 using SpaceEngineers.Lib;
 
-namespace SpaceEngineers
+namespace SpaceEngineers.Lib
 {
     #region Copy
 
     // import:DirectionController2.cs
-    // import:Lib\TargetInfo.cs
-    // import:TargetTracker.cs
+    // import:TargetInfo.cs
 
-    public enum TorpedoState
+    public enum LaunchStage
     {
         Ready,
         Started,
         Dead,
         Invalid
+    }
+
+    public struct TorpedoStatus
+    {
+        public LaunchStage Stage;
+        public string Name;
+        public double Distance;
+
+        public override string ToString()
+        {
+            return Stage == LaunchStage.Started
+                ? $"{Name}: {Stage} => {Distance:0}m"
+                : $"{Name}: {Stage}";
+        }
     }
 
     public class Torpedo
@@ -39,11 +52,13 @@ namespace SpaceEngineers
 
         readonly int delay;
         readonly int lifespan;
+        readonly string name;
 
         readonly DirectionController2 tControl;
 
         readonly List<IMyGyro> listGyro = new List<IMyGyro>();
         readonly List<IMyThrust> listEngine = new List<IMyThrust>();
+        readonly List<IMyGasGenerator> listH2Gen = new List<IMyGasGenerator>();
         readonly IMyRemoteControl tRemote;
         readonly IMyShipMergeBlock tClamp;
 
@@ -55,10 +70,10 @@ namespace SpaceEngineers
         public bool IsReady => listEngine.Any() && listGyro.Any() && tRemote != null && tClamp != null;
         public bool Started { get; private set; }
 
-        TorpedoState State =>
-            !IsAlive ? TorpedoState.Dead :
-            Started ? TorpedoState.Started :
-            IsReady ? TorpedoState.Ready : TorpedoState.Invalid;
+        public LaunchStage Stage =>
+            !IsAlive ? LaunchStage.Dead :
+            Started ? LaunchStage.Started :
+            IsReady ? LaunchStage.Ready : LaunchStage.Invalid;
 
         public long EntityId => (tRemote?.EntityId).GetValueOrDefault();
 
@@ -74,8 +89,13 @@ namespace SpaceEngineers
             float factor = 7,   // коэффициент мощности гироскопа
             int lifespan = 360) // длительность жизни в секундах
         {
+            name = group.Name;
+            this.delay = delay;
+            this.lifespan = lifespan;
+
             group.GetBlocksOfType(listGyro);
             group.GetBlocksOfType(listEngine);
+            group.GetBlocksOfType(listH2Gen);
 
             var tmp = new List<IMyTerminalBlock>();
             group.GetBlocks(tmp);
@@ -83,9 +103,6 @@ namespace SpaceEngineers
             tClamp = tmp.FirstOrDefault(b => b is IMyShipMergeBlock) as IMyShipMergeBlock;
             tRemote = tmp.FirstOrDefault(b => b is IMyRemoteControl) as IMyRemoteControl;
             tControl = new DirectionController2(tRemote, listGyro, factor);
-
-            this.delay = delay;
-            this.lifespan = lifespan;
         }
 
         public void Start()
@@ -95,7 +112,13 @@ namespace SpaceEngineers
 
             tClamp.Enabled = false;
 
-            listGyro.ForEach(g => { g.GyroOverride = true; });
+            listGyro.ForEach(g =>
+            {
+                g.Enabled = true;
+                g.GyroOverride = true;
+            });
+
+            listH2Gen.ForEach(g => { g.Enabled = true; });
 
             listEngine.ForEach(e =>
             {
@@ -106,8 +129,10 @@ namespace SpaceEngineers
             Started = true;
         }
 
-        public void Update(TargetInfo? info)
+        public TorpedoStatus Update(TargetInfo? info)
         {
+            double distance = 0;
+
             if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
             {
                 if (info.HasValue)
@@ -116,8 +141,18 @@ namespace SpaceEngineers
 
                     tControl.Intercept(target);
                     // tControl.Aim(target.Position);
+
+                    distance = (target.Position - Position).Length();
+
                 }
             }
+
+            return new TorpedoStatus
+            {
+                Name = name,
+                Stage = Stage,
+                Distance = distance,
+            };
         }
     }
 
