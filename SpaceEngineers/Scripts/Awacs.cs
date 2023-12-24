@@ -64,9 +64,9 @@ namespace SpaceEngineers.Scripts.Awacs
             var list2 = new List<IMyCockpit>();
             GridTerminalSystem.GetBlocksOfType(list2);
 
-            var control = list2.FirstOrDefault(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId && x.IsMainCockpit);
-            lcdTarget = control?.GetSurface(1);
-            lcdSystem = control?.GetSurface(2);
+            var control = list2.FirstOrDefault(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId);
+            lcdTarget = control?.GetSurface(0);
+            lcdSystem = control?.GetSurface(3);
 
             // динамик
             sound = GridTerminalSystem.GetBlockWithName("SOUND") as IMySoundBlock;

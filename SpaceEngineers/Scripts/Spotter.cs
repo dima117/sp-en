@@ -58,7 +58,7 @@ namespace SpaceEngineers.Scripts.Spotter
             // антенна
             tsm = new Transmitter2(this);
 
-            //Runtime.UpdateFrequency = UpdateFrequency.Update1;
+            Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
         public void ShowTargetState(MyDetectedEntityInfo? target = null)
@@ -79,6 +79,8 @@ namespace SpaceEngineers.Scripts.Spotter
 
         public void Main(string argument, UpdateType updateSource)
         {
+            tsm.Update(argument, updateSource);
+
             switch (argument)
             {
                 case "scan":

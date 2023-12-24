@@ -134,7 +134,7 @@ namespace SpaceEngineers.Scripts.TowShip
                     GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("TORPEDO"));
 
                     torpedos.AddRange(groups
-                        .Select(gr => new Torpedo(gr, lifespan: LIFESPAN))
+                        .Select(gr => new Torpedo(gr, factor: 3f, lifespan: LIFESPAN))
                         .Where(t => !ids.Contains(t.EntityId)));
 
                     torpedos.RemoveAll(t => !t.IsAlive);
