@@ -81,20 +81,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Lib\Transmitter.cs" />
     <Compile Include="Lib\TargetInfo.cs" />
     <Compile Include="RotorTurret.cs" />
     <Compile Include="RuntimeTracker.cs" />
     <Compile Include="Scripts\Debug\GravDriveBalancing.cs" />
     <Compile Include="Scripts\Debug\RotorTest.cs" />
+    <Compile Include="Scripts\Awacs.cs" />
     <Compile Include="Scripts\TowShip.cs" />
     <Compile Include="Scripts\Draft.cs" />
     <Compile Include="Scripts\BattleCruiser.cs" />
-    <Compile Include="Serializer.cs" />
-    <Compile Include="Transmitter.cs" />
+    <Compile Include="Lib\Serializer.cs" />
+    <Compile Include="Lib\Transmitter2.cs" />
     <Compile Include="BlockArray.cs" />
     <Compile Include="Lib\DirectionController2.cs" />
     <Compile Include="Examples\Class1.cs" />
-    <Compile Include="Scripts\IcbmLauncher.cs" />
     <Compile Include="Examples\GravDrive3.cs" />
     <Compile Include="Scripts\Spotter.cs" />
     <Compile Include="Icbm.cs" />

@@ -55,11 +55,8 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Dist\Awacs.cs.txt" />
     <Content Include="Dist\BattleCruiser.cs.txt" />
-    <Content Include="Dist\GravDriveBalancing.cs.txt" />
-    <Content Include="Dist\IcbmLauncher.cs.txt" />
-    <Content Include="Dist\Program.cs.txt" />
-    <Content Include="Dist\RotorTest.cs.txt" />
     <Content Include="Dist\Spotter.cs.txt" />
     <Content Include="Dist\TowShip.cs.txt" />
   </ItemGroup>

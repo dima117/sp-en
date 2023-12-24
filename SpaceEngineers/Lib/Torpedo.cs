@@ -19,6 +19,8 @@ using SpaceEngineers.Lib;
 
 namespace SpaceEngineers.Lib
 {
+    // торпеда может работать с ионными и водородными двигателями
+
     #region Copy
 
     // import:DirectionController2.cs

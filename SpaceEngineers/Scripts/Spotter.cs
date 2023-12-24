@@ -22,9 +22,11 @@ namespace SpaceEngineers.Scripts.Spotter
     {
         #region Copy
 
-        // import:Transmitter.cs
-        // import:Serializer.cs
-        // import:Lib/TargetInfo.cs
+        // import:Lib\Transmitter2.cs
+        // import:Lib\Serializer.cs
+        // import:Lib\TargetInfo.cs
+
+        const int DISTANCE = 60000;
 
         private static readonly HashSet<MyDetectedEntityType> gridTypes =
             new HashSet<MyDetectedEntityType> {
@@ -33,11 +35,10 @@ namespace SpaceEngineers.Scripts.Spotter
             };
 
         IMyCameraBlock cam;
-        IMyTextSurface lcdTarget;
-        IMyTextSurface lcdIcbm;
-        Transmitter tsm;
 
-        MyDetectedEntityInfo? target;
+        IMyTextSurface lcdTarget;
+
+        Transmitter2 tsm;
 
         public Program()
         {
@@ -53,25 +54,14 @@ namespace SpaceEngineers.Scripts.Spotter
 
             var control = list2.FirstOrDefault(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId);
             lcdTarget = control?.GetSurface(0);
-            lcdIcbm = control?.GetSurface(3);
 
             // антенна
-            tsm = new Transmitter(this);
-            tsm.Subscribe(Transmitter.TAG_ICBM_STATE, UpdateIcbmState);
+            tsm = new Transmitter2(this);
 
-            Runtime.UpdateFrequency = UpdateFrequency.Update10;
+            //Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
-        public void UpdateIcbmState(MyIGCMessage message)
-        {
-            var text = message.Data.ToString();
-
-            Echo(text);
-
-            lcdIcbm?.WriteText(text);
-        }
-
-        public void UpdateTargetState()
+        public void ShowTargetState(MyDetectedEntityInfo? target = null)
         {
             if (lcdTarget != null)
             {
@@ -89,39 +79,30 @@ namespace SpaceEngineers.Scripts.Spotter
 
         public void Main(string argument, UpdateType updateSource)
         {
-            // обрабатываем полученные сообщения
-            tsm.Update(argument, updateSource);
-
             switch (argument)
             {
                 case "scan":
-                    var entity = cam.Raycast(15000);
+                    var entity = cam.Raycast(DISTANCE);
 
                     if (gridTypes.Contains(entity.Type))
                     {
-                        target = entity;
-
                         var obj = TargetInfo.CreateTargetInfo(entity, DateTime.UtcNow, cam.GetPosition());
 
-                        var sb = new StringBuilder();
+                        var msg = new StringBuilder();
 
-                        Serializer.SerializeTargetInfo(obj, sb);
-                        var message = sb.ToString();
+                        Serializer.SerializeTargetInfo(obj, msg);
 
-                        tsm.Send(Transmitter.TAG_TARGET_POSITION, message);
+                        tsm.Send(MsgTags.LOCK_TARGET, msg.ToString());
 
-                        Me.CustomData = message;
+                        ShowTargetState(entity);
                     }
 
                     break;
                 case "reset":
-                    target = null;
+                    ShowTargetState();
 
                     break;
             }
-
-            // обновляем информацию о цели
-            UpdateTargetState();
         }
 
         #endregion

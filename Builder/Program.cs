@@ -113,13 +113,10 @@ namespace Builder
             var builderPath = Path.GetFullPath(Path.Combine(cwd, "..\\..\\Dist"));
 
             var files = new string[] {
-                "Program.cs",
-                "Scripts\\IcbmLauncher.cs",
                 "Scripts\\Spotter.cs",
+                "Scripts\\Awacs.cs",
                 "Scripts\\TowShip.cs",
-                "Scripts\\BattleCruiser.cs",
-                "Scripts\\Debug\\RotorTest.cs",
-                "Scripts\\Debug\\GravDriveBalancing.cs"
+                "Scripts\\BattleCruiser.cs"
             };
 
             foreach (var filePath in files)

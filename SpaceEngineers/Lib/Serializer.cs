@@ -7,14 +7,12 @@ using System.Threading.Tasks;
 using VRage;
 using VRage.Game;
 using VRageMath;
-using SpaceEngineers.Lib;
-using static System.BitStreamExtensions;
 
-namespace SpaceEngineers
+namespace SpaceEngineers.Lib
 {
     #region Copy
 
-    // import:Lib/TargetInfo.cs
+    // import:TargetInfo.cs
 
     public static class Serializer
     {

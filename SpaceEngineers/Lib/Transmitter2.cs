@@ -14,19 +14,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-namespace SpaceEngineers
+namespace SpaceEngineers.Lib
 {
     #region Copy
 
-    // import:BlockArray.cs
+    // import:Transmitter.cs
 
-    public class Transmitter
+    public class Transmitter2 : Transmitter
     {
-        // 1. предоставляет лаконичный API для отправки и получения сообщений
-        // 2. включает антенну на короткое время при отправке сообщений
-        public const string TAG_ICBM_STATE = "TAG_ICBM_STATE";
-        public const string TAG_TARGET_POSITION = "TAG_TARGET_POSITION";
-        public const string TAG_ICBM_CONNECT = "TAG_ICBM_CONNECT";
+        // отправляет сообщения с коротким включением антенны
 
         const int TIMEOUT_SWITCH_ON = 200;
         const int TIMEOUT_SWITCH_OFF = 200;
@@ -37,45 +33,17 @@ namespace SpaceEngineers
         private DateTime? timestampSwitchOn = null;
         private DateTime? timestampSwitchOff = null;
 
-        private int seq = 0;
-
-        private BlockArray<IMyRadioAntenna> blocks;
-        private IMyIntergridCommunicationSystem igc;
-        private Dictionary<string, Action<MyIGCMessage>> actions =
-            new Dictionary<string, Action<MyIGCMessage>>();
-        private Dictionary<string, IMyBroadcastListener> listeners =
-            new Dictionary<string, IMyBroadcastListener>();
-
         private readonly Queue<Action> messageQueue = new Queue<Action>();
 
-        public Transmitter(MyGridProgram program)
+        public Transmitter2(MyGridProgram program) : base(program)
         {
-            igc = program.IGC;
-            blocks = new BlockArray<IMyRadioAntenna>(program, a =>
+            blocks.ForEach(a =>
             {
                 a.Radius = MIN_RANGE;
-                a.EnableBroadcasting = true;
-                a.Enabled = true;
             });
-
-            igc.UnicastListener.SetMessageCallback();
         }
 
-        public void Subscribe(string tag, Action<MyIGCMessage> fn, bool broadcast = false)
-        {
-            if (broadcast)
-            {
-                var listener = igc.RegisterBroadcastListener(tag);
-                var listenerId = (DateTime.UtcNow.Ticks - (seq++)).ToString();
-
-                listener.SetMessageCallback(listenerId);
-                listeners[listenerId] = listener;
-            }
-
-            actions[tag] = fn;
-        }
-
-        public void Send<T>(string tag, T data, long? destination = null)
+        public override void Send(string tag, string data = "", long? destination = null)
         {
             if (destination.HasValue)
             {
@@ -93,36 +61,22 @@ namespace SpaceEngineers
                 if (timestampSwitchOff.HasValue)
                 {
                     timestampSwitchOff = DateTime.UtcNow.AddMilliseconds(TIMEOUT_SWITCH_OFF);
-                } else
+                }
+                else
                 {
                     // если всё было выключено, то включаем
                     blocks.ForEach(a => a.Radius = MAX_RANGE);
                     timestampSwitchOn = DateTime.UtcNow.AddMilliseconds(TIMEOUT_SWITCH_ON);
-                }                
+                }
             }
         }
 
-        public void Update(string listenerId, UpdateType updateSource)
+        public override void Update(string listenerId, UpdateType updateSource)
         {
+            base.Update(listenerId, updateSource);
+
             switch (updateSource)
             {
-                case UpdateType.IGC:
-                    IMyMessageProvider listener = igc.UnicastListener;
-
-                    if (listeners.ContainsKey(listenerId))
-                    {
-                        listener = listeners[listenerId];
-                    }
-
-                    while (listener.HasPendingMessage)
-                    {
-                        var message = listener.AcceptMessage();
-                        if (actions.ContainsKey(message.Tag))
-                        {
-                            actions[message.Tag](message);
-                        }
-                    }
-                    break;
                 case UpdateType.Update1:
                 case UpdateType.Update10:
                 case UpdateType.Update100:
