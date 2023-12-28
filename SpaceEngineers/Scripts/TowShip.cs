@@ -20,6 +20,18 @@ namespace SpaceEngineers.Scripts.TowShip
 {
     public class Program : MyGridProgram
     {
+        // 1. захват цели камерой
+        // 2. удаленный захват цели
+        // 3. сброс цели
+        // 4. отображение информации о цели
+        // 5. повторяемая инициализация камер
+        // 6. отображение информации о камерах
+        // 7. повторяемая инициализация торпед
+        // 8. пуск торпед
+        // 9. отображать статус торпед
+        // 0. обновлять цель на торпедах
+
+
         #region Copy
 
         // import:RuntimeTracker.cs
@@ -27,19 +39,28 @@ namespace SpaceEngineers.Scripts.TowShip
         // import:Lib\TargetInfo.cs
         // import:Lib\Serializer.cs
         // import:Lib\Torpedo.cs
+        // import:TargetTracker.cs
 
+        const int DISTANCE = 15000;
         const int LIFESPAN = 540;
+
+        const string BLOCK_NAME_CAMERA = "CAMERA";
+        const string BLOCK_NAME_SOUND = "SOUND";
+
+        bool onlyEnemies = false;
 
         TargetInfo? target = null;
 
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
         IMyTextSurface lcdTarget;
+        IMyTextSurface lcdSystem;
         IMyTextSurface lcdTorpedos;
 
         readonly Transmitter tsm;
+        readonly TargetTracker tt;
+        readonly IMyCameraBlock cam;
         readonly List<Torpedo> torpedos = new List<Torpedo>();
-
         readonly IMySoundBlock sound;
 
         public Program()
@@ -50,8 +71,14 @@ namespace SpaceEngineers.Scripts.TowShip
 
             // антенна
             tsm = new Transmitter(this);
-            tsm.Subscribe(MsgTags.UPDATE_TARGET_POS, UpdateTarget, true);
-            tsm.Subscribe(MsgTags.CLEAR_TARGET_POS, ClearTarget, true);
+            tsm.Subscribe(MsgTags.LOCK_TARGET, RemoteLock, true);
+
+            // массив камер радара
+            tt = new TargetTracker(this);
+
+            // главная камера
+            cam = GridTerminalSystem.GetBlockWithName(BLOCK_NAME_CAMERA) as IMyCameraBlock;
+            cam.EnableRaycast = true;
 
             // lcd
             var list2 = new List<IMyCockpit>();
@@ -60,58 +87,41 @@ namespace SpaceEngineers.Scripts.TowShip
             var control = list2.FirstOrDefault(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId);
             lcdTorpedos = control?.GetSurface(0);
             lcdTarget = control?.GetSurface(1);
+            lcdSystem = control?.GetSurface(2);
 
             // динамик
-            sound = GridTerminalSystem.GetBlockWithName("SOUND") as IMySoundBlock;
+            sound = GridTerminalSystem.GetBlockWithName(BLOCK_NAME_SOUND) as IMySoundBlock;
 
             if (sound != null)
             {
                 sound.SelectedSound = "ArcSoundBlockAlert2";
-                sound.LoopPeriod = 30;
-                sound.Range = 20;
+                sound.LoopPeriod = 300;
+                sound.Range = 50;
                 sound.Enabled = true;
             }
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
-        private void UpdateTarget(MyIGCMessage message)
+
+        private void RemoteLock(MyIGCMessage message)
         {
             try
             {
                 var data = message.Data.ToString();
                 var reader = new Serializer.StringReader(data);
 
-                TargetInfo tmp;
-
-                if (Serializer.TryParseTargetInfo(reader, out tmp))
+                TargetInfo target;
+                if (Serializer.TryParseTargetInfo(reader, out target))
                 {
-                    target = tmp;
+                    tt.LockOn(target);
 
-                    if (sound?.IsWorking != true)
+                    if (tt.Current.HasValue)
                     {
                         sound?.Play();
                     }
                 }
 
                 Me.CustomData = data;
-            }
-            catch (Exception ex)
-            {
-                Me.CustomData = ex.Message + "\n" + ex.StackTrace;
-            }
-        }
-
-        private void ClearTarget(MyIGCMessage message)
-        {
-            try
-            {
-                target = null;
-                Me.CustomData = null;
-
-                if (sound?.IsWorking == true)
-                {
-                    sound?.Stop();
-                }
             }
             catch (Exception ex)
             {
