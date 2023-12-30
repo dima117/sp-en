@@ -83,7 +83,11 @@ namespace SpaceEngineers
 
         public TargetTracker(MyGridProgram program)
         {
-            camArray = new BlockArray<IMyCameraBlock>(program, cam => cam.EnableRaycast = true);
+            camArray = new BlockArray<IMyCameraBlock>(program, cam =>
+            {
+                cam.Enabled = true;
+                cam.EnableRaycast = true;
+            });
         }
 
         public int Count

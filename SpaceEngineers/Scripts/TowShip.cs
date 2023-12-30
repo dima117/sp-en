@@ -20,17 +20,6 @@ namespace SpaceEngineers.Scripts.TowShip
 {
     public class Program : MyGridProgram
     {
-        // 1. захват цели камерой
-        // 2. удаленный захват цели
-        // 3. сброс цели
-        // 4. отображение информации о цели
-        // 5. повторяемая инициализация камер
-        // 6. отображение информации о камерах
-        // 7. повторяемая инициализация торпед
-        // 8. пуск торпед
-        // 9. отображать статус торпед
-        // 0. обновлять цель на торпедах
-
 
         #region Copy
 
@@ -42,26 +31,28 @@ namespace SpaceEngineers.Scripts.TowShip
         // import:TargetTracker.cs
 
         const int DISTANCE = 15000;
-        const int LIFESPAN = 540;
+        const int LIFESPAN = 600;
 
         const string BLOCK_NAME_CAMERA = "CAMERA";
         const string BLOCK_NAME_SOUND = "SOUND";
+        const string GROUP_PREFIX_TORPEDO = "TORPEDO";
 
         bool onlyEnemies = false;
 
-        TargetInfo? target = null;
-
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
-        IMyTextSurface lcdTarget;
-        IMyTextSurface lcdSystem;
-        IMyTextSurface lcdTorpedos;
 
         readonly Transmitter tsm;
         readonly TargetTracker tt;
         readonly IMyCameraBlock cam;
-        readonly List<Torpedo> torpedos = new List<Torpedo>();
+
+        readonly IMyTextSurface lcdTarget;
+        readonly IMyTextSurface lcdSystem;
+        readonly IMyTextSurface lcdTorpedos;
+
         readonly IMySoundBlock sound;
+
+        readonly List<Torpedo> torpedos = new List<Torpedo>();
 
         public Program()
         {
@@ -137,11 +128,33 @@ namespace SpaceEngineers.Scripts.TowShip
 
             switch (argument)
             {
+                case "filter":
+                    onlyEnemies = !onlyEnemies;
+
+                    break;
                 case "init":
+                    tt.UpdateCamArray();
+                    break;
+                case "lock":
+                    var target = TargetTracker.Scan(cam, DISTANCE, onlyEnemies);
+
+                    if (target.HasValue)
+                    {
+                        tt.LockOn(target.Value);
+
+                        sound?.Play();
+                    }
+
+                    break;
+                case "reset":
+                    tt.Clear();
+
+                    break;
+                case "reload":
                     var ids = new HashSet<long>(torpedos.Select(t => t.EntityId));
 
                     var groups = new List<IMyBlockGroup>();
-                    GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith("TORPEDO"));
+                    GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith(GROUP_PREFIX_TORPEDO));
 
                     torpedos.AddRange(groups
                         .Select(gr => new Torpedo(gr, factor: 3f, lifespan: LIFESPAN))
@@ -156,17 +169,26 @@ namespace SpaceEngineers.Scripts.TowShip
 
                     break;
                 default:
+                    // обновлям данные о цели
+                    tt.Update();
 
                     // обновляем параметры цели на всех торпедах
-                    var state = torpedos?.Select(t => t.Update(target));
+                    var state = torpedos?.Select(t => t.Update(tt.Current));
                     var text = String.Join("\n", state?.Select(s => s.ToString()));
 
-                    lcdTorpedos.WriteText(text);
+                    lcdTorpedos?.WriteText(text);
+
+                    // выключаем звук, если цель потеряна
+                    if (!tt.Current.HasValue && sound?.IsWorking == true)
+                    {
+                        sound?.Stop();
+                    }
 
                     break;
             }
 
             UpdateTargetLcd();
+            UpdateSystemLcd();
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());
@@ -175,17 +197,30 @@ namespace SpaceEngineers.Scripts.TowShip
         void UpdateTargetLcd()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Locked: {target.HasValue}");
+            sb.AppendLine($"Locked: {tt.Current.HasValue}");
 
-            if (target.HasValue)
+            if (tt.Current.HasValue)
             {
-                var entity = target.Value.Entity;
-                var distance = Vector3D.Distance(Me.GetPosition(), entity.Position);
+                var target = tt.Current.Value.Entity;
+                var distance = Vector3D.Distance(cam.GetPosition(), target.Position);
 
-                sb.AppendLine($"{entity.Type}\nV={entity.Velocity.Length():0.0}\nS={distance:0.0}");
+                sb.AppendLine($"{target.Type}\nv: {target.Velocity.Length():0.0}\ns: {distance:0.0}");
             }
 
             lcdTarget?.WriteText(sb.ToString());
+        }
+
+        void UpdateSystemLcd()
+        {
+            var filter = onlyEnemies ? "Enemies" : "All";
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"Range: {cam.AvailableScanRange:0.0}");
+            sb.AppendLine($"Total range: {tt.TotalRange:0.0}");
+            sb.AppendLine($"Cam count: {tt.Count}");
+            sb.AppendLine($"Filter: {filter}");
+
+            lcdSystem.WriteText(sb.ToString());
         }
 
         #endregion

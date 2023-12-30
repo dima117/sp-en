@@ -30,22 +30,11 @@ namespace SpaceEngineers
 
         public void UpdateBlocks()
         {
-            list = new List<T>();
             index = 0;
+            list = new List<T>();
+            program.GridTerminalSystem.GetBlocksOfType(list);
 
-            var tmp = new List<IMyTerminalBlock>();
-            program.GridTerminalSystem.GetBlocks(tmp);
-
-            foreach (var x in tmp)
-            {
-                var block = x as T;
-
-                if (block != null)
-                {
-                    list.Add(block);
-                    init(block);
-                }
-            }
+            list.ForEach(init);
         }
 
         public void ForEach(Action<T> fn = null)

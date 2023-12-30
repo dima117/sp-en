@@ -41,9 +41,6 @@
     <Reference Include="Sandbox.Game.XmlSerializers">
       <HintPath>..\..\SEDebug\Debug\Sandbox.Game.XmlSerializers.dll</HintPath>
     </Reference>
-    <Reference Include="SpaceEngineers">
-      <HintPath>..\..\SEDebug\Debug\SpaceEngineers.dll</HintPath>
-    </Reference>
     <Reference Include="SpaceEngineers.Game">
       <HintPath>..\..\SEDebug\Debug\SpaceEngineers.Game.dll</HintPath>
     </Reference>
