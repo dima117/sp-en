@@ -1,6 +1,7 @@
 ﻿using CSharpMinifier;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -113,8 +114,8 @@ namespace Builder
             var builderPath = Path.GetFullPath(Path.Combine(cwd, "..\\..\\Dist"));
 
             var files = new string[] {
+                "Scripts\\Debug\\RotorTest.cs",
                 "Scripts\\Spotter.cs",
-                "Scripts\\Awacs.cs",
                 "Scripts\\TowShip.cs",
                 "Scripts\\BattleCruiser.cs"
             };
