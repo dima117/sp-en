@@ -34,11 +34,12 @@ namespace SpaceEngineers.Scripts.Spotter
                 MyDetectedEntityType.LargeGrid
             };
 
-        IMyCameraBlock cam;
+        readonly IMyCameraBlock cam;
+        readonly Transmitter2 tsm;
+        readonly IMySoundBlock sound;
 
-        IMyTextSurface lcdTarget;
-
-        Transmitter2 tsm;
+        readonly IMyTextSurface lcdTarget;
+        readonly IMyTextSurface lcdStatus;
 
         public Program()
         {
@@ -54,11 +55,33 @@ namespace SpaceEngineers.Scripts.Spotter
 
             var control = list2.FirstOrDefault(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId);
             lcdTarget = control?.GetSurface(0);
+            lcdTarget.WriteText(string.Empty);
+
+            lcdStatus = control?.GetSurface(3);
+            lcdStatus.WriteText(string.Empty);
 
             // антенна
             tsm = new Transmitter2(this);
+            tsm.Subscribe(MsgTags.REMOTE_STATUS, UpdateStatus, true);
+
+            // динамик
+            var sounds = new List<IMySoundBlock>();
+            GridTerminalSystem.GetBlocksOfType(sounds);
+            sound = sounds.FirstOrDefault();
+
+            if (sound != null)
+            {
+                sound.SelectedSound = "ArcSoundBlockAlert2";
+                sound.Range = 50;
+                sound.Enabled = true;
+            }
 
             Runtime.UpdateFrequency = UpdateFrequency.Update10;
+        }
+
+        private void UpdateStatus(MyIGCMessage message)
+        {
+            lcdStatus.WriteText(message.Data.ToString());
         }
 
         public void ShowTargetState(MyDetectedEntityInfo? target = null)
@@ -83,6 +106,12 @@ namespace SpaceEngineers.Scripts.Spotter
 
             switch (argument)
             {
+                case "status":
+                    tsm.Send(MsgTags.GET_STATUS);
+                    break;
+                case "start":
+                    tsm.Send(MsgTags.REMOTE_START);
+                    break;
                 case "scan":
                     var entity = cam.Raycast(DISTANCE);
 
@@ -94,9 +123,11 @@ namespace SpaceEngineers.Scripts.Spotter
 
                         Serializer.SerializeTargetInfo(obj, msg);
 
-                        tsm.Send(MsgTags.LOCK_TARGET, msg.ToString());
+                        tsm.Send(MsgTags.REMOTE_LOCK_TARGET, msg.ToString());
 
                         ShowTargetState(entity);
+
+                        sound?.Play();
                     }
 
                     break;

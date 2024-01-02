@@ -19,11 +19,10 @@ namespace SpaceEngineers.Lib
 
     public class MsgTags
     {
-        public const string LOCK_TARGET = "@LOCK_TARGET";
-
-        public const string UPDATE_TARGET_POS = "@UPDATE_TARGET_POS";
-
-        public const string CLEAR_TARGET_POS = "@CLEAR_TARGET_POS";
+        public const string REMOTE_LOCK_TARGET = "@REMOTE_LOCK_TARGET";
+        public const string REMOTE_START = "@REMOTE_START";
+        public const string GET_STATUS = "@GET_STATUS";
+        public const string REMOTE_STATUS = "@REMOTE_STATUS";
     }
 
     public class Transmitter

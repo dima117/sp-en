@@ -24,7 +24,7 @@ namespace SpaceEngineers.Scripts.TowShip
         #region Copy
 
         // import:RuntimeTracker.cs
-        // import:Lib\Transmitter.cs
+        // import:Lib\Transmitter2.cs
         // import:Lib\TargetInfo.cs
         // import:Lib\Serializer.cs
         // import:Lib\Torpedo.cs
@@ -61,8 +61,10 @@ namespace SpaceEngineers.Scripts.TowShip
             lcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
             // антенна
-            tsm = new Transmitter(this);
-            tsm.Subscribe(MsgTags.LOCK_TARGET, RemoteLock, true);
+            tsm = new Transmitter2(this);
+            tsm.Subscribe(MsgTags.REMOTE_LOCK_TARGET, RemoteLock, true);
+            tsm.Subscribe(MsgTags.REMOTE_START, RemoteStart, true);
+            tsm.Subscribe(MsgTags.GET_STATUS, GetStatus, true);
 
             // массив камер радара
             tt = new TargetTracker(this);
@@ -118,6 +120,20 @@ namespace SpaceEngineers.Scripts.TowShip
             {
                 Me.CustomData = ex.Message + "\n" + ex.StackTrace;
             }
+        }
+
+        private void RemoteStart(MyIGCMessage message)
+        {
+            // запускаем одну из торпед
+            torpedos.FirstOrDefault(t => !t.Started)?.Start();
+        }
+
+        private void GetStatus(MyIGCMessage message)
+        {
+            var t = tt.Current.HasValue ? tt.Current.Value.Entity.Type.ToString() : "FALSE";
+            var text = $"Locked: ${t}\n" + lcdTorpedos.GetText();
+
+            tsm.Send(MsgTags.REMOTE_STATUS, text, message.Source);
         }
 
         public void Main(string argument, UpdateType updateSource)

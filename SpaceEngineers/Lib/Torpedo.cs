@@ -67,6 +67,7 @@ namespace SpaceEngineers.Lib
         DateTime startTime = DateTime.MaxValue;
         DateTime deathTime = DateTime.MaxValue;
 
+        public string Name => name;
         public Vector3D Position => tRemote.GetPosition();
         public double Speed => Started && IsAlive ? tRemote.GetShipSpeed() : 0;
         public bool IsReady => listEngine.Any() && listGyro.Any() && tRemote != null && tClamp != null;
