@@ -28,7 +28,6 @@ namespace SpaceEngineers.Scripts.RotorTest
         private IMyMotorStator rotorElevation;
         private IMyShipController remote;
         private IMyGyro gyro1;
-        private IMyGyro gyro2;
 
         public Program()
         {
@@ -36,7 +35,6 @@ namespace SpaceEngineers.Scripts.RotorTest
             rotorElevation = GridTerminalSystem.GetBlockWithName("ELEVATION") as IMyMotorStator;
             remote = GridTerminalSystem.GetBlockWithName("REMOTE") as IMyShipController;
             gyro1 = GridTerminalSystem.GetBlockWithName("GYRO1") as IMyGyro;
-            gyro2 = GridTerminalSystem.GetBlockWithName("GYRO2") as IMyGyro;
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
@@ -46,21 +44,18 @@ namespace SpaceEngineers.Scripts.RotorTest
             var input = remote.MoveIndicator;
 
             gyro1.GyroOverride = true;
-            gyro2.GyroOverride = true;
-
-            gyro1.Yaw = gyro2.Yaw = input.X;
-            gyro1.Pitch = gyro2.Pitch = input.Z;
+            gyro1.Yaw = input.X * 2;
+            gyro1.Pitch = input.Z;
 
             var invertedMatrix = MatrixD.Invert(rotorAzimuth.WorldMatrix.GetOrientation());
-            //var invertedMatrix2 = MatrixD.Invert(rotorElevation.WorldMatrix.GetOrientation());
 
             var angularVelocity = remote.GetShipVelocities().AngularVelocity;
             var localAngularVelocity = Vector3D.Transform(angularVelocity, invertedMatrix);
-            //var localAngularVelocity2 = Vector3D.Transform(angularVelocity, invertedMatrix2);
 
-            rotorAzimuth.TargetVelocityRad = Convert.ToSingle(localAngularVelocity.Dot(rotorAzimuth.WorldMatrix.Up));
-            //rotorElevation.TargetVelocityRad = Convert.ToSingle(localAngularVelocity2.Dot(rotorElevation.WorldMatrix.Up));
+            rotorAzimuth.TargetVelocityRad = Convert.ToSingle(angularVelocity.Dot(rotorAzimuth.WorldMatrix.Up));
+            rotorElevation.TargetVelocityRad = Convert.ToSingle(angularVelocity.Dot(rotorElevation.WorldMatrix.Up));
         }
+
 
         #endregion
     }
