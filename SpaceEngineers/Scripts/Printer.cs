@@ -22,6 +22,10 @@ namespace SpaceEngineers.Scripts.Printer
 {
     public class Program : MyGridProgram
     {
+        // скрипт для выравнивания челнока в принтере кораблей
+        // гироскоп должен быть сориентирован по направлению кабины
+        // remote control а принтере должен быть сориентирован вверх
+
         #region Copy
 
         // import:RuntimeTracker.cs
@@ -36,7 +40,6 @@ namespace SpaceEngineers.Scripts.Printer
         readonly IMyTextSurface lcd;
         readonly IMyTextSurface lcdStatus;
 
-        private IMyShipWelder[] welders;
         private Vector3D? direction;
 
         private IEnumerable<T> GetBlocksOfType<T>(
@@ -62,64 +65,49 @@ namespace SpaceEngineers.Scripts.Printer
 
             lcdStatus = cockpit.GetSurface(0);
 
+            var x = Vector3D.Zero;
+            if (!Vector3D.TryParse(Me.CustomData, out x))
+            {
+                direction = x;
+            }
+
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
-        public void Main(string argument, UpdateType updateSource)
+        private void SetDirection()
         {
-            tracker.AddRuntime();
+            direction = GetBlocksOfType<IMyShipController>(w => w.CubeGrid != Me.CubeGrid)
+                        .FirstOrDefault()?.WorldMatrix.Down;
 
-            switch (argument)
+            Me.CustomData = direction.HasValue ? direction.ToString() : string.Empty;
+        }
+
+        private void Lock()
+        {
+            if (direction.HasValue)
             {
-                case "lock":
-                    welders = GetBlocksOfType<IMyShipWelder>(w => w.CubeGrid != Me.CubeGrid).ToArray();
-                    direction = GetBlocksOfType<IMyShipController>(w => w.CubeGrid != Me.CubeGrid)
-                        .FirstOrDefault()?.WorldMatrix.Backward;
+                connector.Disconnect();
 
-                    foreach (var w in welders)
-                    {
-                        w.Enabled = false;
-                    };
-
-                    connector.Disconnect();
-
-                    foreach (var gyro in gyros)
-                    {
-                        gyro.GyroOverride = true;
-                    }
-
-                    break;
-                case "unlock":
-                    direction = null;
-
-                    foreach (var gyro in gyros)
-                    {
-                        gyro.GyroOverride = false;
-                    }
-
-                    break;
-                case "on":
-                    if (welders != null)
-                    {
-                        foreach (var w in welders)
-                        {
-                            w.Enabled = true;
-                        };
-                    }
-
-                    break;
-                case "off":
-                    if (welders != null)
-                    {
-                        foreach (var w in welders)
-                        {
-                            w.Enabled = false;
-                        };
-                    }
-
-                    break;
+                foreach (var gyro in gyros)
+                {
+                    gyro.GyroOverride = true;
+                    gyro.GyroPower = 1;
+                }
             }
 
+        }
+
+        private void Unlock()
+        {
+            foreach (var gyro in gyros)
+            {
+                gyro.GyroOverride = false;
+                gyro.GyroPower = 0.3f;
+            }
+        }
+
+        private void Align()
+        {
             if (direction.HasValue)
             {
                 var axis = DirectionController2.GetAxis(cockpit.WorldMatrix.Down, direction.Value);
@@ -129,16 +117,40 @@ namespace SpaceEngineers.Scripts.Printer
                     gyro.Yaw = FACTOR * cockpit.RollIndicator;
                     gyro.Pitch = FACTOR * Convert.ToSingle(axis.Dot(gyro.WorldMatrix.Right));
                     gyro.Roll = FACTOR * Convert.ToSingle(axis.Dot(gyro.WorldMatrix.Backward));
-                    
+
                     gyro.GyroOverride = true;
                 }
             }
+        }
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"Locked: {direction.HasValue}");
-            sb.AppendLine($"Welders: {welders?.Count() ?? 0}");
+        public void Main(string argument, UpdateType updateSource)
+        {
+            tracker.AddRuntime();
 
-            lcdStatus.WriteText(sb);
+            switch (argument)
+            {
+                case "init":
+                    SetDirection();
+                    Lock();
+                    break;
+
+                case "reset":
+                    direction = null;
+                    Me.CustomData = string.Empty;
+                    Unlock();
+                    break;
+
+                case "lock":
+                    Lock();
+                    break;
+                case "unlock":
+                    Unlock();
+                    break;
+            }
+
+            Align();
+
+            lcdStatus.WriteText($"Locked: {direction.HasValue}");
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());
