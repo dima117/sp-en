@@ -53,8 +53,13 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Dist\" />
+    <Content Include="Dist\BattleCruiser.cs.txt" />
+    <Content Include="Dist\Printer.cs.txt" />
+    <Content Include="Dist\RotorTest.cs.txt" />
+    <Content Include="Dist\Spotter.cs.txt" />
+    <Content Include="Dist\TowShip.cs.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

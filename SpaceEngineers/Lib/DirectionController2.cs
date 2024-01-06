@@ -64,14 +64,14 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void KeepHorizon()
+        public void KeepHorizon(Vector3D? grav = null)
         {
-            var grav = remoteControl.GetNaturalGravity();
+            var direction = grav ?? remoteControl.GetNaturalGravity();
 
-            if (!grav.IsZero())
+            if (!direction.IsZero())
             {
                 // вращаем вектор down по направлению к вектору гравитации
-                var axis = GetAxis(remoteControl.WorldMatrix.Down, grav);
+                var axis = GetAxis(remoteControl.WorldMatrix.Down, direction);
 
                 SetGyroByAxis(axis);
             }
