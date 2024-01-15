@@ -25,9 +25,7 @@ namespace SpaceEngineers
 
     public class TargetTracker
     {
-        const double DISTANCE_RESERVE = 50;
-        const double DISTANCE_SCAN_DEFAULT = 5000;
-
+        const double DISTANCE_RESERVE = 8000;
 
         static readonly HashSet<MyDetectedEntityType> targetTypes = new HashSet<MyDetectedEntityType> {
             MyDetectedEntityType.SmallGrid,
