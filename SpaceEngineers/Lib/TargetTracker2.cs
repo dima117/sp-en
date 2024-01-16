@@ -13,6 +13,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using System.Text;
 
 namespace SpaceEngineers.Lib
 {
@@ -48,10 +49,11 @@ namespace SpaceEngineers.Lib
         }
 
         const double DISTANCE_RESERVE = 50;
-        const double DISTANCE_SCAN_DEFAULT = 15000;
+        const double DISTANCE_DISPERSION = 25;
+        const double DISTANCE_SCAN_DEFAULT = 10000;
 
         private BlockArray<IMyCameraBlock> camArray;
-        private Dictionary<long, TargetInfo> targets = new Dictionary<long, TargetInfo>();
+        private SortedDictionary<long, TargetInfo> targets = new SortedDictionary<long, TargetInfo>();
 
         public int Count
         {
@@ -90,29 +92,78 @@ namespace SpaceEngineers.Lib
                 return null;
             }
 
-            var target = cam.Raycast(distance);
-
-            if (target.IsEmpty())
-            {
-                return null;
-            }
-
-            if (!targetTypes.Contains(target.Type))
-            {
-                return null;
-            }
-
-            if (onlyEnemies && target.Relationship != MyRelationsBetweenPlayerAndBlock.Enemies)
-            {
-                return null;
-            }
-
             var camPos = cam.GetPosition();
+            var entity = cam.Raycast(distance);
 
-            return TargetInfo.CreateTargetInfo(target, DateTime.UtcNow, camPos);
+            return Entity2Target(entity, camPos, onlyEnemies);
         }
 
-        static Vector3D CalculateTargetLocation(TargetInfo info, TimeSpan timePassed)
+        public static TargetInfo? ScanArea(IMyCameraBlock cam, double distance = DISTANCE_SCAN_DEFAULT, bool onlyEnemies = false)
+        {
+            if (cam == null)
+            {
+                return null;
+            }
+
+            var up = cam.WorldMatrix.Up * DISTANCE_DISPERSION;
+            var left = cam.WorldMatrix.Left * DISTANCE_DISPERSION;
+            var camPos = cam.GetPosition();
+
+            var targetPos = camPos + distance * cam.WorldMatrix.Forward;
+
+            // сканируем заданную точку
+            var target = Entity2Target(cam.Raycast(targetPos), camPos, onlyEnemies);
+            if (target.HasValue)
+            {
+                return target.Value;
+            }
+
+            // left
+            target = Entity2Target(cam.Raycast(targetPos + left), camPos, onlyEnemies);
+            if (target.HasValue)
+            {
+                return target.Value;
+            }
+
+            // right
+            target = Entity2Target(cam.Raycast(targetPos - left), camPos, onlyEnemies);
+            if (target.HasValue)
+            {
+                return target.Value;
+            }
+
+            // up
+            target = Entity2Target(cam.Raycast(targetPos + up), camPos, onlyEnemies);
+            if (target.HasValue)
+            {
+                return target.Value;
+            }
+
+            // down
+            return Entity2Target(cam.Raycast(targetPos - up), camPos, onlyEnemies);
+        }
+
+        private static TargetInfo? Entity2Target(MyDetectedEntityInfo entity, Vector3D camPos, bool onlyEnemies)
+        {
+            if (entity.IsEmpty())
+            {
+                return null;
+            }
+
+            if (!targetTypes.Contains(entity.Type))
+            {
+                return null;
+            }
+
+            if (onlyEnemies && entity.Relationship != MyRelationsBetweenPlayerAndBlock.Enemies)
+            {
+                return null;
+            }
+
+            return TargetInfo.CreateTargetInfo(entity, DateTime.UtcNow, camPos);
+        }
+
+        private static Vector3D CalculateTargetLocation(TargetInfo info, TimeSpan timePassed)
         {
             var target = info.Entity;
 
@@ -137,23 +188,56 @@ namespace SpaceEngineers.Lib
             }
         }
 
+        public void Merge(TargetInfo[] array)
+        {
+            foreach (var t in array)
+            {
+                LockTarget(t);
+            }
+        }
+
         public void ReleaseTarget(long targetId)
         {
             targets.Remove(targetId);
         }
 
+        public void Clear()
+        {
+            targets.Clear();
+        }
 
-        /*
-            хранит данные о списке целей
-            отображает информацию о целях: читаемое имя, тип, скорость, расстояние
-            умеет сериализовать цели для отправки и мержить списки с более новыми данными
-            если цель давно не обновлялась, подсвечивает ее
-            api: 1) отсканировать цель 2) обновить очредную цель
-            предоставляет инфо о целях, отсортированных по id
-            
-                
+        public TargetInfo[] GetTargets()
+        {
+            return targets.Values.ToArray();
+        }
 
-        */
+        public TargetInfo? GetByEntityId(long entityId)
+        {
+            return targets[entityId];
+        }
+
+        public void Update() { 
+
+        }
+
+        public string GetDisplayState(Vector3D camPos)
+        {
+            var sb = new StringBuilder();
+
+            foreach(var target in targets)
+            {
+                var t = target.Value.Entity;
+
+                var type = t.Type;
+                var name = GetName(t.EntityId);
+                var dist = (t.Position - camPos).Length();
+                var speed = t.Velocity.Length();
+
+                sb.AppendLine($"{type} {name} {dist:0} / {speed:0}");
+            }
+
+            return sb.ToString();
+        }
     }
 
     #endregion

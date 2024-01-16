@@ -114,6 +114,7 @@ namespace Builder
             var builderPath = Path.GetFullPath(Path.Combine(cwd, "..\\..\\Dist"));
 
             var files = new string[] {
+                "Scripts\\AimBot.cs",
                 "Scripts\\Debug\\RotorTest.cs",
                 "Scripts\\Spotter.cs",
                 "Scripts\\TowShip.cs",

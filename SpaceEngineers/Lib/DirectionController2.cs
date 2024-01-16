@@ -26,6 +26,7 @@ namespace SpaceEngineers.Lib
     {
 
         public const double MIN_SPEED = 50;
+        public const float DEFAULT_FACTOR = 2;
 
         readonly IMyShipController remoteControl;
         readonly IEnumerable<IMyGyro> gyroList;
@@ -35,7 +36,7 @@ namespace SpaceEngineers.Lib
         public DirectionController2(
             IMyShipController remoteControl,
             IEnumerable<IMyGyro> gyroList,
-            float factor)
+            float factor = DEFAULT_FACTOR)
         {
             this.remoteControl = remoteControl;
             this.gyroList = gyroList;
@@ -60,7 +61,7 @@ namespace SpaceEngineers.Lib
                 Vector3D direction = CompensateSideVelocity(grav, targetVector);
 
                 var axis = GetAxis(remoteControl.WorldMatrix.Forward, direction);
-                SetGyroByAxis(axis);
+                SetGyroByAxis(axis, gyroList, factor);
             }
         }
 
@@ -73,7 +74,7 @@ namespace SpaceEngineers.Lib
                 // вращаем вектор down по направлению к вектору гравитации
                 var axis = GetAxis(remoteControl.WorldMatrix.Down, direction);
 
-                SetGyroByAxis(axis);
+                SetGyroByAxis(axis, gyroList, factor);
             }
         }
 
@@ -85,7 +86,7 @@ namespace SpaceEngineers.Lib
             var targetVector = CompensateSideVelocity(velocity, targetPos - ownPos);
             var axis = GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
 
-            SetGyroByAxis(axis);
+            SetGyroByAxis(axis, gyroList, factor);
         }
 
         public void Intercept(MyDetectedEntityInfo target)
@@ -103,7 +104,25 @@ namespace SpaceEngineers.Lib
             var targetVector = CompensateSideVelocity(velocity, direction);
             var axis = GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
 
-            SetGyroByAxis(axis);
+            SetGyroByAxis(axis, gyroList, factor);
+        }
+
+        public void InterceptShot(MyDetectedEntityInfo target, double bulletSpeed)
+        {
+            var ownPos = remoteControl.GetPosition();
+            var ownVelocity = remoteControl.GetShipVelocities().LinearVelocity;
+
+            var relativeTargetVelocity = target.Velocity - ownVelocity;
+
+            var point = Helpers.CalculateInterceptPoint(ownPos, bulletSpeed, target.Position, relativeTargetVelocity);
+
+            var targetVector = point == null
+                ? (target.Position - ownPos) // если снаряд не может догнать цель, то целимся в текущую позицию цели 
+                : (point.Position - ownPos); // иначе курс на точку перехвата
+
+            var axis = GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
+
+            SetGyroByAxis(axis, gyroList, factor);
         }
 
         // корректирует направление на цель для компенсации боковой скорости
@@ -137,7 +156,7 @@ namespace SpaceEngineers.Lib
             return axis;
         }
 
-        public void SetGyroByAxis(Vector3D axis)
+        public static void SetGyroByAxis(Vector3D axis, IEnumerable<IMyGyro> gyroList, float factor = DEFAULT_FACTOR)
         {
             // установка скорости вращения вне зависимости от направления установки гироскопа
             foreach (var gyro in gyroList)
