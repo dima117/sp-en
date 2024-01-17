@@ -26,9 +26,35 @@ namespace SpaceEngineers.Scripts.Spotter
         // import:Lib\Serializer.cs
         // import:Lib\TargetInfo.cs
 
-        const int DISTANCE = 60000;
+        const double DISTANCE_RESERVE = 50;
+        const double DISTANCE_DISPERSION = 25;
+        const double DISTANCE_SCAN_DEFAULT = 10000;
 
-        private static readonly HashSet<MyDetectedEntityType> gridTypes =
+        public static readonly string[] names = new[] {
+            "корова",
+            "пёс",
+            "кролик",
+            "конь",
+            "медвед",
+            "кот",
+            "болт",
+            "кабан",
+            "волк",
+            "бобр",
+            "жук",
+            "zombie",
+            "сом",
+        };
+
+        public static string GetName(long entityId)
+        {
+            var name = names[entityId % names.Length];
+            var index = entityId % 89;
+
+            return $"{name}-{index}";
+        }
+
+        private readonly HashSet<MyDetectedEntityType> gridTypes =
             new HashSet<MyDetectedEntityType> {
                 MyDetectedEntityType.SmallGrid,
                 MyDetectedEntityType.LargeGrid
@@ -40,6 +66,8 @@ namespace SpaceEngineers.Scripts.Spotter
 
         readonly IMyTextSurface lcdTarget;
         readonly IMyTextSurface lcdStatus;
+
+        private bool onlyEnemies = false;
 
         public Program()
         {
@@ -90,8 +118,9 @@ namespace SpaceEngineers.Scripts.Spotter
             {
                 if (target.HasValue)
                 {
+                    var name = GetName(target.Value.EntityId);
                     var dist = (target.Value.Position - cam.GetPosition()).Length();
-                    lcdTarget.WriteText($"{target.Value.Type}\ndist: {dist:0}m");
+                    lcdTarget.WriteText($"{target.Value.Type}\n{name}\ndist: {dist:0}m");
                 }
                 else
                 {
@@ -113,19 +142,17 @@ namespace SpaceEngineers.Scripts.Spotter
                     tsm.Send(MsgTags.REMOTE_START);
                     break;
                 case "scan":
-                    var entity = cam.Raycast(DISTANCE);
+                    var target = ScanArea();
 
-                    if (gridTypes.Contains(entity.Type))
+                    if (target != null)
                     {
-                        var obj = TargetInfo.CreateTargetInfo(entity, DateTime.UtcNow, cam.GetPosition());
-
                         var msg = new StringBuilder();
 
-                        Serializer.SerializeTargetInfo(obj, msg);
+                        Serializer.SerializeTargetInfo(target.Value, msg);
 
                         tsm.Send(MsgTags.REMOTE_LOCK_TARGET, msg.ToString());
 
-                        ShowTargetState(entity);
+                        ShowTargetState(target.Value.Entity);
 
                         sound?.Play();
                     }
@@ -136,6 +163,49 @@ namespace SpaceEngineers.Scripts.Spotter
 
                     break;
             }
+        }
+
+        public TargetInfo? ScanArea(double distance = DISTANCE_SCAN_DEFAULT)
+        {
+            if (cam == null)
+            {
+                return null;
+            }
+
+            var up = cam.WorldMatrix.Up * DISTANCE_DISPERSION;
+            var left = cam.WorldMatrix.Left * DISTANCE_DISPERSION;
+            var camPos = cam.GetPosition();
+
+            var targetPos = camPos + distance * cam.WorldMatrix.Forward;
+
+            return Scan(targetPos)
+                ?? Scan(targetPos + left)
+                ?? Scan(targetPos - left)
+                ?? Scan(targetPos + up)
+                ?? Scan(targetPos - up);
+        }
+
+        private TargetInfo? Scan(Vector3D targetPos)
+        {
+            Me.CustomData = $"GPS:SCAN #1:{targetPos.X:0.00}:{targetPos.Y:0.00}:{targetPos.Z:0.00}:#FF75C9F1:";
+            var entity = cam.Raycast(targetPos);
+
+            if (entity.IsEmpty())
+            {
+                return null;
+            }
+
+            if (!gridTypes.Contains(entity.Type))
+            {
+                return null;
+            }
+
+            if (onlyEnemies && entity.Relationship != MyRelationsBetweenPlayerAndBlock.Enemies)
+            {
+                return null;
+            }
+
+            return TargetInfo.CreateTargetInfo(entity, DateTime.UtcNow, cam.GetPosition());
         }
 
         #endregion
