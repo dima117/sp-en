@@ -26,8 +26,6 @@ namespace SpaceEngineers.Scripts.Spotter
         // import:Lib\Serializer.cs
         // import:Lib\TargetInfo.cs
 
-        const double DISTANCE_RESERVE = 50;
-        const double DISTANCE_DISPERSION = 25;
         const double DISTANCE_SCAN_DEFAULT = 10000;
 
         public static readonly string[] names = new[] {
@@ -142,7 +140,7 @@ namespace SpaceEngineers.Scripts.Spotter
                     tsm.Send(MsgTags.REMOTE_START);
                     break;
                 case "scan":
-                    var target = ScanArea();
+                    var target = Scan();
 
                     if (target != null)
                     {
@@ -165,30 +163,9 @@ namespace SpaceEngineers.Scripts.Spotter
             }
         }
 
-        public TargetInfo? ScanArea(double distance = DISTANCE_SCAN_DEFAULT)
+        private TargetInfo? Scan(double distance = DISTANCE_SCAN_DEFAULT)
         {
-            if (cam == null)
-            {
-                return null;
-            }
-
-            var up = cam.WorldMatrix.Up * DISTANCE_DISPERSION;
-            var left = cam.WorldMatrix.Left * DISTANCE_DISPERSION;
-            var camPos = cam.GetPosition();
-
-            var targetPos = camPos + distance * cam.WorldMatrix.Forward;
-
-            return Scan(targetPos)
-                ?? Scan(targetPos + left)
-                ?? Scan(targetPos - left)
-                ?? Scan(targetPos + up)
-                ?? Scan(targetPos - up);
-        }
-
-        private TargetInfo? Scan(Vector3D targetPos)
-        {
-            Me.CustomData = $"GPS:SCAN #1:{targetPos.X:0.00}:{targetPos.Y:0.00}:{targetPos.Z:0.00}:#FF75C9F1:";
-            var entity = cam.Raycast(targetPos);
+            var entity = cam.Raycast(distance);
 
             if (entity.IsEmpty())
             {
