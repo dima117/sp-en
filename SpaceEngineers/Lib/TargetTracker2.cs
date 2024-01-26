@@ -48,9 +48,14 @@ namespace SpaceEngineers.Lib
             return $"{name}-{index}";
         }
 
-        const double DISTANCE_RESERVE = 50;
-        const double DISTANCE_DISPERSION = 25;
-        const double DISTANCE_SCAN_DEFAULT = 10000;
+        const int SCAN_DELAY_MS = 60;
+        const int SCAN_RETRY_MS = 25;
+        const double DISTANCE_SCAN_DEFAULT = 7500;
+
+        static readonly HashSet<MyDetectedEntityType> targetTypes = new HashSet<MyDetectedEntityType> {
+            MyDetectedEntityType.SmallGrid,
+            MyDetectedEntityType.LargeGrid
+        };
 
         private BlockArray<IMyCameraBlock> camArray;
         private SortedDictionary<long, TargetInfo> targets = new SortedDictionary<long, TargetInfo>();
@@ -68,10 +73,10 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        static readonly HashSet<MyDetectedEntityType> targetTypes = new HashSet<MyDetectedEntityType> {
-            MyDetectedEntityType.SmallGrid,
-            MyDetectedEntityType.LargeGrid
-        };
+        public void UpdateCamArray()
+        {
+            camArray.UpdateBlocks();
+        }
 
         public TargetTracker2(MyGridProgram program)
         {
@@ -95,56 +100,6 @@ namespace SpaceEngineers.Lib
             var camPos = cam.GetPosition();
             var entity = cam.Raycast(distance);
 
-            return Entity2Target(entity, camPos, onlyEnemies);
-        }
-
-        public static TargetInfo? ScanArea(IMyCameraBlock cam, double distance = DISTANCE_SCAN_DEFAULT, bool onlyEnemies = false)
-        {
-            if (cam == null)
-            {
-                return null;
-            }
-
-            var up = cam.WorldMatrix.Up * DISTANCE_DISPERSION;
-            var left = cam.WorldMatrix.Left * DISTANCE_DISPERSION;
-            var camPos = cam.GetPosition();
-
-            var targetPos = camPos + distance * cam.WorldMatrix.Forward;
-
-            // сканируем заданную точку
-            var target = Entity2Target(cam.Raycast(targetPos), camPos, onlyEnemies);
-            if (target.HasValue)
-            {
-                return target.Value;
-            }
-
-            // left
-            target = Entity2Target(cam.Raycast(targetPos + left), camPos, onlyEnemies);
-            if (target.HasValue)
-            {
-                return target.Value;
-            }
-
-            // right
-            target = Entity2Target(cam.Raycast(targetPos - left), camPos, onlyEnemies);
-            if (target.HasValue)
-            {
-                return target.Value;
-            }
-
-            // up
-            target = Entity2Target(cam.Raycast(targetPos + up), camPos, onlyEnemies);
-            if (target.HasValue)
-            {
-                return target.Value;
-            }
-
-            // down
-            return Entity2Target(cam.Raycast(targetPos - up), camPos, onlyEnemies);
-        }
-
-        private static TargetInfo? Entity2Target(MyDetectedEntityInfo entity, Vector3D camPos, bool onlyEnemies)
-        {
             if (entity.IsEmpty())
             {
                 return null;
@@ -163,21 +118,6 @@ namespace SpaceEngineers.Lib
             return TargetInfo.CreateTargetInfo(entity, DateTime.UtcNow, camPos);
         }
 
-        private static Vector3D CalculateTargetLocation(TargetInfo info, TimeSpan timePassed)
-        {
-            var target = info.Entity;
-
-            // прежние координаты + вектор скорости (м/с) * время с последнего захвата (с)
-            return target.Position +
-                (target.Velocity * Convert.ToSingle(timePassed.TotalSeconds)) +
-                Vector3D.Transform(info.HitPos, target.Orientation);
-        }
-
-        public void UpdateCamArray()
-        {
-            camArray.UpdateBlocks();
-        }
-
         public void LockTarget(TargetInfo target)
         {
             var id = target.Entity.EntityId;
@@ -188,9 +128,9 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void Merge(TargetInfo[] array)
+        public void Merge(TargetInfo[] list)
         {
-            foreach (var t in array)
+            foreach (var t in list)
             {
                 LockTarget(t);
             }
@@ -216,28 +156,91 @@ namespace SpaceEngineers.Lib
             return targets[entityId];
         }
 
-        public void Update() { 
+        public void Update()
+        {
+            var now = DateTime.UtcNow;
 
+            TargetInfo target = targets.Values.FirstOrDefault(t => t.NextScan < now);
+
+            if (target.Entity.IsEmpty())
+            {
+                return;
+            }
+
+            var timePassed = now - target.Timestamp;
+
+            var scanResult = ScanNextPosition(target, timePassed);
+
+            if (scanResult.IsEmpty())
+            {
+                if (timePassed.TotalSeconds > 2)
+                {
+                    // если последнее успешное сканирование было больше 2 секунд назад
+                    ReleaseTarget(target.Entity.EntityId);
+                }
+                else
+                {
+                    target.UpdateNextScan(now.AddMilliseconds(SCAN_RETRY_MS));
+                }
+            }
+            else
+            {
+                target.Update(scanResult, now, now.AddMilliseconds(SCAN_DELAY_MS));
+            }
         }
 
-        public string GetDisplayState(Vector3D camPos)
+        private static Vector3D CalculateTargetLocation(TargetInfo info, TimeSpan timePassed)
+        {
+            var target = info.Entity;
+
+            // прежние координаты + вектор скорости (м/с) * время с последнего захвата (с)
+            return target.Position +
+                (target.Velocity * Convert.ToSingle(timePassed.TotalSeconds)) +
+                Vector3D.Transform(info.HitPos, target.Orientation);
+        }
+
+        private MyDetectedEntityInfo ScanNextPosition(TargetInfo prevTarget, TimeSpan timePassed)
+        {
+            // вычисляем новую позицию цели
+            var calculatedTargetPos = CalculateTargetLocation(prevTarget, timePassed);
+
+            var camera = camArray.GetNext(cam => cam.CanScan(calculatedTargetPos));
+
+            if (camera == null)
+            {
+                return default(MyDetectedEntityInfo);
+            }
+
+            var entity = camera.Raycast(calculatedTargetPos);
+
+            // если не удалось повторно отсканировать ту же цель
+            if (entity.EntityId != prevTarget.Entity.EntityId)
+            {
+                return default(MyDetectedEntityInfo);
+            }
+
+            return entity;
+        }
+
+        public string GetDisplayState(Vector3D selfPos)
         {
             var sb = new StringBuilder();
 
-            foreach(var target in targets)
+            foreach (var target in targets)
             {
                 var t = target.Value.Entity;
 
                 var type = t.Type;
                 var name = GetName(t.EntityId);
-                var dist = (t.Position - camPos).Length();
+                var dist = (t.Position - selfPos).Length();
                 var speed = t.Velocity.Length();
 
-                sb.AppendLine($"{type} {name} {dist:0} / {speed:0}");
+                sb.AppendLine($"{type} {name} {dist:0}m {speed:0}m/s");
             }
 
             return sb.ToString();
         }
+
     }
 
     #endregion

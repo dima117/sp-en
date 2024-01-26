@@ -12,26 +12,41 @@ namespace SpaceEngineers.Lib
 
     public struct TargetInfo
     {
-        public readonly MyDetectedEntityInfo Entity;
-        public readonly Vector3D HitPos; // смещение точки прицеливания относительно геометрического центра цели
-        public readonly DateTime Timestamp; // время последнего обнаружения цели
-        public readonly double ScanDelayMs; // время до следующего сканирования
+        public MyDetectedEntityInfo Entity {  get; private set; }
+
+        // время последнего обнаружения цели
+        public DateTime Timestamp {  get; private set; }
+
+        // время следующего сканирования
+        public DateTime NextScan {  get; private set; }
+
+        // смещение точки прицеливания относительно геометрического центра цели
+        public Vector3D HitPos {  get; private set; }
 
         public TargetInfo(
             MyDetectedEntityInfo entity = default(MyDetectedEntityInfo),
             DateTime timestamp = default(DateTime),
-            double scanDelayMs = default(double),
+            DateTime nextScan = default(DateTime),
             Vector3D hitPos = default(Vector3D))
         {
             Entity = entity;
             Timestamp = timestamp;
-            ScanDelayMs = scanDelayMs;
+            NextScan = nextScan;
             HitPos = hitPos;
         }
 
-        public TargetInfo Update(MyDetectedEntityInfo entity, DateTime timestamp, double scanDelayMs)
+        public TargetInfo Update(MyDetectedEntityInfo entity, DateTime timestamp, DateTime nextScan)
         {
-            return new TargetInfo(entity, timestamp, scanDelayMs, HitPos);
+            Entity = entity;
+            Timestamp = timestamp;
+            NextScan = nextScan;
+
+            return this;
+        }   
+        
+        public void UpdateNextScan(DateTime nextScan)
+        {
+            NextScan = nextScan;
         }
 
         public static TargetInfo CreateTargetInfo(MyDetectedEntityInfo entity, DateTime timestamp, Vector3D camPos)
@@ -50,7 +65,7 @@ namespace SpaceEngineers.Lib
                 relativeHitPos = Vector3D.Transform(correctedHitPos - entity.Position, invertedMatrix);
             }
 
-            return new TargetInfo(entity, timestamp, 0, relativeHitPos);
+            return new TargetInfo(entity, timestamp, timestamp, relativeHitPos);
         }
     }
 

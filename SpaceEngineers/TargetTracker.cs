@@ -25,7 +25,8 @@ namespace SpaceEngineers
 
     public class TargetTracker
     {
-        const double DISTANCE_RESERVE = 8000;
+        const int SCAN_DELAY_MS = 60;
+        const double DISTANCE_SCAN_DEFAULT = 8000;
 
         static readonly HashSet<MyDetectedEntityType> targetTypes = new HashSet<MyDetectedEntityType> {
             MyDetectedEntityType.SmallGrid,
@@ -116,7 +117,7 @@ namespace SpaceEngineers
             Current = null;
         }
 
-        private TargetInfo? TryGetUpdatedEntity(TargetInfo prevTarget, TimeSpan timePassed, DateTime now)
+        private MyDetectedEntityInfo TryGetUpdatedEntity(TargetInfo prevTarget, TimeSpan timePassed, DateTime now)
         {
             // вычисляем новую позицию цели
             var calculatedTargetPos = CalculateTargetLocation(prevTarget, timePassed);
@@ -125,26 +126,18 @@ namespace SpaceEngineers
 
             if (camera == null)
             {
-                return null;
+                return default(MyDetectedEntityInfo);
             }
 
             var target = camera.Raycast(calculatedTargetPos);
 
             // если не удалось повторно отсканировать ту же цель
-            if (target.IsEmpty() || target.EntityId != prevTarget.Entity.EntityId)
+            if (target.EntityId != prevTarget.Entity.EntityId)
             {
-                return null;
+                return default(MyDetectedEntityInfo);
             }
 
-            var camPos = camera.GetPosition();
-
-            var distance = (target.Position - camPos).Length() + DISTANCE_RESERVE;
-
-            // считаем, сколько мс нужно для накопления камерами дистанции до цели
-            // камера накапливает дистанцию 2 м/мс
-            var scanDelayMs = distance / camArray.Count / 2;
-
-            return prevTarget.Update(target, now, scanDelayMs);
+            return target;
         }
 
         public void Update()
@@ -157,24 +150,29 @@ namespace SpaceEngineers
 
             var now = DateTime.UtcNow;
             var prevTarget = Current.Value;
-            var timePassed = now - prevTarget.Timestamp;
 
             // если прошло мало времени, то ничего не делаем
-            if (timePassed.TotalMilliseconds < prevTarget.ScanDelayMs)
+            if (now < prevTarget.NextScan)
             {
                 return;
             }
 
+            var timePassed = now - prevTarget.Timestamp;
+
+
             var target = TryGetUpdatedEntity(prevTarget, timePassed, now);
 
-            if (target.HasValue)
+            if (target.IsEmpty())
             {
-                Current = target.Value;
+                if (timePassed.TotalSeconds > 2)
+                {
+                    // если последнее успешное сканирование было больше 2 секунд назад
+                    Clear();
+                }
             }
-            else if (timePassed.TotalSeconds > 2)
+            else
             {
-                // если последнее успешное сканирование было больше 2 секунд назад
-                Clear();
+                Current.Value.Update(target, now, now.AddMilliseconds(SCAN_DELAY_MS));
             }
         }
     }
