@@ -48,6 +48,7 @@ namespace SpaceEngineers.Lib
             return $"{name}-{index}";
         }
 
+        const int MIN_CAM_COUN = 10;
         const int SCAN_DELAY_MS = 60;
         const int SCAN_RETRY_MS = 25;
         const double DISTANCE_SCAN_DEFAULT = 7500;
@@ -57,8 +58,13 @@ namespace SpaceEngineers.Lib
             MyDetectedEntityType.LargeGrid
         };
 
+        private readonly List<IMyTurretControlBlock> turretControllers = new List<IMyTurretControlBlock>();
+        private readonly List<IMyLargeTurretBase> turrets = new List<IMyLargeTurretBase>();
+
         private BlockArray<IMyCameraBlock> camArray;
         private SortedDictionary<long, TargetInfo> targets = new SortedDictionary<long, TargetInfo>();
+
+        public event Action TargetListChanged;
 
         public int Count
         {
@@ -80,6 +86,9 @@ namespace SpaceEngineers.Lib
 
         public TargetTracker2(MyGridProgram program)
         {
+            program.GridTerminalSystem.GetBlocksOfType(turretControllers);
+            program.GridTerminalSystem.GetBlocksOfType(turrets);
+
             camArray = new BlockArray<IMyCameraBlock>(program, cam =>
             {
                 cam.Enabled = true;
@@ -115,24 +124,29 @@ namespace SpaceEngineers.Lib
                 return null;
             }
 
-            return TargetInfo.CreateTargetInfo(entity, DateTime.UtcNow, camPos);
+            return TargetInfo.CreateTargetInfo(entity, camPos, DateTime.UtcNow);
         }
 
         public void LockTarget(TargetInfo target)
         {
-            var id = target.Entity.EntityId;
-
-            if (!targets.ContainsKey(id) || target.Timestamp > targets[id].Timestamp)
+            if (AddOrUpdateTarget(target))
             {
-                targets[id] = target;
+                TargetListChanged?.Invoke();
             }
         }
 
         public void Merge(TargetInfo[] list)
         {
+            var changed = false;
+
             foreach (var t in list)
             {
-                LockTarget(t);
+                changed |= AddOrUpdateTarget(t);
+            }
+
+            if (changed)
+            {
+                TargetListChanged?.Invoke();
             }
         }
 
@@ -159,7 +173,68 @@ namespace SpaceEngineers.Lib
         public void Update()
         {
             var now = DateTime.UtcNow;
+            var nextScan = now.AddMilliseconds(SCAN_DELAY_MS);
 
+            var isChanged = UpdateFromTurrets(now, nextScan);
+
+            if (Count >= MIN_CAM_COUN)
+            {
+                // todo: обновлять isChanged при удалении
+                UpdateOneFromCameras(now, nextScan);
+            }
+
+            if (isChanged)
+            {
+                TargetListChanged?.Invoke();
+            }
+        }
+
+        private bool AddOrUpdateTarget(TargetInfo target)
+        {
+            var id = target.Entity.EntityId;
+
+            if (targets.ContainsKey(id))
+            {
+                if (target.Timestamp > targets[id].Timestamp)
+                {
+                    // todo: может теряться hitpos
+                    targets[id] = target;
+                }
+
+                return false;
+            }
+            else
+            {
+                targets.Add(id, target);
+
+                return true;
+            }
+        }
+
+        private bool AddOrUpdateTarget(MyDetectedEntityInfo entity, Vector3D pos, DateTime now, DateTime nextScan)
+        {
+            if (targets.ContainsKey(entity.EntityId))
+            {
+                var target = targets[entity.EntityId];
+
+                if (target.Timestamp < now)
+                {
+                    target.Update(entity, now, nextScan);
+                }
+
+                return false;
+            }
+            else
+            {
+                targets.Add(entity.EntityId, TargetInfo.CreateTargetInfo(entity, pos, now, nextScan));
+
+                return true;
+            }
+
+        }
+
+        private void UpdateOneFromCameras(DateTime now, DateTime nextScan)
+        {
             TargetInfo target = targets.Values.FirstOrDefault(t => t.NextScan < now);
 
             if (target.Entity.IsEmpty())
@@ -185,8 +260,35 @@ namespace SpaceEngineers.Lib
             }
             else
             {
-                target.Update(scanResult, now, now.AddMilliseconds(SCAN_DELAY_MS));
+                target.Update(scanResult, now, nextScan);
             }
+        }
+
+        private bool UpdateFromTurrets(DateTime now, DateTime nextScan)
+        {
+            var changed = false;
+
+            foreach (var t in turrets)
+            {
+                if (!t.Closed && t.HasTarget)
+                {
+                    var entity = t.GetTargetedEntity();
+
+                    changed |= AddOrUpdateTarget(entity, t.GetPosition(), now, nextScan);
+                }
+            }
+
+            foreach (var t in turretControllers)
+            {
+                if (!t.Closed && t.HasTarget)
+                {
+                    var entity = t.GetTargetedEntity();
+
+                    changed |= AddOrUpdateTarget(entity, t.GetPosition(), now, nextScan);
+                }
+            }
+
+            return changed;
         }
 
         private static Vector3D CalculateTargetLocation(TargetInfo info, TimeSpan timePassed)

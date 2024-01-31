@@ -49,7 +49,7 @@ namespace SpaceEngineers.Lib
             NextScan = nextScan;
         }
 
-        public static TargetInfo CreateTargetInfo(MyDetectedEntityInfo entity, DateTime timestamp, Vector3D camPos)
+        public static TargetInfo CreateTargetInfo(MyDetectedEntityInfo entity, Vector3D camPos, DateTime timestamp, DateTime? nextScan = null)
         {
             // hitpos
             var relativeHitPos = default(Vector3D);
@@ -65,7 +65,7 @@ namespace SpaceEngineers.Lib
                 relativeHitPos = Vector3D.Transform(correctedHitPos - entity.Position, invertedMatrix);
             }
 
-            return new TargetInfo(entity, timestamp, timestamp, relativeHitPos);
+            return new TargetInfo(entity, timestamp, nextScan ?? timestamp, relativeHitPos);
         }
     }
 

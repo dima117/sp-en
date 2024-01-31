@@ -62,7 +62,7 @@ namespace SpaceEngineers
 
             var camPos = cam.GetPosition();
 
-            return TargetInfo.CreateTargetInfo(target, DateTime.UtcNow, camPos);
+            return TargetInfo.CreateTargetInfo(target, camPos, DateTime.UtcNow);
         }
 
         private BlockArray<IMyCameraBlock> camArray;

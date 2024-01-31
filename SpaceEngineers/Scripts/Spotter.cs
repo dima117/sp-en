@@ -182,7 +182,7 @@ namespace SpaceEngineers.Scripts.Spotter
                 return null;
             }
 
-            return TargetInfo.CreateTargetInfo(entity, DateTime.UtcNow, cam.GetPosition());
+            return TargetInfo.CreateTargetInfo(entity, cam.GetPosition(), DateTime.UtcNow);
         }
 
         #endregion
