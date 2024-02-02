@@ -76,10 +76,14 @@ namespace SpaceEngineers.Scripts.Printer
 
         private void SetDirection()
         {
-            direction = GetBlocksOfType<IMyShipController>(w => w.CubeGrid != Me.CubeGrid)
-                        .FirstOrDefault()?.WorldMatrix.Down;
+            if (connector.Status == MyShipConnectorStatus.Connected) {
+                var grid = connector.OtherConnector.CubeGrid;
 
-            Me.CustomData = direction.HasValue ? direction.ToString() : string.Empty;
+                direction = GetBlocksOfType<IMyShipController>(w => w.CubeGrid == grid)
+                            .FirstOrDefault()?.WorldMatrix.Down;
+
+                Me.CustomData = direction.HasValue ? direction.ToString() : string.Empty;
+            }
         }
 
         private void Lock()
