@@ -93,7 +93,7 @@ namespace SpaceEngineers.Lib
             this.turrets = turrets ?? new IMyLargeTurretBase[0];
             this.turretControllers = turretControllers ?? new IMyTurretControlBlock[0];
 
-            foreach (var cam in cameras)
+            foreach (var cam in this.cameras)
             {
                 cam.Enabled = true;
                 cam.EnableRaycast = true;
