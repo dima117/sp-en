@@ -60,6 +60,7 @@ namespace SpaceEngineers.Scripts.Fighter
 
             // кокпит
             cockpit = grid.GetByFilterOrAny<IMyCockpit>();
+            lcdTargets = grid.GetByFilterOrAny<IMyTextPanel>();
 
             // динамик
             sound = grid.GetByFilterOrAny<IMySoundBlock>();

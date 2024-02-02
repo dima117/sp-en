@@ -336,7 +336,7 @@ namespace SpaceEngineers.Lib
             {
                 var t = target.Value.Entity;
 
-                var type = t.Type;
+                var type = t.Type.ToString().Substring(0, 1);
                 var name = GetName(t.EntityId);
                 var dist = (t.Position - selfPos).Length();
                 var speed = t.Velocity.Length();
