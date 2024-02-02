@@ -78,6 +78,16 @@ namespace SpaceEngineers.Lib
             SerializeDateTime(t.Timestamp, sb);
         }
 
+        public static void SerializeTargetInfoArray(TargetInfo[] a, StringBuilder sb)
+        {
+            sb.AppendLine(a.Length.ToString());
+
+            foreach (var t in a)
+            {
+                SerializeTargetInfo(t, sb);
+            }
+        }
+
         public static bool TryParseMatrixD(StringReader reader, out MatrixD m)
         {
             try
@@ -212,7 +222,7 @@ namespace SpaceEngineers.Lib
         }
 
         public static bool TryParseTargetInfo(
-            StringReader reader, 
+            StringReader reader,
             out TargetInfo targetInfo)
         {
             targetInfo = new TargetInfo();
@@ -226,7 +236,38 @@ namespace SpaceEngineers.Lib
             DateTime timestamp;
             if (!TryParseDateTime(reader, out timestamp)) return false;
 
-            targetInfo = new TargetInfo(entity, timestamp, 0, hitPos);
+            targetInfo = new TargetInfo(entity, timestamp, timestamp, hitPos);
+            return true;
+        }
+
+        public static bool TryParseTargetInfoArray(
+            StringReader reader,
+            out TargetInfo[] result)
+        {
+            TargetInfo target;
+            int length;
+
+            if (!int.TryParse(reader.GetNextLine(), out length))
+            {
+                result = null;
+                return false;
+            }
+
+            result = new TargetInfo[length];
+
+            for (var i = 0; i < length; i++)
+            {
+                if (TryParseTargetInfo(reader, out target))
+                {
+                    result[i] = target;
+                }
+                else
+                {
+                    result = null;
+                    return false;
+                }
+            }
+
             return true;
         }
     }

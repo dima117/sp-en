@@ -78,6 +78,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Lib\Grid.cs" />
     <Compile Include="Lib\TargetTracker2.cs" />
     <Compile Include="Lib\Transmitter.cs" />
     <Compile Include="Lib\TargetInfo.cs" />
@@ -85,6 +86,7 @@
     <Compile Include="RuntimeTracker.cs" />
     <Compile Include="Scripts\Debug\GravDriveBalancing.cs" />
     <Compile Include="Scripts\Debug\RotorTest.cs" />
+    <Compile Include="Scripts\Fighter.cs" />
     <Compile Include="Scripts\Printer.cs" />
     <Compile Include="Scripts\AimBot.cs" />
     <Compile Include="Scripts\TowShip.cs" />

@@ -14,13 +14,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Text;
+using System.Collections;
+using System.Reflection;
 
 namespace SpaceEngineers.Lib
 {
     #region Copy
 
     // import:../BlockArray.cs
-    // import:Lib/TargetInfo.cs
+    // import:TargetInfo.cs
 
     public class TargetTracker2
     {
@@ -58,42 +60,44 @@ namespace SpaceEngineers.Lib
             MyDetectedEntityType.LargeGrid
         };
 
-        private readonly List<IMyTurretControlBlock> turretControllers = new List<IMyTurretControlBlock>();
-        private readonly List<IMyLargeTurretBase> turrets = new List<IMyLargeTurretBase>();
+        private readonly IMyTurretControlBlock[] turretControllers;
+        private readonly IMyLargeTurretBase[] turrets;
+        private readonly IMyCameraBlock[] cameras;
 
-        private BlockArray<IMyCameraBlock> camArray;
+        private int camIndex = 0;
+
         private SortedDictionary<long, TargetInfo> targets = new SortedDictionary<long, TargetInfo>();
 
         public event Action TargetListChanged;
 
         public int Count
         {
-            get { return camArray.Count; }
+            get { return cameras.Length; }
         }
 
         public double TotalRange
         {
             get
             {
-                return camArray.Aggregate<double>(0, (a, c) => a + c.AvailableScanRange);
+                return cameras.Aggregate(0d, (a, c) => a + c.AvailableScanRange);
             }
         }
 
-        public void UpdateCamArray()
+        public TargetTracker2(
+            IMyCameraBlock[] cameras = null,
+            IMyLargeTurretBase[] turrets = null,
+            IMyTurretControlBlock[] turretControllers = null
+            )
         {
-            camArray.UpdateBlocks();
-        }
+            this.cameras = cameras ?? new IMyCameraBlock[0];
+            this.turrets = turrets ?? new IMyLargeTurretBase[0];
+            this.turretControllers = turretControllers ?? new IMyTurretControlBlock[0];
 
-        public TargetTracker2(MyGridProgram program)
-        {
-            program.GridTerminalSystem.GetBlocksOfType(turretControllers);
-            program.GridTerminalSystem.GetBlocksOfType(turrets);
-
-            camArray = new BlockArray<IMyCameraBlock>(program, cam =>
+            foreach (var cam in cameras)
             {
                 cam.Enabled = true;
                 cam.EnableRaycast = true;
-            });
+            }
         }
 
         public static TargetInfo? Scan(
@@ -306,7 +310,7 @@ namespace SpaceEngineers.Lib
             // вычисляем новую позицию цели
             var calculatedTargetPos = CalculateTargetLocation(prevTarget, timePassed);
 
-            var camera = camArray.GetNext(cam => cam.CanScan(calculatedTargetPos));
+            var camera = GetNext(cameras, ref camIndex, cam => cam.CanScan(calculatedTargetPos));
 
             if (camera == null)
             {
@@ -341,6 +345,28 @@ namespace SpaceEngineers.Lib
             }
 
             return sb.ToString();
+        }
+
+        public static T GetNext<T>(T[] a, ref int index, Func<T, bool> filter = null)
+        {
+            if (a.Length == 0)
+            {
+                return default(T);
+            }
+
+            for (var count = 0; count < a.Length; count++)
+            {
+                index = (index + 1) % a.Length;
+
+                T block = a[index];
+
+                if (filter == null || filter(block))
+                {
+                    return block;
+                }
+            }
+
+            return default(T);
         }
 
     }

@@ -23,6 +23,7 @@ namespace SpaceEngineers.Lib
         public const string REMOTE_START = "@REMOTE_START";
         public const string GET_STATUS = "@GET_STATUS";
         public const string REMOTE_STATUS = "@REMOTE_STATUS";
+        public const string SYNC_TARGETS = "@SYNC_TARGETS";
     }
 
     public class Transmitter
