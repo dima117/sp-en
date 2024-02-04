@@ -43,10 +43,16 @@ namespace SpaceEngineers.Lib
             this.factor = factor;
         }
 
-        public void ICBM(Vector3D targetPos)
+        public void ICBM(MyDetectedEntityInfo target)
         {
             var grav = remoteControl.GetNaturalGravity();
             var ownPos = remoteControl.GetPosition();
+            var velocity = remoteControl.GetShipVelocities().LinearVelocity;
+            var ownSpeed = Math.Max(velocity.Length(), MIN_SPEED);
+            var point = Helpers.CalculateInterceptPoint(ownPos, ownSpeed, target.Position, target.Velocity);
+
+            var targetPos = point == null ? target.Position : point.Position;
+
             var targetVector = targetPos - ownPos;
 
             if (grav.IsZero() || targetVector.Length() < 3500)

@@ -15,6 +15,7 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.GameSystems;
+using SpaceEngineers.Lib;
 
 namespace SpaceEngineers
 {
@@ -57,7 +58,7 @@ namespace SpaceEngineers
         public double Speed => Started && IsAlive ? tRemote.GetShipSpeed() : 0;
         public bool IsReady => listEngine.Any() && listGyro.Any() && tRemote != null && tClamp != null;
         public bool Started { get; private set; }
-        public Vector3D TargetPos { get; private set; }
+        public MyDetectedEntityInfo Target { get; private set; }
 
         public long EntityId => (tRemote?.EntityId).GetValueOrDefault();
 
@@ -86,9 +87,9 @@ namespace SpaceEngineers
             tControl = new DirectionController2(tRemote, listGyro, factor);
         }
 
-        public void Start(Vector3D targetPos)
+        public void Start(MyDetectedEntityInfo target)
         {
-            TargetPos = targetPos;
+            Target = target;
             startTime = DateTime.UtcNow;
 
             tClamp.Enabled = false;
@@ -114,13 +115,13 @@ namespace SpaceEngineers
         {
             if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
             {
-                tControl.ICBM(TargetPos);
+                tControl.ICBM(Target);
             }
         }
 
         public override string ToString()
         {
-            var dist = (TargetPos - Position).Length();
+            var dist = (Target.Position - Position).Length();
 
             return State == MissileState.Started
                 ? $"{name}: {State} => {dist}m"

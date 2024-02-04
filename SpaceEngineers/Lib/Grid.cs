@@ -29,6 +29,11 @@ namespace SpaceEngineers.Lib
             return list.ToArray();
         }
 
+        public T GetBlockWithName<T>(string name) where T : class, IMyTerminalBlock
+        {
+            return system.GetBlockWithName(name) as T;
+        }
+
         public T GetByFilterOrAny<T>(Func<T, bool> filter = null) where T : class, IMyTerminalBlock
         {
             var all = new List<T>();

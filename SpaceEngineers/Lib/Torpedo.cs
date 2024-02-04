@@ -61,6 +61,7 @@ namespace SpaceEngineers.Lib
         readonly List<IMyGyro> listGyro = new List<IMyGyro>();
         readonly List<IMyThrust> listEngine = new List<IMyThrust>();
         readonly List<IMyGasGenerator> listH2Gen = new List<IMyGasGenerator>();
+        readonly List<IMyWarhead> listWarhead = new List<IMyWarhead>();
         readonly IMyRemoteControl tRemote;
         readonly IMyShipMergeBlock tClamp;
 
@@ -88,7 +89,7 @@ namespace SpaceEngineers.Lib
 
         public Torpedo(
             IMyBlockGroup group,
-            int delay = 3000,  // задержка при старте
+            int delay = 2000,  // задержка при старте
             float factor = 7,   // коэффициент мощности гироскопа
             int lifespan = 360) // длительность жизни в секундах
         {
@@ -99,6 +100,7 @@ namespace SpaceEngineers.Lib
             group.GetBlocksOfType(listGyro);
             group.GetBlocksOfType(listEngine);
             group.GetBlocksOfType(listH2Gen);
+            group.GetBlocksOfType(listWarhead);
 
             var tmp = new List<IMyTerminalBlock>();
             group.GetBlocks(tmp);
@@ -142,11 +144,16 @@ namespace SpaceEngineers.Lib
                 {
                     var target = info.Value.Entity;
 
+                    // tControl.ICBM(target);
                     tControl.Intercept(target);
                     // tControl.Aim(target.Position);
 
                     distance = (target.Position - Position).Length();
 
+                    if (distance < 30)
+                    {
+                        listWarhead.ForEach(h => h.IsArmed = true);
+                    }
                 }
             }
 

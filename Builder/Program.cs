@@ -117,6 +117,7 @@ namespace Builder
                 "Scripts\\AimBot.cs",
                 "Scripts\\Debug\\RotorTest.cs",
                 "Scripts\\Fighter.cs",
+                "Scripts\\Fortress.cs",
                 "Scripts\\Spotter.cs",
                 "Scripts\\TowShip.cs",
                 "Scripts\\Printer.cs",
