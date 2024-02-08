@@ -183,8 +183,7 @@ namespace SpaceEngineers.Lib
 
             if (Count >= MIN_CAM_COUN)
             {
-                // todo: обновлять isChanged при удалении
-                UpdateOneFromCameras(now, nextScan);
+                isChanged |= UpdateOneFromCameras(now, nextScan);
             }
 
             if (isChanged)
@@ -237,13 +236,13 @@ namespace SpaceEngineers.Lib
 
         }
 
-        private void UpdateOneFromCameras(DateTime now, DateTime nextScan)
+        private bool UpdateOneFromCameras(DateTime now, DateTime nextScan)
         {
             TargetInfo target = targets.Values.FirstOrDefault(t => t.NextScan < now);
 
             if (target.Entity.IsEmpty())
             {
-                return;
+                return false;
             }
 
             var timePassed = now - target.Timestamp;
@@ -256,6 +255,7 @@ namespace SpaceEngineers.Lib
                 {
                     // если последнее успешное сканирование было больше 2 секунд назад
                     ReleaseTarget(target.Entity.EntityId);
+                    return true;
                 }
                 else
                 {
@@ -266,6 +266,8 @@ namespace SpaceEngineers.Lib
             {
                 target.Update(scanResult, now, nextScan);
             }
+
+            return false;
         }
 
         private bool UpdateFromTurrets(DateTime now, DateTime nextScan)
