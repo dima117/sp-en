@@ -302,9 +302,7 @@ namespace SpaceEngineers.Lib
             var target = info.Entity;
 
             // прежние координаты + вектор скорости (м/с) * время с последнего захвата (с)
-            return target.Position +
-                (target.Velocity * Convert.ToSingle(timePassed.TotalSeconds)) +
-                Vector3D.Transform(info.HitPos, target.Orientation);
+            return info.GetHitPosWorld() + (target.Velocity * Convert.ToSingle(timePassed.TotalSeconds));
         }
 
         private MyDetectedEntityInfo ScanNextPosition(TargetInfo prevTarget, TimeSpan timePassed)

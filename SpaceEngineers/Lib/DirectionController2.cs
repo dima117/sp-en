@@ -95,25 +95,27 @@ namespace SpaceEngineers.Lib
             SetGyroByAxis(axis, gyroList, factor);
         }
 
-        public void Intercept(MyDetectedEntityInfo target)
+        public bool Intercept(Vector3D targetPosition, Vector3 targetVelocity)
         {
             var ownPos = remoteControl.GetPosition();
             var velocity = remoteControl.GetShipVelocities().LinearVelocity;
             var ownSpeed = Math.Max(velocity.Length(), MIN_SPEED);
 
-            var point = Helpers.CalculateInterceptPoint(ownPos, ownSpeed, target.Position, target.Velocity);
+            var interceptPoint = Helpers.CalculateInterceptPoint(ownPos, ownSpeed, targetPosition, targetVelocity);
 
-            var direction = point == null
-                ? new Vector3D(target.Velocity) // если ракета не может догнать цель, то двигаемся параллельно 
-                : (point.Position - ownPos); // иначе курс на точку перехвата
+            // если ракета не может догнать цель, то двигаемся в текущую позицию цели
+            var aimingPointPosition = interceptPoint?.Position ?? targetPosition;
 
-            var targetVector = CompensateSideVelocity(velocity, direction);
-            var axis = GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
+            var direction = aimingPointPosition - ownPos;
+            var compensatedTargetVector = CompensateSideVelocity(velocity, direction);
 
+            var axis = GetAxis(remoteControl.WorldMatrix.Forward, compensatedTargetVector);
             SetGyroByAxis(axis, gyroList, factor);
+
+            return interceptPoint != null;
         }
 
-        public void InterceptShot(MyDetectedEntityInfo target, double bulletSpeed)
+        public bool InterceptShot(MyDetectedEntityInfo target, double bulletSpeed)
         {
             var ownPos = remoteControl.GetPosition();
             var ownVelocity = remoteControl.GetShipVelocities().LinearVelocity;
@@ -129,7 +131,10 @@ namespace SpaceEngineers.Lib
             var axis = GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
 
             SetGyroByAxis(axis, gyroList, factor);
+
+            return point != null;
         }
+
 
         // корректирует направление на цель для компенсации боковой скорости
         public static Vector3D CompensateSideVelocity(Vector3D velocity, Vector3D targetVector, float ratio = 1)
@@ -144,10 +149,11 @@ namespace SpaceEngineers.Lib
                 : (1 - ratio) * sideVelocity - velocity;
         }
 
-        // получить ось вращения для совмещения векторов
-        // длина зависит от угла между векторами
         public static Vector3D GetAxis(Vector3D currentDirection, Vector3D targetDirection)
         {
+            // получить ось вращения для совмещения векторов
+            // длина зависит от угла между векторами
+
             var target = Vector3D.Normalize(targetDirection);
             var current = Vector3D.Normalize(currentDirection);
 

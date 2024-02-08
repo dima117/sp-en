@@ -142,13 +142,14 @@ namespace SpaceEngineers.Lib
             {
                 if (info.HasValue)
                 {
-                    var target = info.Value.Entity;
+                    var target = info.Value;
+                    var targetPos = target.GetHitPosWorld();
 
                     // tControl.ICBM(target);
-                    tControl.Intercept(target);
+                    tControl.Intercept(targetPos, target.Entity.Velocity);
                     // tControl.Aim(target.Position);
 
-                    distance = (target.Position - Position).Length();
+                    distance = (targetPos - Position).Length();
 
                     if (distance < 30)
                     {

@@ -12,27 +12,33 @@ namespace SpaceEngineers.Lib
 
     public struct TargetInfo
     {
-        public MyDetectedEntityInfo Entity {  get; private set; }
+        public MyDetectedEntityInfo Entity { get; private set; }
 
         // время последнего обнаружения цели
-        public DateTime Timestamp {  get; private set; }
+        public DateTime Timestamp { get; private set; }
 
         // время следующего сканирования
-        public DateTime NextScan {  get; private set; }
+        public DateTime NextScan { get; private set; }
 
         // смещение точки прицеливания относительно геометрического центра цели
-        public Vector3D HitPos {  get; private set; }
+        // в системе координат цели
+        public Vector3D HitPosRelative { get; private set; }
+
+        public Vector3D GetHitPosWorld()
+        {
+            return Entity.Position + Vector3D.Transform(HitPosRelative, Entity.Orientation);
+        }
 
         public TargetInfo(
             MyDetectedEntityInfo entity = default(MyDetectedEntityInfo),
             DateTime timestamp = default(DateTime),
             DateTime nextScan = default(DateTime),
-            Vector3D hitPos = default(Vector3D))
+            Vector3D hitPosRelative = default(Vector3D))
         {
             Entity = entity;
             Timestamp = timestamp;
             NextScan = nextScan;
-            HitPos = hitPos;
+            HitPosRelative = hitPosRelative;
         }
 
         public TargetInfo Update(MyDetectedEntityInfo entity, DateTime timestamp, DateTime nextScan)
@@ -42,8 +48,8 @@ namespace SpaceEngineers.Lib
             NextScan = nextScan;
 
             return this;
-        }   
-        
+        }
+
         public void UpdateNextScan(DateTime nextScan)
         {
             NextScan = nextScan;
