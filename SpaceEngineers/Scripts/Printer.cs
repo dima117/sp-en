@@ -29,6 +29,7 @@ namespace SpaceEngineers.Scripts.Printer
         #region Copy
 
         // import:RuntimeTracker.cs
+        // import:Lib\Grid.cs
         // import:Lib\DirectionController2.cs
 
         const float FACTOR = 2;
@@ -39,29 +40,22 @@ namespace SpaceEngineers.Scripts.Printer
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
         readonly IMyTextSurface lcdStatus;
+        private readonly Grid grid;
 
+        private bool forward = false;
         private Vector3D? direction;
-
-        private IEnumerable<T> GetBlocksOfType<T>(
-            Func<T, bool> filter = null) where T : class
-        {
-            Func<T, bool> f = filter == null ? (t => true) : filter;
-            var list = new List<T>();
-
-            GridTerminalSystem.GetBlocksOfType(list, f);
-
-            return list;
-        }
 
         public Program()
         {
+            grid = new Grid(GridTerminalSystem);
+
             tracker = new RuntimeTracker(this);
             lcd = Me.GetSurface(1);
             lcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
-            connector = GetBlocksOfType<IMyShipConnector>(w => w.CubeGrid == Me.CubeGrid).First();
-            cockpit = GetBlocksOfType<IMyCockpit>(w => w.CubeGrid == Me.CubeGrid).First();
-            gyros = GetBlocksOfType<IMyGyro>(w => w.CubeGrid == Me.CubeGrid).ToArray();
+            connector = grid.GetBlocksOfType<IMyShipConnector>(w => w.CubeGrid == Me.CubeGrid).First();
+            cockpit = grid.GetBlocksOfType<IMyCockpit>(w => w.CubeGrid == Me.CubeGrid).First();
+            gyros = grid.GetBlocksOfType<IMyGyro>(w => w.CubeGrid == Me.CubeGrid);
 
             lcdStatus = cockpit.GetSurface(0);
 
@@ -76,10 +70,11 @@ namespace SpaceEngineers.Scripts.Printer
 
         private void SetDirection()
         {
-            if (connector.Status == MyShipConnectorStatus.Connected) {
-                var grid = connector.OtherConnector.CubeGrid;
+            if (connector.Status == MyShipConnectorStatus.Connected)
+            {
+                var cubeGrid = connector.OtherConnector.CubeGrid;
 
-                direction = GetBlocksOfType<IMyShipController>(w => w.CubeGrid == grid)
+                direction = grid.GetBlocksOfType<IMyShipController>(w => w.CubeGrid == cubeGrid)
                             .FirstOrDefault()?.WorldMatrix.Down;
 
                 Me.CustomData = direction.HasValue ? direction.ToString() : string.Empty;
@@ -114,7 +109,9 @@ namespace SpaceEngineers.Scripts.Printer
         {
             if (direction.HasValue)
             {
-                var axis = DirectionController2.GetAxis(cockpit.WorldMatrix.Down, direction.Value);
+                var projectionVector = forward ? cockpit.WorldMatrix.Forward : cockpit.WorldMatrix.Down;
+
+                var axis = DirectionController2.GetAxis(projectionVector, direction.Value);
 
                 foreach (var gyro in gyros)
                 {
@@ -133,6 +130,10 @@ namespace SpaceEngineers.Scripts.Printer
 
             switch (argument)
             {
+                case "rotate":
+                    forward = !forward;
+                    break;
+
                 case "init":
                     SetDirection();
                     Lock();
