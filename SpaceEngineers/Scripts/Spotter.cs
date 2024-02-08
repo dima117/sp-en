@@ -61,6 +61,7 @@ namespace SpaceEngineers.Scripts.Spotter
         readonly IMyCameraBlock cam;
         readonly Transmitter2 tsm;
         readonly IMySoundBlock sound;
+        readonly List<IMyRadioAntenna> antennas = new List<IMyRadioAntenna>();
 
         readonly IMyTextSurface lcdTarget;
         readonly IMyTextSurface lcdStatus;
@@ -87,7 +88,8 @@ namespace SpaceEngineers.Scripts.Spotter
             lcdStatus.WriteText(string.Empty);
 
             // антенна
-            tsm = new Transmitter2(this);
+            GridTerminalSystem.GetBlocksOfType(antennas);
+            tsm = new Transmitter2(IGC, antennas.ToArray());
             tsm.Subscribe(MsgTags.REMOTE_STATUS, UpdateStatus, true);
 
             // динамик

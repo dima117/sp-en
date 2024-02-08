@@ -74,7 +74,7 @@ namespace SpaceEngineers.Lib
         public static void SerializeTargetInfo(TargetInfo t, StringBuilder sb)
         {
             SerializeMyDetectedEntityInfo(t.Entity, sb);
-            SerializeVector3D(t.HitPos, sb);
+            SerializeVector3D(t.HitPosRelative, sb);
             SerializeDateTime(t.Timestamp, sb);
         }
 

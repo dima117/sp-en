@@ -14,7 +14,6 @@ using VRage.Collections;
 using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
-using SpaceEngineers2;
 
 namespace SpaceEngineers.Scripts.BattleCruiser
 {

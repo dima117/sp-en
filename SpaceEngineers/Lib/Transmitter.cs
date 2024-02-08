@@ -32,20 +32,19 @@ namespace SpaceEngineers.Lib
 
         protected IMyIntergridCommunicationSystem igc;
 
-        protected List<IMyRadioAntenna> blocks =
-            new List<IMyRadioAntenna>();
+        protected IMyRadioAntenna[] antennas;
         private Dictionary<string, Action<MyIGCMessage>> actions =
             new Dictionary<string, Action<MyIGCMessage>>();
         private Dictionary<string, IMyBroadcastListener> listeners =
             new Dictionary<string, IMyBroadcastListener>();
 
-        public Transmitter(MyGridProgram program)
+        public Transmitter(IMyIntergridCommunicationSystem igc, IMyRadioAntenna[] antennas)
         {
-            igc = program.IGC;
+            this.igc = igc;
             igc.UnicastListener.SetMessageCallback();
 
-            program.GridTerminalSystem.GetBlocksOfType(blocks);
-            blocks.ForEach(a =>
+            this.antennas = antennas;
+            antennas.ForEach(a =>
             {
                 a.EnableBroadcasting = true;
                 a.Enabled = true;

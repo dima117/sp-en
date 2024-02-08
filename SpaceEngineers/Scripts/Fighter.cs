@@ -78,7 +78,8 @@ namespace SpaceEngineers.Scripts.Fighter
             tt.TargetListChanged += TargetListChanged;
 
             // антенна
-            tsm = new Transmitter2(this);
+            var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
+            tsm = new Transmitter2(IGC, antennas);
 
             Runtime.UpdateFrequency = UpdateFrequency.Update10;
         }

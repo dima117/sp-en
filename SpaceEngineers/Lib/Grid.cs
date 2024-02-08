@@ -34,7 +34,7 @@ namespace SpaceEngineers.Lib
             return system.GetBlockWithName(name) as T;
         }
 
-        public T GetByFilterOrAny<T>(Func<T, bool> filter = null) where T : class, IMyTerminalBlock
+        public T GetByFilterOrAny<T>(Func<T, bool> filter = null, Action<T> init = null) where T : class, IMyTerminalBlock
         {
             var all = new List<T>();
             system.GetBlocksOfType(all, filter);
@@ -46,7 +46,17 @@ namespace SpaceEngineers.Lib
                 res = all.FirstOrDefault(filter);
             }
 
-            return res ?? all.FirstOrDefault();
+            if (res == null)
+            {
+                res = all.FirstOrDefault();
+            }
+
+            if (res != null && init != null)
+            {
+                init(res);
+            }
+
+            return res;
         }
 
     }

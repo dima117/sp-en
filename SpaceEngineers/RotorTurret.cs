@@ -17,9 +17,9 @@ using SpaceEngineers.Game.ModAPI.Ingame;
 using VRage.Noise.Modifiers;
 using System.ComponentModel;
 using static VRageMath.Base6Directions;
-using SpaceEngineers;
+using SpaceEngineers.Lib;
 
-namespace SpaceEngineers2
+namespace SpaceEngineers
 {
     #region Copy
 

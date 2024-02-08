@@ -24,212 +24,141 @@ namespace SpaceEngineers.Scripts.Fortress
         #region Copy
 
         // import:RuntimeTracker.cs
-        // import:Lib\Transmitter.cs
-        // import:Lib\TargetInfo.cs
-        // import:Lib\Serializer.cs
-        // import:Lib\Torpedo.cs
         // import:Lib\Grid.cs
-        // import:TargetTracker.cs
+        // import:Lib\WeaponController.cs
 
-        const int DISTANCE = 7000;
-        const int LIFESPAN = 600;
+        private readonly RuntimeTracker tracker;
+        private readonly IMyTextSurface trackerLcd;
 
-        const string BLOCK_NAME_CAMERA = "CAMERA";
-        const string BLOCK_NAME_SOUND = "SOUND";
-        const string GROUP_PREFIX_TORPEDO = "TORPEDO";
-
-        bool onlyEnemies = false;
-
-        readonly RuntimeTracker tracker;
-        readonly IMyTextSurface lcd;
-        readonly Grid grid;
-
-        readonly Transmitter tsm;
-        readonly TargetTracker2 tt;
-        readonly IMyCameraBlock cam;
-
-        readonly IMyTextSurface lcdTarget;
-        readonly IMyTextSurface lcdSystem;
-        readonly IMyTextSurface lcdTorpedos;
-
-        readonly IMySoundBlock sound;
-
-        readonly List<Torpedo> torpedos = new List<Torpedo>();
-
+        private readonly Grid grid;
+        private readonly WeaponController weapons;
         public Program()
         {
             tracker = new RuntimeTracker(this);
-            lcd = Me.GetSurface(1);
-            lcd.ContentType = ContentType.TEXT_AND_IMAGE;
+            trackerLcd = Me.GetSurface(1);
+            trackerLcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
             grid = new Grid(GridTerminalSystem);
 
-            // антенна
-            tsm = new Transmitter(this);
-            tsm.Subscribe(MsgTags.SYNC_TARGETS, SyncTargets, true);
+            var cockpit = grid.GetByFilterOrAny<IMyCockpit>();
+            var mainCamera = grid.GetByFilterOrAny<IMyCameraBlock>(x => x.CustomName.StartsWith("CAMERA"), cam => cam.EnableRaycast = true);
+            var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
+            var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
+            var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
+            var lcdTargets = grid.GetByFilterOrAny<IMyTextPanel>(x => x.CustomName.StartsWith("TARGETS"));
+            var sound = grid.GetByFilterOrAny<IMySoundBlock>(x => x.CustomName.StartsWith("SOUND"));
 
-            // массив камер радара
-            var cameras = new List<IMyCameraBlock>();
+            weapons = new WeaponController(
+                cockpit,
+                mainCamera,
+                cameras,
+                turrets,
+                lcdTargets,
+                IGC,
+                antennas,
+                sound
+              );
 
-            tt = new TargetTracker2(grid.GetBlocksOfType<IMyCameraBlock>());
-            tt.TargetListChanged += TargetListChanged
-                ;
-
-            // главная камера
-            cam = grid.GetBlockWithName<IMyCameraBlock>(BLOCK_NAME_CAMERA);
-            cam.EnableRaycast = true;
-
-            // lcd
-            var list2 = new List<IMyCockpit>();
-            GridTerminalSystem.GetBlocksOfType(list2);
-
-            var control = grid.GetByFilterOrAny<IMyCockpit>(x => x.CubeGrid.EntityId == Me.CubeGrid.EntityId);
-            lcdTorpedos = control?.GetSurface(0);
-            lcdTarget = control?.GetSurface(1);
-            lcdSystem = control?.GetSurface(2);
-
-            // динамик
-            sound = grid.GetBlockWithName<IMySoundBlock>(BLOCK_NAME_SOUND);
-
-            if (sound != null)
-            {
-                sound.SelectedSound = "ArcSoundBlockAlert2";
-                sound.LoopPeriod = 300;
-                sound.Range = 50;
-                sound.Enabled = true;
-            }
+            weapons.OnError += HandleError;
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
-        private void TargetListChanged()
+        private void HandleError(Exception ex)
         {
-            sound?.Play();
+            Echo(ex.ToString());
         }
 
-        private void SyncTargets(MyIGCMessage message)
-        {
-            try
-            {
-                var data = message.Data.ToString();
-                var reader = new Serializer.StringReader(data);
 
-                TargetInfo[] targets;
-                if (Serializer.TryParseTargetInfoArray(reader, out targets))
-                {
-                    tt.Merge(targets);
-                }
-
-                Me.CustomData = data;
-            }
-            catch (Exception ex)
-            {
-                Me.CustomData = ex.Message + "\n" + ex.StackTrace;
-            }
-        }
 
         public void Main(string argument, UpdateType updateSource)
         {
             tracker.AddRuntime();
 
-            tsm.Update(argument, updateSource);
+            weapons.Execute(argument, updateSource);
 
-            switch (argument)
-            {
-                case "filter":
-                    onlyEnemies = !onlyEnemies;
+            weapons.Update();
+            
 
-                    break;
-                case "init":
-                    tt.UpdateCamArray();
-                    break;
-                case "lock":
-                    var target = TargetTracker.Scan(cam, DISTANCE, onlyEnemies);
 
-                    if (target.HasValue)
-                    {
-                        tt.LockOn(target.Value);
+            //switch (argument)
+            //{
+            //    case "filter":
+            //        onlyEnemies = !onlyEnemies;
 
-                        sound?.Play();
-                    }
+            //        break;
+            //    case "init":
+            //        tt.UpdateCamArray();
+            //        break;
+            //    case "lock":
+            //        var target = TargetTracker.Scan(cam, DISTANCE, onlyEnemies);
 
-                    break;
-                case "reset":
-                    tt.Clear();
+            //        if (target.HasValue)
+            //        {
+            //            tt.LockOn(target.Value);
 
-                    break;
-                case "reload":
-                    var ids = new HashSet<long>(torpedos.Select(t => t.EntityId));
+            //            sound?.Play();
+            //        }
 
-                    var groups = new List<IMyBlockGroup>();
-                    GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith(GROUP_PREFIX_TORPEDO));
+            //        break;
+            //    case "reset":
+            //        tt.Clear();
 
-                    torpedos.AddRange(groups
-                        .Select(gr => new Torpedo(gr, factor: 3f, lifespan: LIFESPAN))
-                        .Where(t => !ids.Contains(t.EntityId)));
+            //        break;
+            //    case "reload":
+            //        var ids = new HashSet<long>(torpedos.Select(t => t.EntityId));
 
-                    torpedos.RemoveAll(t => !t.IsAlive);
+            //        var groups = new List<IMyBlockGroup>();
+            //        GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith(GROUP_PREFIX_TORPEDO));
 
-                    break;
-                case "start":
-                    // запускаем одну из торпед
-                    torpedos.FirstOrDefault(t => !t.Started)?.Start();
+            //        torpedos.AddRange(groups
+            //            .Select(gr => new Torpedo(gr, factor: 3f, lifespan: LIFESPAN))
+            //            .Where(t => !ids.Contains(t.EntityId)));
 
-                    break;
-                default:
-                    // обновлям данные о цели
-                    tt.Update();
+            //        torpedos.RemoveAll(t => !t.IsAlive);
 
-                    // обновляем параметры цели на всех торпедах
-                    var state = torpedos?.Select(t => t.Update(tt.Current));
-                    var text = String.Join("\n", state?.Select(s => s.ToString()));
+            //        break;
+            //    case "start":
+            //        // запускаем одну из торпед
+            //        torpedos.FirstOrDefault(t => !t.Started)?.Start();
 
-                    lcdTorpedos?.WriteText(text);
+            //        break;
+            //    default:
+            //        // обновлям данные о цели
+            //        tt.Update();
 
-                    // выключаем звук, если цель потеряна
-                    if (!tt.Current.HasValue && sound?.IsWorking == true)
-                    {
-                        sound?.Stop();
-                    }
+            //        // обновляем параметры цели на всех торпедах
+            //        var state = torpedos?.Select(t => t.Update(tt.Current));
+            //        var text = String.Join("\n", state?.Select(s => s.ToString()));
 
-                    break;
-            }
+            //        lcdTorpedos?.WriteText(text);
 
-            UpdateTargetLcd();
-            UpdateSystemLcd();
+            //        // выключаем звук, если цель потеряна
+            //        if (!tt.Current.HasValue && sound?.IsWorking == true)
+            //        {
+            //            sound?.Stop();
+            //        }
+
+            //        break;
+            //}
 
             tracker.AddInstructions();
-            lcd.WriteText(tracker.ToString());
+            trackerLcd.WriteText(tracker.ToString());
         }
 
-        void UpdateTargetLcd()
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine($"Locked: {tt.Current.HasValue}");
 
-            if (tt.Current.HasValue)
-            {
-                var target = tt.Current.Value.Entity;
-                var distance = Vector3D.Distance(cam.GetPosition(), target.Position);
+        //void UpdateSystemLcd()
+        //{
+        //    var filter = onlyEnemies ? "Enemies" : "All";
 
-                sb.AppendLine($"{target.Type}\nv: {target.Velocity.Length():0.0}\ns: {distance:0.0}");
-            }
+        //    var sb = new StringBuilder();
+        //    sb.AppendLine($"Range: {cam.AvailableScanRange:0.0}");
+        //    sb.AppendLine($"Total range: {tt.TotalRange:0.0}");
+        //    sb.AppendLine($"Cam count: {tt.Count}");
+        //    sb.AppendLine($"Filter: {filter}");
 
-            lcdTarget?.WriteText(sb.ToString());
-        }
-
-        void UpdateSystemLcd()
-        {
-            var filter = onlyEnemies ? "Enemies" : "All";
-
-            var sb = new StringBuilder();
-            sb.AppendLine($"Range: {cam.AvailableScanRange:0.0}");
-            sb.AppendLine($"Total range: {tt.TotalRange:0.0}");
-            sb.AppendLine($"Cam count: {tt.Count}");
-            sb.AppendLine($"Filter: {filter}");
-
-            lcdSystem.WriteText(sb.ToString());
-        }
+        //    lcdSystem.WriteText(sb.ToString());
+        //}
 
         #endregion
     }

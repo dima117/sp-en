@@ -164,6 +164,8 @@ namespace SpaceEngineers.Lib
             targets.Clear();
         }
 
+        public int TargetCount => targets.Count;
+
         public TargetInfo[] GetTargets()
         {
             return targets.Values.ToArray();

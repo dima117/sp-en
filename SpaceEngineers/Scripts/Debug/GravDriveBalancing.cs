@@ -116,8 +116,8 @@ namespace SpaceEngineers.Scripts.GravDriveBalancing
                 totalMass += block.VirtualMass;
             }
 
-            var center2 = sum / massBlocks.Count;
-            var center2local = localSum / massBlocks.Count;
+            var center2 = sum / massBlocks.Count();
+            var center2local = localSum / massBlocks.Count();
             var center2local2 = Vector3D.Transform(center2, invertedMatrix);
 
             sb.AppendLine($"\n\ncenter2: {center2}");

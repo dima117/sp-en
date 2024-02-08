@@ -83,6 +83,7 @@
     <Compile Include="Lib\Torpedos\SpaceTorpedo.cs" />
     <Compile Include="Lib\Transmitter.cs" />
     <Compile Include="Lib\TargetInfo.cs" />
+    <Compile Include="Lib\WeaponController.cs" />
     <Compile Include="RotorTurret.cs" />
     <Compile Include="RuntimeTracker.cs" />
     <Compile Include="Scripts\Debug\GravDriveBalancing.cs" />

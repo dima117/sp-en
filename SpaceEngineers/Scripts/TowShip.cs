@@ -52,6 +52,7 @@ namespace SpaceEngineers.Scripts.TowShip
 
         readonly IMySoundBlock sound;
 
+        readonly List<IMyRadioAntenna> antennas = new List<IMyRadioAntenna>();
         readonly List<Torpedo> torpedos = new List<Torpedo>();
 
         public Program()
@@ -61,7 +62,8 @@ namespace SpaceEngineers.Scripts.TowShip
             lcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
             // антенна
-            tsm = new Transmitter2(this);
+            GridTerminalSystem.GetBlocksOfType(antennas);
+            tsm = new Transmitter2(IGC, antennas.ToArray());
             tsm.Subscribe(MsgTags.REMOTE_LOCK_TARGET, RemoteLock, true);
             tsm.Subscribe(MsgTags.REMOTE_START, RemoteStart, true);
             tsm.Subscribe(MsgTags.GET_STATUS, GetStatus, true);

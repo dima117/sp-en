@@ -35,9 +35,9 @@ namespace SpaceEngineers.Lib
 
         private readonly Queue<Action> messageQueue = new Queue<Action>();
 
-        public Transmitter2(MyGridProgram program) : base(program)
+        public Transmitter2(IMyIntergridCommunicationSystem igc, IMyRadioAntenna[] antennas) : base(igc, antennas)
         {
-            blocks.ForEach(a =>
+            antennas.ForEach(a =>
             {
                 a.Radius = MIN_RANGE;
             });
@@ -65,7 +65,7 @@ namespace SpaceEngineers.Lib
                 else
                 {
                     // если всё было выключено, то включаем
-                    blocks.ForEach(a => a.Radius = MAX_RANGE);
+                    antennas.ForEach(a => a.Radius = MAX_RANGE);
                     timestampSwitchOn = DateTime.UtcNow.AddMilliseconds(TIMEOUT_SWITCH_ON);
                 }
             }
@@ -96,7 +96,7 @@ namespace SpaceEngineers.Lib
                     else if (timestampSwitchOff.HasValue && now > timestampSwitchOff)
                     {
                         timestampSwitchOff = null;
-                        blocks.ForEach(a => a.Radius = MIN_RANGE);
+                        antennas.ForEach(a => a.Radius = MIN_RANGE);
                     }
 
                     break;
