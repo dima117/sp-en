@@ -80,6 +80,7 @@
   <ItemGroup>
     <Compile Include="Lib\Grid.cs" />
     <Compile Include="Lib\TargetTracker2.cs" />
+    <Compile Include="Lib\Torpedos\SpaceTorpedo.cs" />
     <Compile Include="Lib\Transmitter.cs" />
     <Compile Include="Lib\TargetInfo.cs" />
     <Compile Include="RotorTurret.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Scripts\Printer.cs" />
     <Compile Include="Scripts\AimBot.cs" />
     <Compile Include="Scripts\Fortress.cs" />
+    <Compile Include="Lib\Torpedos\BaseTorpedos.cs" />
     <Compile Include="Scripts\TowShip.cs" />
     <Compile Include="Scripts\Draft.cs" />
     <Compile Include="Scripts\BattleCruiser.cs" />
