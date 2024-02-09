@@ -15,13 +15,26 @@ namespace SpaceEngineers.Lib.Torpedos
 
     public class SpaceTorpedo : BaseTorpedo
     {
+        const double INTERCEPT_DISTANCE = 1200;
+
         public SpaceTorpedo(IMyBlockGroup group, int delay = 2000, float factor = 7, int lifespan = 360) : base(group, delay, factor, lifespan)
         {
         }
 
-        protected override void SetDirection(TargetInfo targetInfo)
+        protected override void SetDirection(TargetInfo targetInfo, double distance)
         {
-            tControl.Intercept(targetInfo.GetHitPosWorld(), targetInfo.Entity.Velocity);
+            var targetPos = targetInfo.GetHitPosWorld();
+
+            if (distance < INTERCEPT_DISTANCE)
+            {
+                // при большом расстоянии до цели точка перехвата далеко перемещается
+                // при маневрах цели, поэтому рассчитываем её только на дальности до 1 км
+                tControl.Intercept(targetPos, targetInfo.Entity.Velocity);
+            }
+            else
+            {
+                tControl.Aim(targetPos);
+            }
         }
     }
 

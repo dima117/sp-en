@@ -135,11 +135,14 @@ namespace SpaceEngineers.Scripts.Torpedos
 
             if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
             {
+                // включаем управление торпедой через пару секунд,
+                // чтобы она успела отлететь от корабля
+
                 if (target != null)
                 {
-                    SetDirection(target);
-
                     distance = (target.Entity.Position - Position).Length();
+
+                    SetDirection(target, distance);
                 }
             }
 
@@ -151,7 +154,7 @@ namespace SpaceEngineers.Scripts.Torpedos
             };
         }
 
-        protected abstract void SetDirection(TargetInfo targetInfo);
+        protected abstract void SetDirection(TargetInfo targetInfo, double distance);
     }
 
     #endregion
