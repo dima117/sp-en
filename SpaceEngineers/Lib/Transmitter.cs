@@ -44,11 +44,11 @@ namespace SpaceEngineers.Lib
             igc.UnicastListener.SetMessageCallback();
 
             this.antennas = antennas;
-            antennas.ForEach(a =>
+            foreach (var a in antennas)
             {
                 a.EnableBroadcasting = true;
                 a.Enabled = true;
-            });
+            }
         }
 
         public void Subscribe(string tag, Action<MyIGCMessage> fn, bool broadcast = false)

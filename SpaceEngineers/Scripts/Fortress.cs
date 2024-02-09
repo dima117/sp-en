@@ -39,21 +39,24 @@ namespace SpaceEngineers.Scripts.Fortress
             trackerLcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
             grid = new Grid(GridTerminalSystem);
+            var mainCam = grid.GetByFilterOrAny<IMyCameraBlock>(
+                x => x.CustomName.StartsWith("CAMERA"));
 
             var cockpit = grid.GetByFilterOrAny<IMyCockpit>();
-            var mainCamera = grid.GetByFilterOrAny<IMyCameraBlock>(x => x.CustomName.StartsWith("CAMERA"), cam => cam.EnableRaycast = true);
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
-            var lcdTargets = grid.GetByFilterOrAny<IMyTextPanel>(x => x.CustomName.StartsWith("TARGETS"));
+            var lcdTargets = cockpit.GetSurface(0);
+            var lcdSystem = cockpit.GetSurface(2);
             var sound = grid.GetByFilterOrAny<IMySoundBlock>(x => x.CustomName.StartsWith("SOUND"));
 
             weapons = new WeaponController(
                 cockpit,
-                mainCamera,
+                mainCam,
                 cameras,
                 turrets,
                 lcdTargets,
+                lcdSystem,
                 IGC,
                 antennas,
                 sound
@@ -77,8 +80,24 @@ namespace SpaceEngineers.Scripts.Fortress
 
             weapons.Execute(argument, updateSource);
 
+            switch (argument)
+            {
+                case "filter":
+                    weapons.ToggleFilter();
+                    break;
+                case "prev":
+                    weapons.PrevTarget();
+                    break;
+                case "next":
+                    weapons.NextTarget();
+                    break;
+                case "lock":
+                    weapons.Scan();
+                    break;
+            }
+
             weapons.Update();
-            
+
 
 
             //switch (argument)

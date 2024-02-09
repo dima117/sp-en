@@ -37,10 +37,10 @@ namespace SpaceEngineers.Lib
 
         public Transmitter2(IMyIntergridCommunicationSystem igc, IMyRadioAntenna[] antennas) : base(igc, antennas)
         {
-            antennas.ForEach(a =>
+            foreach (var a in antennas)
             {
                 a.Radius = MIN_RANGE;
-            });
+            }
         }
 
         public override void Send(string tag, string data = "", long? destination = null)
@@ -65,7 +65,11 @@ namespace SpaceEngineers.Lib
                 else
                 {
                     // если всё было выключено, то включаем
-                    antennas.ForEach(a => a.Radius = MAX_RANGE);
+                    foreach (var a in antennas)
+                    {
+                        a.Radius = MAX_RANGE;
+                    }
+
                     timestampSwitchOn = DateTime.UtcNow.AddMilliseconds(TIMEOUT_SWITCH_ON);
                 }
             }
@@ -96,7 +100,10 @@ namespace SpaceEngineers.Lib
                     else if (timestampSwitchOff.HasValue && now > timestampSwitchOff)
                     {
                         timestampSwitchOff = null;
-                        antennas.ForEach(a => a.Radius = MIN_RANGE);
+                        foreach (var a in antennas)
+                        {
+                            a.Radius = MIN_RANGE;
+                        }
                     }
 
                     break;

@@ -22,18 +22,23 @@ namespace SpaceEngineers.Lib
 {
     #region Copy
 
+    // import:Serializer.cs
     // import:Transmitter2.cs
     // import:TargetTracker2.cs
 
     public class WeaponController
     {
+        const int DISTANCE = 6500;
+
         private TargetTracker2 tracker;
         private Transmitter2 transmitter;
         private IMyTextSurface lcdTargets;
+        private IMyTextSurface lcdSystem;
         private IMyShipController cockpit;
-        private IMyCameraBlock mainCamera;
         private IMySoundBlock sound;
+        private IMyCameraBlock mainCamera;
 
+        private bool onlyEnemies;
         private int targetIndex;
         private long targetId;
 
@@ -45,6 +50,7 @@ namespace SpaceEngineers.Lib
             IMyCameraBlock[] cameras,
             IMyLargeTurretBase[] turrets,
             IMyTextSurface lcdTargets,
+            IMyTextSurface lcdSystem,
             IMyIntergridCommunicationSystem igc,
             IMyRadioAntenna[] antennas,
             IMySoundBlock sound
@@ -56,18 +62,30 @@ namespace SpaceEngineers.Lib
             transmitter = new Transmitter2(igc, antennas);
             transmitter.Subscribe(MsgTags.SYNC_TARGETS, Transmitter_SyncTargets, true);
 
-            this.mainCamera = mainCamera;
             this.cockpit = cockpit;
             this.lcdTargets = lcdTargets;
+            this.lcdSystem = lcdSystem;
+
+            this.mainCamera = mainCamera;
+            if (mainCamera != null)
+            {
+                mainCamera.Enabled = true;
+                mainCamera.EnableRaycast = true;
+            }
 
             this.sound = sound;
             if (sound != null)
             {
-                sound.SelectedSound = "ArcSoundBlockAlert2";
-                sound.LoopPeriod = 300;
-                sound.Range = 50;
                 sound.Enabled = true;
+                sound.SelectedSound = "ArcSoundBlockAlert2";
+                sound.Volume = 1;
+                sound.Range = 100;
             }
+        }
+
+        public void ToggleFilter()
+        {
+            onlyEnemies = !onlyEnemies;
         }
 
         public void NextTarget()
@@ -85,6 +103,18 @@ namespace SpaceEngineers.Lib
                 targetIndex--;
                 targetId = tracker.GetTargets()[targetIndex].Entity.EntityId;
             }
+
+        }
+
+        public void Scan()
+        {
+            var target = TargetTracker2.Scan(mainCamera, DISTANCE, onlyEnemies);
+
+            if (target.HasValue)
+            {
+                sound?.Play();
+                tracker.LockTarget(target.Value);
+            }
         }
 
         public void Execute(string argument, UpdateType updateSource)
@@ -100,6 +130,20 @@ namespace SpaceEngineers.Lib
         {
             // обновляем содержимое экранов
             UpdateLcdTargets();
+            UpdateLcdSystem();
+        }
+
+        private void UpdateLcdSystem()
+        {
+            var filter = onlyEnemies ? "Enemies" : "All";
+
+            var sb = new StringBuilder();
+            sb.AppendLine($"Range: {mainCamera.AvailableScanRange:0.0}");
+            sb.AppendLine($"Total range: {tracker.TotalRange:0.0}");
+            sb.AppendLine($"Cam count: {tracker.Count}");
+            sb.AppendLine($"Filter: {filter}");
+
+            lcdSystem.WriteText(sb);
         }
 
         private void UpdateLcdTargets()
@@ -120,7 +164,7 @@ namespace SpaceEngineers.Lib
                     var dist = (t.Position - selfPos).Length();
                     var speed = t.Velocity.Length();
 
-                    var pointer = targetIndex == i ? ">> " : " ";
+                    var pointer = targetIndex == i ? "> " : " ";
 
                     sb.AppendLine($"{pointer}{type} {name} {dist:0}m {speed:0}m/s");
                 }
