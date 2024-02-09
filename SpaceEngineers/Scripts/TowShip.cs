@@ -110,7 +110,7 @@ namespace SpaceEngineers.Scripts.TowShip
                 {
                     tt.LockOn(target);
 
-                    if (tt.Current.HasValue)
+                    if (tt.Current != null)
                     {
                         sound?.Play();
                     }
@@ -132,7 +132,7 @@ namespace SpaceEngineers.Scripts.TowShip
 
         private void GetStatus(MyIGCMessage message)
         {
-            var t = tt.Current.HasValue ? tt.Current.Value.Entity.Type.ToString() : "FALSE";
+            var t = tt.Current == null ? "FALSE" : tt.Current.Entity.Type.ToString();
             var text = $"Locked: ${t}\n" + lcdTorpedos.GetText();
 
             tsm.Send(MsgTags.REMOTE_STATUS, text, message.Source);
@@ -156,9 +156,9 @@ namespace SpaceEngineers.Scripts.TowShip
                 case "lock":
                     var target = TargetTracker.Scan(cam, DISTANCE, onlyEnemies);
 
-                    if (target.HasValue)
+                    if (target != null)
                     {
-                        tt.LockOn(target.Value);
+                        tt.LockOn(target);
 
                         sound?.Play();
                     }
@@ -197,7 +197,7 @@ namespace SpaceEngineers.Scripts.TowShip
                     lcdTorpedos?.WriteText(text);
 
                     // выключаем звук, если цель потеряна
-                    if (!tt.Current.HasValue && sound?.IsWorking == true)
+                    if (tt.Current == null && sound?.IsWorking == true)
                     {
                         sound?.Stop();
                     }
@@ -215,11 +215,11 @@ namespace SpaceEngineers.Scripts.TowShip
         void UpdateTargetLcd()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Locked: {tt.Current.HasValue}");
+            sb.AppendLine($"Locked: {tt.Current != null}");
 
-            if (tt.Current.HasValue)
+            if (tt.Current != null)
             {
-                var target = tt.Current.Value.Entity;
+                var target = tt.Current.Entity;
                 var distance = Vector3D.Distance(cam.GetPosition(), target.Position);
 
                 sb.AppendLine($"{target.Type}\nv: {target.Velocity.Length():0.0}\ns: {distance:0.0}");

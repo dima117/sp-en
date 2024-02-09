@@ -129,19 +129,17 @@ namespace SpaceEngineers.Scripts.Torpedos
             started = true;
         }
 
-        public virtual TorpedoStatus Update(TargetInfo? info)
+        public virtual TorpedoStatus Update(TargetInfo target)
         {
             double distance = 0;
 
             if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
             {
-                if (info.HasValue)
+                if (target != null)
                 {
-                    var obj = info.Value;
+                    SetDirection(target);
 
-                    SetDirection(obj);
-
-                    distance = (obj.Entity.Position - Position).Length();
+                    distance = (target.Entity.Position - Position).Length();
                 }
             }
 

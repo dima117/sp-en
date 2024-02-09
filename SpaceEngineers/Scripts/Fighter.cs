@@ -118,7 +118,7 @@ namespace SpaceEngineers.Scripts.Fighter
 
                     if (target != null)
                     {
-                        tt.LockTarget(target.Value);
+                        tt.LockTarget(target);
                     }
 
                     break;

@@ -100,7 +100,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public static TargetInfo? Scan(
+        public static TargetInfo Scan(
             IMyCameraBlock cam,
             double distance = DISTANCE_SCAN_DEFAULT,
             bool onlyEnemies = false)
@@ -171,7 +171,7 @@ namespace SpaceEngineers.Lib
             return targets.Values.ToArray();
         }
 
-        public TargetInfo? GetByEntityId(long entityId)
+        public TargetInfo GetByEntityId(long entityId)
         {
             return targets[entityId];
         }
@@ -242,8 +242,8 @@ namespace SpaceEngineers.Lib
         {
             TargetInfo target = targets.Values.FirstOrDefault(t => t.NextScan < now);
 
-            if (target.Entity.IsEmpty())
-            {
+            if (target == null)
+            {   
                 return false;
             }
 
@@ -265,7 +265,7 @@ namespace SpaceEngineers.Lib
                 }
             }
             else
-            {
+            {   
                 target.Update(scanResult, now, nextScan);
             }
 

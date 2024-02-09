@@ -134,15 +134,14 @@ namespace SpaceEngineers.Lib
             Started = true;
         }
 
-        public TorpedoStatus Update(TargetInfo? info)
+        public TorpedoStatus Update(TargetInfo target)
         {
             double distance = 0;
 
             if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
             {
-                if (info.HasValue)
+                if (target != null)
                 {
-                    var target = info.Value;
                     var targetPos = target.GetHitPosWorld();
 
                     // tControl.ICBM(target);

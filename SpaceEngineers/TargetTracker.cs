@@ -33,7 +33,7 @@ namespace SpaceEngineers
             MyDetectedEntityType.LargeGrid
         };
 
-        public static TargetInfo? Scan(
+        public static TargetInfo Scan(
             IMyCameraBlock cam,
             double distance = DISTANCE_SCAN_DEFAULT,
             bool onlyEnemies = false)
@@ -67,7 +67,7 @@ namespace SpaceEngineers
 
         private BlockArray<IMyCameraBlock> camArray;
 
-        public TargetInfo? Current; // последняя захваченная цель
+        public TargetInfo Current; // последняя захваченная цель
 
         static Vector3D CalculateTargetLocation(
             TargetInfo info, TimeSpan timePassed)
@@ -141,13 +141,13 @@ namespace SpaceEngineers
         public void Update()
         {
             // если цель не захвачена, то ничего не делаем
-            if (!Current.HasValue)
+            if (Current == null)
             {
                 return;
             }
 
             var now = DateTime.UtcNow;
-            var prevTarget = Current.Value;
+            var prevTarget = Current;
 
             // если прошло мало времени, то ничего не делаем
             if (now < prevTarget.NextScan)
@@ -170,7 +170,7 @@ namespace SpaceEngineers
             }
             else
             {
-                Current.Value.Update(target, now, now.AddMilliseconds(SCAN_DELAY_MS));
+                Current.Update(target, now, now.AddMilliseconds(SCAN_DELAY_MS));
             }
         }
     }

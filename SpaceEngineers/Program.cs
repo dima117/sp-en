@@ -77,9 +77,9 @@ namespace SpaceEngineers
                 case "lock":
                     var entity = TargetTracker.Scan(cam, 5000, onlyEnemies);
 
-                    if (entity.HasValue)
+                    if (entity != null)
                     {
-                        tt.LockOn(entity.Value);
+                        tt.LockOn(entity);
 
                         sound?.Play();
                     }
@@ -102,7 +102,7 @@ namespace SpaceEngineers
                     torpedos.AddRange(groups
                         .Select(gr => new Torpedo(gr))
                         .Where(t => !ids.Contains(t.EntityId)));
-                        
+
                     torpedos.RemoveAll(t => !t.IsAlive);
 
                     welders.ForEach(w => w.Enabled = false);
@@ -115,7 +115,8 @@ namespace SpaceEngineers
                 default:
                     tt.Update();
 
-                    if (sound?.IsWorking == true && !tt.Current.HasValue) { 
+                    if (sound?.IsWorking == true && tt.Current == null)
+                    {
                         sound?.Stop();
                     }
 
@@ -153,12 +154,13 @@ namespace SpaceEngineers
         void UpdateTargetLcd()
         {
             var sb = new StringBuilder();
-            sb.AppendLine($"Locked: {tt.Current.HasValue}");
 
-            if (tt.Current.HasValue)
+            if (tt.Current != null)
             {
-                var target = tt.Current.Value.Entity;
+                var target = tt.Current.Entity;
                 var distance = Vector3D.Distance(cam.GetPosition(), target.Position);
+
+                sb.AppendLine($"Locked: TRUE");
 
                 sb.AppendLine($"- type: {target.Type}");
                 sb.AppendLine($"- speed: {target.Velocity.Length():0.0}");
@@ -167,8 +169,12 @@ namespace SpaceEngineers
                 sb.AppendLine($"- position Y: {target.Position.Y:0.0}");
                 sb.AppendLine($"- position Z: {target.Position.Z:0.0}");
             }
+            else
+            {
+                sb.AppendLine($"Locked: FALSE");
+            }
 
-            lcd2.WriteText(sb.ToString());
+            lcd2.WriteText(sb);
         }
 
         void UpdateTorpedoLcd(List<Torpedo> torpedos)

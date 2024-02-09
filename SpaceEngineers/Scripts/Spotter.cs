@@ -148,11 +148,11 @@ namespace SpaceEngineers.Scripts.Spotter
                     {
                         var msg = new StringBuilder();
 
-                        Serializer.SerializeTargetInfo(target.Value, msg);
+                        Serializer.SerializeTargetInfo(target, msg);
 
                         tsm.Send(MsgTags.REMOTE_LOCK_TARGET, msg.ToString());
 
-                        ShowTargetState(target.Value.Entity);
+                        ShowTargetState(target.Entity);
 
                         sound?.Play();
                     }
@@ -165,7 +165,7 @@ namespace SpaceEngineers.Scripts.Spotter
             }
         }
 
-        private TargetInfo? Scan(double distance = DISTANCE_SCAN_DEFAULT)
+        private TargetInfo Scan(double distance = DISTANCE_SCAN_DEFAULT)
         {
             var entity = cam.Raycast(distance);
 

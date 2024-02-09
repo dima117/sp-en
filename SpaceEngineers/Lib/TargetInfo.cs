@@ -10,7 +10,7 @@ namespace SpaceEngineers.Lib
 {
     #region Copy
 
-    public struct TargetInfo
+    public class TargetInfo
     {
         public MyDetectedEntityInfo Entity { get; private set; }
 

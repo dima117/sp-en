@@ -110,10 +110,10 @@ namespace SpaceEngineers.Lib
         {
             var target = TargetTracker2.Scan(mainCamera, DISTANCE, onlyEnemies);
 
-            if (target.HasValue)
+            if (target != null)
             {
                 sound?.Play();
-                tracker.LockTarget(target.Value);
+                tracker.LockTarget(target);
             }
         }
 
