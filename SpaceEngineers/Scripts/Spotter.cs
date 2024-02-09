@@ -26,7 +26,7 @@ namespace SpaceEngineers.Scripts.Spotter
         // import:Lib\Serializer.cs
         // import:Lib\TargetInfo.cs
 
-        const double DISTANCE_SCAN_DEFAULT = 10000;
+        const double DISTANCE_SCAN_DEFAULT = 7000;
 
         public static readonly string[] names = new[] {
             "корова",

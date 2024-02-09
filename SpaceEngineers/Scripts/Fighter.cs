@@ -106,9 +106,11 @@ namespace SpaceEngineers.Scripts.Fighter
 
         public void Main(string argument, UpdateType updateSource)
         {
+            
             tracker.AddRuntime();
 
             tsm.Update(argument, updateSource);
+
             tt.Update();
 
             switch (argument)

@@ -70,6 +70,7 @@ namespace SpaceEngineers.Lib
 
             transmitter = new Transmitter2(igc, antennas);
             transmitter.Subscribe(MsgTags.SYNC_TARGETS, Transmitter_SyncTargets, true);
+            transmitter.Subscribe(MsgTags.REMOTE_LOCK_TARGET, Transmitter_RemoteLock, true);
 
             this.cockpit = cockpit;
             this.lcdTargets = lcdTargets;
@@ -247,6 +248,25 @@ namespace SpaceEngineers.Lib
             {
                 targetIndex = 0;
                 targetId = targets.Any() ? targets[0].Entity.EntityId : 0;
+            }
+        }
+
+        private void Transmitter_RemoteLock(MyIGCMessage message)
+        {
+            try
+            {
+                var data = message.Data.ToString();
+                var reader = new Serializer.StringReader(data);
+
+                TargetInfo target;
+                if (Serializer.TryParseTargetInfo(reader, out target))
+                {
+                    tracker.LockTarget(target);
+                }
+            }
+            catch (Exception ex)
+            {
+                OnError?.Invoke(ex);
             }
         }
 

@@ -54,6 +54,7 @@ namespace SpaceEngineers.Lib
         const int SCAN_DELAY_MS = 60;
         const int SCAN_RETRY_MS = 25;
         const double DISTANCE_SCAN_DEFAULT = 7500;
+        const int TARGET_RELEASE_TIMEOUT = 20;
 
         static readonly HashSet<MyDetectedEntityType> targetTypes = new HashSet<MyDetectedEntityType> {
             MyDetectedEntityType.SmallGrid,
@@ -185,7 +186,17 @@ namespace SpaceEngineers.Lib
 
             if (Count >= MIN_CAM_COUN)
             {
-                isChanged |= UpdateOneFromCameras(now, nextScan);
+                UpdateOneFromCameras(now, nextScan);
+            }
+
+            foreach (var t in targets.ToArray())
+            {
+                if ((now - t.Value.Timestamp).TotalSeconds > TARGET_RELEASE_TIMEOUT)
+                {
+                    // если последнее успешное сканирование было больше 20 секунд назад
+                    ReleaseTarget(t.Value.Entity.EntityId);
+                    isChanged = true;
+                }
             }
 
             if (isChanged)
@@ -238,13 +249,13 @@ namespace SpaceEngineers.Lib
 
         }
 
-        private bool UpdateOneFromCameras(DateTime now, DateTime nextScan)
+        private void UpdateOneFromCameras(DateTime now, DateTime nextScan)
         {
             TargetInfo target = targets.Values.FirstOrDefault(t => t.NextScan < now);
 
             if (target == null)
-            {   
-                return false;
+            {
+                return;
             }
 
             var timePassed = now - target.Timestamp;
@@ -253,23 +264,12 @@ namespace SpaceEngineers.Lib
 
             if (scanResult.IsEmpty())
             {
-                if (timePassed.TotalSeconds > 2)
-                {
-                    // если последнее успешное сканирование было больше 2 секунд назад
-                    ReleaseTarget(target.Entity.EntityId);
-                    return true;
-                }
-                else
-                {
-                    target.UpdateNextScan(now.AddMilliseconds(SCAN_RETRY_MS));
-                }
+                target.UpdateNextScan(now.AddMilliseconds(SCAN_RETRY_MS));
             }
             else
-            {   
+            {
                 target.Update(scanResult, now, nextScan);
             }
-
-            return false;
         }
 
         private bool UpdateFromTurrets(DateTime now, DateTime nextScan)
