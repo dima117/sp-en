@@ -1,4 +1,5 @@
-﻿using Sandbox.ModAPI.Ingame;
+﻿using Sandbox.Game.GameSystems;
+using Sandbox.ModAPI.Ingame;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,6 +19,15 @@ namespace SpaceEngineers.Lib
         public Grid(IMyGridTerminalSystem system)
         {
             this.system = system;
+        }
+
+        public IMyBlockGroup[] GetBlockGroups(string prefix = "")
+        {
+            var groups = new List<IMyBlockGroup>();
+
+            system.GetBlockGroups(groups, g => g.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+            return groups.ToArray();
         }
 
         public T[] GetBlocksOfType<T>(Func<T, bool> filter = null) where T : class, IMyTerminalBlock

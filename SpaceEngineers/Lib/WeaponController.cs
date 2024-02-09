@@ -16,7 +16,9 @@ using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.GameSystems;
 using SpaceEngineers.Lib;
+using SpaceEngineers.Lib.Torpedos;
 using System.Data;
+using SpaceEngineers.Scripts.Torpedos;
 
 namespace SpaceEngineers.Lib
 {
@@ -25,14 +27,17 @@ namespace SpaceEngineers.Lib
     // import:Serializer.cs
     // import:Transmitter2.cs
     // import:TargetTracker2.cs
+    // import:Torpedos\SpaceTorpedo.cs
 
     public class WeaponController
     {
-        const int DISTANCE = 6500;
+        const int RAYCAST_DISTANCE = 6500;
+        const int TORPEDO_LIFESPAN = 600;
 
         private TargetTracker2 tracker;
         private Transmitter2 transmitter;
         private IMyTextSurface lcdTargets;
+        private IMyTextSurface lcdTorpedos;
         private IMyTextSurface lcdSystem;
         private IMyShipController cockpit;
         private IMySoundBlock sound;
@@ -44,12 +49,16 @@ namespace SpaceEngineers.Lib
 
         public event Action<Exception> OnError;
 
+        readonly List<SpaceTorpedo> torpedos = new List<SpaceTorpedo>();
+        readonly Dictionary<long, long> targeting = new Dictionary<long, long>(); // цели торпед
+
         public WeaponController(
             IMyShipController cockpit,
             IMyCameraBlock mainCamera,
             IMyCameraBlock[] cameras,
             IMyLargeTurretBase[] turrets,
             IMyTextSurface lcdTargets,
+            IMyTextSurface lcdTorpedos,
             IMyTextSurface lcdSystem,
             IMyIntergridCommunicationSystem igc,
             IMyRadioAntenna[] antennas,
@@ -64,6 +73,7 @@ namespace SpaceEngineers.Lib
 
             this.cockpit = cockpit;
             this.lcdTargets = lcdTargets;
+            this.lcdTorpedos = lcdTorpedos;
             this.lcdSystem = lcdSystem;
 
             this.mainCamera = mainCamera;
@@ -82,6 +92,8 @@ namespace SpaceEngineers.Lib
                 sound.Range = 100;
             }
         }
+
+        public TargetInfo Current => tracker.GetByEntityId(targetId);
 
         public void ToggleFilter()
         {
@@ -108,13 +120,41 @@ namespace SpaceEngineers.Lib
 
         public void Scan()
         {
-            var target = TargetTracker2.Scan(mainCamera, DISTANCE, onlyEnemies);
+            var target = TargetTracker2.Scan(mainCamera, RAYCAST_DISTANCE, onlyEnemies);
 
             if (target != null)
             {
                 sound?.Play();
                 tracker.LockTarget(target);
             }
+        }
+
+        public void Reload(IMyBlockGroup[] groups)
+        {
+            var ids = new HashSet<long>(torpedos.Select(t => t.EntityId));
+
+            torpedos.AddRange(groups
+                .Select(gr => new SpaceTorpedo(gr, factor: 3f, lifespan: TORPEDO_LIFESPAN))
+                .Where(t => !ids.Contains(t.EntityId)));
+
+            torpedos.RemoveAll(t => !t.IsAlive);
+        }
+
+        public bool Launch()
+        {
+            // запускает торпеду по текущей цели
+            var target = Current;
+            var torpedo = torpedos.FirstOrDefault(t => t.Stage == BaseTorpedo.LaunchStage.Ready);
+
+            if (target == null || torpedo == null)
+            {
+                return false;
+            }
+
+            targeting[torpedo.EntityId] = target.Entity.EntityId;
+            torpedo.Start();
+
+            return true;
         }
 
         public void Execute(string argument, UpdateType updateSource)
@@ -128,9 +168,28 @@ namespace SpaceEngineers.Lib
 
         public void Update()
         {
+            // обновляем цели торпед
+            UpdateTorpedoTargets();
+
             // обновляем содержимое экранов
             UpdateLcdTargets();
             UpdateLcdSystem();
+        }
+
+        private void UpdateTorpedoTargets()
+        {
+            var sb = new StringBuilder();
+
+            foreach (var t in torpedos)
+            {
+                var targetId = targeting.GetValueOrDefault(t.EntityId);
+                var target = tracker.GetByEntityId(targetId);
+
+                var state = t.Update(target);
+                sb.AppendLine(state.ToString());
+            }
+
+            lcdTorpedos?.WriteText(sb);
         }
 
         private void UpdateLcdSystem()
@@ -143,7 +202,7 @@ namespace SpaceEngineers.Lib
             sb.AppendLine($"Cam count: {tracker.Count}");
             sb.AppendLine($"Filter: {filter}");
 
-            lcdSystem.WriteText(sb);
+            lcdSystem?.WriteText(sb);
         }
 
         private void UpdateLcdTargets()
@@ -174,7 +233,7 @@ namespace SpaceEngineers.Lib
                 sb.AppendLine("NO TARGETS");
             }
 
-            lcdTargets.WriteText(sb);
+            lcdTargets?.WriteText(sb);
         }
 
         private void Tracker_TargetListChanged()

@@ -173,7 +173,7 @@ namespace SpaceEngineers.Lib
 
         public TargetInfo GetByEntityId(long entityId)
         {
-            return targets[entityId];
+            return targets.ContainsKey(entityId) ? targets[entityId] : null;
         }
 
         public void Update()

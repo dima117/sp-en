@@ -27,6 +27,8 @@ namespace SpaceEngineers.Scripts.Fortress
         // import:Lib\Grid.cs
         // import:Lib\WeaponController.cs
 
+        private const string GROUP_PREFIX_TORPEDO = "TORPEDO";
+
         private readonly RuntimeTracker tracker;
         private readonly IMyTextSurface trackerLcd;
 
@@ -47,6 +49,7 @@ namespace SpaceEngineers.Scripts.Fortress
             var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
             var lcdTargets = cockpit.GetSurface(0);
+            var lcdTorpedos = cockpit.GetSurface(1);
             var lcdSystem = cockpit.GetSurface(2);
             var sound = grid.GetByFilterOrAny<IMySoundBlock>(x => x.CustomName.StartsWith("SOUND"));
 
@@ -56,6 +59,7 @@ namespace SpaceEngineers.Scripts.Fortress
                 cameras,
                 turrets,
                 lcdTargets,
+                lcdTorpedos,
                 lcdSystem,
                 IGC,
                 antennas,
@@ -71,8 +75,6 @@ namespace SpaceEngineers.Scripts.Fortress
         {
             Echo(ex.ToString());
         }
-
-
 
         public void Main(string argument, UpdateType updateSource)
         {
@@ -94,69 +96,24 @@ namespace SpaceEngineers.Scripts.Fortress
                 case "lock":
                     weapons.Scan();
                     break;
+                case "reload":
+                    var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
+                    weapons.Reload(groups);
+                    break;
+                case "start":
+                    weapons.Launch();
+                    break;
             }
 
             weapons.Update();
 
-
-
             //switch (argument)
             //{
-            //    case "filter":
-            //        onlyEnemies = !onlyEnemies;
-
-            //        break;
             //    case "init":
             //        tt.UpdateCamArray();
             //        break;
-            //    case "lock":
-            //        var target = TargetTracker.Scan(cam, DISTANCE, onlyEnemies);
-
-            //        if (target.HasValue)
-            //        {
-            //            tt.LockOn(target.Value);
-
-            //            sound?.Play();
-            //        }
-
-            //        break;
             //    case "reset":
             //        tt.Clear();
-
-            //        break;
-            //    case "reload":
-            //        var ids = new HashSet<long>(torpedos.Select(t => t.EntityId));
-
-            //        var groups = new List<IMyBlockGroup>();
-            //        GridTerminalSystem.GetBlockGroups(groups, g => g.Name.StartsWith(GROUP_PREFIX_TORPEDO));
-
-            //        torpedos.AddRange(groups
-            //            .Select(gr => new Torpedo(gr, factor: 3f, lifespan: LIFESPAN))
-            //            .Where(t => !ids.Contains(t.EntityId)));
-
-            //        torpedos.RemoveAll(t => !t.IsAlive);
-
-            //        break;
-            //    case "start":
-            //        // запускаем одну из торпед
-            //        torpedos.FirstOrDefault(t => !t.Started)?.Start();
-
-            //        break;
-            //    default:
-            //        // обновлям данные о цели
-            //        tt.Update();
-
-            //        // обновляем параметры цели на всех торпедах
-            //        var state = torpedos?.Select(t => t.Update(tt.Current));
-            //        var text = String.Join("\n", state?.Select(s => s.ToString()));
-
-            //        lcdTorpedos?.WriteText(text);
-
-            //        // выключаем звук, если цель потеряна
-            //        if (!tt.Current.HasValue && sound?.IsWorking == true)
-            //        {
-            //            sound?.Stop();
-            //        }
 
             //        break;
             //}
@@ -164,20 +121,6 @@ namespace SpaceEngineers.Scripts.Fortress
             tracker.AddInstructions();
             trackerLcd.WriteText(tracker.ToString());
         }
-
-
-        //void UpdateSystemLcd()
-        //{
-        //    var filter = onlyEnemies ? "Enemies" : "All";
-
-        //    var sb = new StringBuilder();
-        //    sb.AppendLine($"Range: {cam.AvailableScanRange:0.0}");
-        //    sb.AppendLine($"Total range: {tt.TotalRange:0.0}");
-        //    sb.AppendLine($"Cam count: {tt.Count}");
-        //    sb.AppendLine($"Filter: {filter}");
-
-        //    lcdSystem.WriteText(sb.ToString());
-        //}
 
         #endregion
     }
