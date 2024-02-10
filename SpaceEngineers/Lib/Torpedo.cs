@@ -16,6 +16,7 @@ using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.GameSystems;
 using SpaceEngineers.Lib;
+using SpaceEngineers.Scripts.Torpedos;
 
 namespace SpaceEngineers.Lib
 {
@@ -25,28 +26,6 @@ namespace SpaceEngineers.Lib
 
     // import:DirectionController2.cs
     // import:TargetInfo.cs
-
-    public enum LaunchStage
-    {
-        Ready,
-        Started,
-        Dead,
-        Invalid
-    }
-
-    public struct TorpedoStatus
-    {
-        public LaunchStage Stage;
-        public string Name;
-        public double Distance;
-
-        public override string ToString()
-        {
-            return Stage == LaunchStage.Started
-                ? $"{Name}: {Stage} => {Distance:0}m"
-                : $"{Name}: {Stage}";
-        }
-    }
 
     public class Torpedo
     {

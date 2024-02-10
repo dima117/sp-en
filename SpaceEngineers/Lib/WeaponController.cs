@@ -49,7 +49,7 @@ namespace SpaceEngineers.Lib
 
         public event Action<Exception> OnError;
 
-        readonly List<SpaceTorpedo> torpedos = new List<SpaceTorpedo>();
+        readonly Dictionary<long, SpaceTorpedo> torpedos = new Dictionary<long, SpaceTorpedo>();
         readonly Dictionary<long, long> targeting = new Dictionary<long, long>(); // цели торпед
 
         public WeaponController(
@@ -132,20 +132,32 @@ namespace SpaceEngineers.Lib
 
         public void Reload(IMyBlockGroup[] groups)
         {
-            var ids = new HashSet<long>(torpedos.Select(t => t.EntityId));
+            foreach (var gr in groups)
+            {
+                var tmp = new SpaceTorpedo(gr, factor: 3f, lifespan: TORPEDO_LIFESPAN);
 
-            torpedos.AddRange(groups
-                .Select(gr => new SpaceTorpedo(gr, factor: 3f, lifespan: TORPEDO_LIFESPAN))
-                .Where(t => !ids.Contains(t.EntityId)));
+                // добавляем новые торпеды
+                if (!torpedos.ContainsKey(tmp.EntityId))
+                {
+                    torpedos.Add(tmp.EntityId, tmp);
+                }
+            }
 
-            torpedos.RemoveAll(t => !t.IsAlive);
+            foreach (var t in torpedos.ToArray())
+            {
+                if (!t.Value.IsAlive)
+                {
+                    torpedos.Remove(t.Key);
+                    targeting.Remove(t.Key);
+                }
+            }
         }
 
         public bool Launch()
         {
             // запускает торпеду по текущей цели
             var target = Current;
-            var torpedo = torpedos.FirstOrDefault(t => t.Stage == BaseTorpedo.LaunchStage.Ready);
+            var torpedo = torpedos.Values.FirstOrDefault(t => t.Stage == LaunchStage.Ready);
 
             if (target == null || torpedo == null)
             {
@@ -181,7 +193,7 @@ namespace SpaceEngineers.Lib
         {
             var sb = new StringBuilder();
 
-            foreach (var t in torpedos)
+            foreach (var t in torpedos.Values)
             {
                 var targetId = targeting.GetValueOrDefault(t.EntityId);
                 var target = tracker.GetByEntityId(targetId);
