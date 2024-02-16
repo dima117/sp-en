@@ -21,6 +21,30 @@ namespace SpaceEngineers.Lib
 {
     #region Copy
 
+    public class CenterOfMassPosition
+    {
+        public CenterOfMassPosition(Vector3D local, Vector3D world)
+        {
+            Local = local;
+            World = world;
+        }
+
+        public readonly Vector3D Local;
+        public readonly Vector3D World;
+    }
+
+    public class CenterOfMass
+    {
+        public CenterOfMass(CenterOfMassPosition physicalValue, CenterOfMassPosition virtualValue)
+        {
+            Physical = physicalValue;
+            Virtual = virtualValue;
+        }
+
+        public readonly CenterOfMassPosition Physical;
+        public readonly CenterOfMassPosition Virtual;
+    }
+
     public class GravityDrive
     {
         private bool enabled;
@@ -66,6 +90,26 @@ namespace SpaceEngineers.Lib
                 else if (controller.WorldMatrix.Down == block.WorldMatrix.Down)
                     downGens.Add(block);
             }
+        }
+
+        public CenterOfMass CalculateCenterOfMass()
+        {
+            // матрица для преобразования в локальные координаты
+            var invertedMatrix = MatrixD.Invert(controller.WorldMatrix.GetOrientation());
+
+            // physical
+            var centerOfMass = controller.CenterOfMass;
+            var localCenterOfMass = Vector3D.Transform(centerOfMass, invertedMatrix);
+
+            // virtual
+            var virtualMassPositions = massBlocks.Aggregate(Vector3D.Zero, (a, b) => a + b.GetPosition());
+            var virtualCenterOfMass = virtualMassPositions / massBlocks.Count;
+            var localVirtualCenterOfMass = Vector3D.Transform(virtualCenterOfMass, invertedMatrix);
+
+            return new CenterOfMass(
+                physicalValue: new CenterOfMassPosition(localCenterOfMass, centerOfMass),
+                virtualValue: new CenterOfMassPosition(localVirtualCenterOfMass, virtualCenterOfMass)
+            );
         }
 
         public bool Enabled
