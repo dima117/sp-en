@@ -84,7 +84,6 @@
     <Compile Include="Lib\Torpedos\BaseTorpedo.cs" />
     <Compile Include="Scripts\TowShip.cs" />
     <Compile Include="Scripts\Draft.cs" />
-    <Compile Include="Scripts\BattleCruiser.cs" />
     <Compile Include="Lib\Serializer.cs" />
     <Compile Include="Lib\Transmitter2.cs" />
     <Compile Include="BlockArray.cs" />
@@ -95,7 +94,7 @@
     <Compile Include="Icbm.cs" />
     <Compile Include="Examples\TmpAngularVelocity.cs" />
     <Compile Include="Examples\TmpGravDrive.cs" />
-    <Compile Include="GravityDrive.cs" />
+    <Compile Include="Lib\GravityDrive.cs" />
     <Compile Include="Lib\Helpers.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

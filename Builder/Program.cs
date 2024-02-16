@@ -120,8 +120,7 @@ namespace Builder
                 "Scripts\\Fortress.cs",
                 "Scripts\\Spotter.cs",
                 "Scripts\\TowShip.cs",
-                "Scripts\\Printer.cs",
-                "Scripts\\BattleCruiser.cs"
+                "Scripts\\Printer.cs"
             };
 
             foreach (var filePath in files)

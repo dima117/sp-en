@@ -17,7 +17,7 @@ using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.GameSystems;
 using static VRage.Game.MyObjectBuilder_ControllerSchemaDefinition;
 
-namespace SpaceEngineers
+namespace SpaceEngineers.Lib
 {
     #region Copy
 
