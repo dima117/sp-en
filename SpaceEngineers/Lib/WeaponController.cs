@@ -42,6 +42,7 @@ namespace SpaceEngineers.Lib
         private IMyShipController cockpit;
         private IMySoundBlock sound;
         private IMyCameraBlock mainCamera;
+        private IMyBeacon beacon;
 
         private bool onlyEnemies;
         private int targetIndex;
@@ -62,7 +63,8 @@ namespace SpaceEngineers.Lib
             IMyTextSurface lcdSystem,
             IMyIntergridCommunicationSystem igc,
             IMyRadioAntenna[] antennas,
-            IMySoundBlock sound
+            IMySoundBlock sound,
+            IMyBeacon beacon = null
         )
         {
             tracker = new TargetTracker2(cameras, turrets);
@@ -72,6 +74,7 @@ namespace SpaceEngineers.Lib
             transmitter.Subscribe(MsgTags.SYNC_TARGETS, Transmitter_SyncTargets, true);
             transmitter.Subscribe(MsgTags.REMOTE_LOCK_TARGET, Transmitter_RemoteLock, true);
 
+            this.beacon = beacon;
             this.cockpit = cockpit;
             this.lcdTargets = lcdTargets;
             this.lcdTorpedos = lcdTorpedos;
@@ -181,11 +184,14 @@ namespace SpaceEngineers.Lib
 
         public void Update()
         {
+            var selfPos = cockpit.GetPosition();
+
             // обновляем цели торпед
             UpdateTorpedoTargets();
 
             // обновляем содержимое экранов
-            UpdateLcdTargets();
+            DisplayCurrentTarget(selfPos);
+            UpdateLcdTargets(selfPos);
             UpdateLcdSystem();
         }
 
@@ -205,6 +211,26 @@ namespace SpaceEngineers.Lib
             lcdTorpedos?.WriteText(sb);
         }
 
+        private void DisplayCurrentTarget(Vector3D selfPos)
+        {
+            var target = "NO TARGET";
+
+            if (Current != null)
+            {
+                var t = Current.Entity;
+                var name = t.Name;
+                var velocity = t.Velocity;
+                var distance = (t.Position - selfPos).Length();
+
+                target = $"{name} / {distance}";
+            }
+
+            if (beacon != null)
+            {
+                beacon.HudText = target;
+            }
+        }
+
         private void UpdateLcdSystem()
         {
             var filter = onlyEnemies ? "Enemies" : "All";
@@ -218,15 +244,13 @@ namespace SpaceEngineers.Lib
             lcdSystem?.WriteText(sb);
         }
 
-        private void UpdateLcdTargets()
+        private void UpdateLcdTargets(Vector3D selfPos)
         {
             var sb = new StringBuilder();
             var targets = tracker.GetTargets();
 
             if (targets.Any())
             {
-                var selfPos = cockpit.GetPosition();
-
                 for (var i = 0; i < targets.Length; i++)
                 {
                     var t = targets[i].Entity;
