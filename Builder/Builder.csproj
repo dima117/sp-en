@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Dist\BattleShip.cs.txt" />
     <Content Include="Dist\Fighter.cs.txt" />
     <Content Include="Dist\Fortress.cs.txt" />
     <Content Include="Dist\Printer.cs.txt" />

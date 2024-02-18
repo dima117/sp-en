@@ -66,28 +66,28 @@ namespace SpaceEngineers.Lib
         const float ROTATION_RATIO = 10f;
 
         public GravityDrive(
-            IMyShipController controller,
+            IMyShipController cockpit,
             IMyBlockGroup group)
         {
-            this.controller = controller;
+            this.controller = cockpit;
 
-            group.GetBlocksOfType(gyroBlocks, b => b.IsSameConstructAs(controller));
-            group.GetBlocksOfType(massBlocks, b => b.IsSameConstructAs(controller));
-            group.GetBlocksOfType(allGens, b => b.IsSameConstructAs(controller));
+            group.GetBlocksOfType(gyroBlocks, b => b.IsSameConstructAs(cockpit));
+            group.GetBlocksOfType(massBlocks, b => b.IsSameConstructAs(cockpit));
+            group.GetBlocksOfType(allGens, b => b.IsSameConstructAs(cockpit));
 
             foreach (var block in allGens)
             {
-                if (controller.WorldMatrix.Forward == block.WorldMatrix.Down)
+                if (cockpit.WorldMatrix.Forward == block.WorldMatrix.Down)
                     fowardGens.Add(block);
-                else if (controller.WorldMatrix.Backward == block.WorldMatrix.Down)
+                else if (cockpit.WorldMatrix.Backward == block.WorldMatrix.Down)
                     backwardGens.Add(block);
-                else if (controller.WorldMatrix.Left == block.WorldMatrix.Down)
+                else if (cockpit.WorldMatrix.Left == block.WorldMatrix.Down)
                     leftGens.Add(block);
-                else if (controller.WorldMatrix.Right == block.WorldMatrix.Down)
+                else if (cockpit.WorldMatrix.Right == block.WorldMatrix.Down)
                     rightGens.Add(block);
-                else if (controller.WorldMatrix.Up == block.WorldMatrix.Down)
+                else if (cockpit.WorldMatrix.Up == block.WorldMatrix.Down)
                     upGens.Add(block);
-                else if (controller.WorldMatrix.Down == block.WorldMatrix.Down)
+                else if (cockpit.WorldMatrix.Down == block.WorldMatrix.Down)
                     downGens.Add(block);
             }
         }

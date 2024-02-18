@@ -77,6 +77,7 @@
     <Compile Include="Scripts\Debug\GravDriveBalancing.cs" />
     <Compile Include="Scripts\Debug\NukeTest.cs" />
     <Compile Include="Scripts\Debug\RotorTest.cs" />
+    <Compile Include="Scripts\BattleShip.cs" />
     <Compile Include="Scripts\Fighter.cs" />
     <Compile Include="Scripts\Printer.cs" />
     <Compile Include="Scripts\AimBot.cs" />
