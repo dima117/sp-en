@@ -27,12 +27,19 @@ namespace SpaceEngineers.Scripts.BattleShip
         // import:RuntimeTracker.cs
         // import:Lib\Grid.cs
         // import:Lib\GravityDrive.cs
+        // import:Lib\WeaponController.cs
+
+        private const string GROUP_PREFIX_TORPEDO = "ws_torpedo";
 
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
 
         readonly Grid grid;
         readonly GravityDrive gdrive;
+        readonly WeaponController weapons;
+
+        readonly IMyCameraBlock cameraTop;
+        readonly IMyCameraBlock cameraBottom;
 
         public Program()
         {
@@ -42,19 +49,53 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             grid = new Grid(GridTerminalSystem);
 
-            var cockpit = grid.GetBlockWithName<IMyCockpit>("cockpit_main");
+            cameraTop = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_t");
+            cameraBottom = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_b");
+
+            var cockpit = grid.GetBlockWithName<IMyCockpit>("ws_cockpit");
+            var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
+            var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
+            var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
+
+            var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");
+            var lcdTargets = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_2");
+            var lcdSystem = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_3");
+            var sound = grid.GetBlockWithName<IMySoundBlock>("ws_sound_1");
+
             var group = GridTerminalSystem.GetBlockGroupWithName("ws_gdrive");
+
             gdrive = new GravityDrive(cockpit, group);
+            weapons = new WeaponController(
+                cockpit,
+                cameras,
+                turrets,
+                lcdTargets,
+                lcdTorpedos,
+                lcdSystem,
+                IGC,
+                antennas,
+                sound
+              );
+
+            weapons.OnError += HandleError;
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
+        }
+
+        private void HandleError(Exception ex)
+        {
+            Echo(ex.ToString());
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
             tracker.AddRuntime();
 
+            weapons.Execute(argument, updateSource);
+
             switch (argument)
             {
+                // gdrive
                 case "gd-on":
                     gdrive.Enabled = true;
                     break;
@@ -64,10 +105,34 @@ namespace SpaceEngineers.Scripts.BattleShip
                 case "gd-info":
                     UpdateGdInfo();
                     break;
-                default:
-                    gdrive.Update();
+
+                // weapons
+                case "filter":
+                    weapons.ToggleFilter();
+                    break;
+                case "prev":
+                    weapons.PrevTarget();
+                    break;
+                case "next":
+                    weapons.NextTarget();
+                    break;
+                case "lock-top":
+                    weapons.Scan(cameraTop);
+                    break;
+                case "lock-bottom":
+                    weapons.Scan(cameraBottom);
+                    break;
+                case "reload":
+                    var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
+                    weapons.Reload(groups);
+                    break;
+                case "start":
+                    weapons.Launch();
                     break;
             }
+
+            weapons.Update();
+            gdrive.Update();
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());
@@ -84,7 +149,8 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             return $"GPS:{label}:{point.X:0.00}:{point.Y:0.00}:{point.Z:0.00}:#FF89F175:";
         }
-        private void UpdateGdInfo() {
+        private void UpdateGdInfo()
+        {
             var x = gdrive.CalculateCenterOfMass();
             var p = x.Physical.Local;
             var v = x.Virtual.Local;

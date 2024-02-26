@@ -41,7 +41,6 @@ namespace SpaceEngineers.Lib
         private IMyTextSurface lcdSystem;
         private IMyShipController cockpit;
         private IMySoundBlock sound;
-        private IMyCameraBlock mainCamera;
         private IMyBeacon beacon;
 
         private bool onlyEnemies;
@@ -55,7 +54,6 @@ namespace SpaceEngineers.Lib
 
         public WeaponController(
             IMyShipController cockpit,
-            IMyCameraBlock mainCamera,
             IMyCameraBlock[] cameras,
             IMyLargeTurretBase[] turrets,
             IMyTextSurface lcdTargets,
@@ -79,13 +77,6 @@ namespace SpaceEngineers.Lib
             this.lcdTargets = lcdTargets;
             this.lcdTorpedos = lcdTorpedos;
             this.lcdSystem = lcdSystem;
-
-            this.mainCamera = mainCamera;
-            if (mainCamera != null)
-            {
-                mainCamera.Enabled = true;
-                mainCamera.EnableRaycast = true;
-            }
 
             this.sound = sound;
             if (sound != null)
@@ -122,9 +113,9 @@ namespace SpaceEngineers.Lib
 
         }
 
-        public void Scan()
+        public void Scan(IMyCameraBlock cam)
         {
-            var target = TargetTracker2.Scan(mainCamera, RAYCAST_DISTANCE, onlyEnemies);
+            var target = TargetTracker2.Scan(cam, RAYCAST_DISTANCE, onlyEnemies);
 
             if (target != null)
             {
@@ -236,7 +227,6 @@ namespace SpaceEngineers.Lib
             var filter = onlyEnemies ? "Enemies" : "All";
 
             var sb = new StringBuilder();
-            sb.AppendLine($"Range: {mainCamera.AvailableScanRange:0.0}");
             sb.AppendLine($"Total range: {tracker.TotalRange:0.0}");
             sb.AppendLine($"Cam count: {tracker.Count}");
             sb.AppendLine($"Filter: {filter}");

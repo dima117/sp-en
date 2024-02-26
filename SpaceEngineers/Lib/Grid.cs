@@ -44,6 +44,19 @@ namespace SpaceEngineers.Lib
             return system.GetBlockWithName(name) as T;
         }
 
+        public IMyCameraBlock GetCamera(string name)
+        {
+            var camera = GetBlockWithName<IMyCameraBlock>(name);
+
+            if (camera != null)
+            {
+                camera.Enabled = true;
+                camera.EnableRaycast = true;
+            }
+
+            return camera;
+        }
+
         public T GetByFilterOrAny<T>(Func<T, bool> filter = null, Action<T> init = null) where T : class, IMyTerminalBlock
         {
             var all = new List<T>();

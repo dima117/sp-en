@@ -32,6 +32,8 @@ namespace SpaceEngineers.Scripts.Fortress
         private readonly RuntimeTracker tracker;
         private readonly IMyTextSurface trackerLcd;
 
+        private readonly IMyCameraBlock camera;
+
         private readonly Grid grid;
         private readonly WeaponController weapons;
         public Program()
@@ -41,8 +43,8 @@ namespace SpaceEngineers.Scripts.Fortress
             trackerLcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
             grid = new Grid(GridTerminalSystem);
-            var mainCam = grid.GetByFilterOrAny<IMyCameraBlock>(
-                x => x.CustomName.StartsWith("CAMERA"));
+
+            camera = grid.GetCamera("CAMERA");
 
             var cockpit = grid.GetByFilterOrAny<IMyCockpit>();
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
@@ -55,7 +57,6 @@ namespace SpaceEngineers.Scripts.Fortress
 
             weapons = new WeaponController(
                 cockpit,
-                mainCam,
                 cameras,
                 turrets,
                 lcdTargets,
@@ -94,7 +95,7 @@ namespace SpaceEngineers.Scripts.Fortress
                     weapons.NextTarget();
                     break;
                 case "lock":
-                    weapons.Scan();
+                    weapons.Scan(camera);
                     break;
                 case "reload":
                     var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
