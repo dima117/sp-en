@@ -97,9 +97,8 @@ Monospace
 
         float GetJumpDriveChargePercent(IMyJumpDrive jumpDrive)
         {
-            var lines = jumpDrive.DetailedInfo.Split('\n');
-            var max = ParseNumber(lines[2]);
-            var current = ParseNumber(lines[4]);
+            var max = jumpDrive.MaxStoredPower;
+            var current = jumpDrive.CurrentStoredPower;
 
             float result = 100 * current / max;
 
