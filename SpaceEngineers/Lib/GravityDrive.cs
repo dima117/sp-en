@@ -120,12 +120,16 @@ namespace SpaceEngineers.Lib
 
         public bool DampenersOverride => controller.DampenersOverride;
 
-        public void Update()
+        public void Update(bool controlGyros = true)
         {
             MyShipVelocities velocities = controller.GetShipVelocities();
 
             UpdateGenerators(velocities.LinearVelocity);
-            UpdateGyro(velocities.AngularVelocity);
+
+            if (controlGyros)
+            {
+                UpdateGyro(velocities.AngularVelocity);
+            }
         }
 
         private void UpdateGyro(Vector3D worldAngularVelocity)

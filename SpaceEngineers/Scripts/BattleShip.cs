@@ -57,6 +57,7 @@ namespace SpaceEngineers.Scripts.BattleShip
             var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
 
+            var hud = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("ws_hud"));
             var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");
             var lcdTargets = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_2");
             var lcdSystem = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_3");
@@ -64,11 +65,16 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             var group = GridTerminalSystem.GetBlockGroupWithName("ws_gdrive");
 
+            var gyros = new List<IMyGyro>();
+            group.GetBlocksOfType(gyros);
+
             gdrive = new GravityDrive(cockpit, group);
             weapons = new WeaponController(
+                gyros.ToArray(),
                 cockpit,
                 cameras,
                 turrets,
+                hud,
                 lcdTargets,
                 lcdTorpedos,
                 lcdSystem,
@@ -107,6 +113,15 @@ namespace SpaceEngineers.Scripts.BattleShip
                     break;
 
                 // weapons
+                case "aim-railgun":
+                    weapons.Aim(WeaponController.RAILGUN_SPEED);
+                    break;
+                case "aim-artillery":
+                    weapons.Aim(WeaponController.ARTILLERY_SPEED);
+                    break;
+                case "aim-clear":
+                    weapons.ClearAimBotTarget();
+                    break;
                 case "filter":
                     weapons.ToggleFilter();
                     break;
@@ -131,8 +146,8 @@ namespace SpaceEngineers.Scripts.BattleShip
                     break;
             }
 
-            weapons.Update();
-            gdrive.Update();
+            var directionControlledByAimBot = weapons.Update();
+            gdrive.Update(!directionControlledByAimBot);
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());

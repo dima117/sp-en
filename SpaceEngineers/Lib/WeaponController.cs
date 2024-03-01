@@ -27,12 +27,16 @@ namespace SpaceEngineers.Lib
     // import:Serializer.cs
     // import:Transmitter2.cs
     // import:TargetTracker2.cs
+    // import:DirectionController2.cs
     // import:Torpedos\SpaceTorpedo.cs
 
     public class WeaponController
     {
         const int RAYCAST_DISTANCE = 6500;
         const int TORPEDO_LIFESPAN = 600;
+
+        public const int RAILGUN_SPEED = 2000;
+        public const int ARTILLERY_SPEED = 500;
 
         private TargetTracker2 tracker;
         private Transmitter2 transmitter;
@@ -42,20 +46,27 @@ namespace SpaceEngineers.Lib
         private IMyShipController cockpit;
         private IMySoundBlock sound;
         private IMyBeacon beacon;
+        private IMyTextPanel[] hud;
 
         private bool onlyEnemies;
         private int targetIndex;
         private long targetId;
 
+        private DateTime lastUpdateHUD = DateTime.MinValue;
+        private int aimBotTargetShotSpeed;
+
         public event Action<Exception> OnError;
 
+        readonly DirectionController2 directionController;
         readonly Dictionary<long, SpaceTorpedo> torpedos = new Dictionary<long, SpaceTorpedo>();
         readonly Dictionary<long, long> targeting = new Dictionary<long, long>(); // цели торпед
 
         public WeaponController(
+            IMyGyro[] gyros,
             IMyShipController cockpit,
             IMyCameraBlock[] cameras,
             IMyLargeTurretBase[] turrets,
+            IMyTextPanel[] hud,
             IMyTextSurface lcdTargets,
             IMyTextSurface lcdTorpedos,
             IMyTextSurface lcdSystem,
@@ -77,6 +88,7 @@ namespace SpaceEngineers.Lib
             this.lcdTargets = lcdTargets;
             this.lcdTorpedos = lcdTorpedos;
             this.lcdSystem = lcdSystem;
+            this.hud = hud;
 
             this.sound = sound;
             if (sound != null)
@@ -86,6 +98,8 @@ namespace SpaceEngineers.Lib
                 sound.Volume = 1;
                 sound.Range = 100;
             }
+
+            directionController = new DirectionController2(cockpit, gyros);
         }
 
         public TargetInfo Current => tracker.GetByEntityId(targetId);
@@ -147,6 +161,16 @@ namespace SpaceEngineers.Lib
             }
         }
 
+        public void Aim(int shotSpeed)
+        {
+            aimBotTargetShotSpeed = shotSpeed;
+        }
+
+        public void ClearAimBotTarget()
+        {
+            aimBotTargetShotSpeed = 0;
+        }
+
         public bool Launch()
         {
             // запускает торпеду по текущей цели
@@ -173,17 +197,37 @@ namespace SpaceEngineers.Lib
             tracker.Update();
         }
 
-        public void Update()
+        public bool Update()
         {
             var selfPos = cockpit.GetPosition();
 
             // обновляем цели торпед
             UpdateTorpedoTargets();
 
+            var controlDirection = UpdateAimBot();
+
             // обновляем содержимое экранов
-            DisplayCurrentTarget(selfPos);
+            UpdateHUD(selfPos);
             UpdateLcdTargets(selfPos);
             UpdateLcdSystem();
+
+            return controlDirection;
+        }
+
+        private bool UpdateAimBot()
+        {
+            if (aimBotTargetShotSpeed > 0)
+            {
+                var target = Current;
+
+                if (target != null)
+                {
+                    directionController.InterceptShot(target.Entity, aimBotTargetShotSpeed);
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void UpdateTorpedoTargets()
@@ -202,24 +246,131 @@ namespace SpaceEngineers.Lib
             lcdTorpedos?.WriteText(sb);
         }
 
-        private void DisplayCurrentTarget(Vector3D selfPos)
+        private void UpdateHUD(Vector3D selfPos)
         {
-            var target = "NO TARGET";
+            var now = DateTime.UtcNow;
 
-            if (Current != null)
+            if (hud.Any() && (now - lastUpdateHUD).TotalMilliseconds > 100)
             {
-                var t = Current.Entity;
-                var name = t.Name;
-                var velocity = t.Velocity;
-                var distance = (t.Position - selfPos).Length();
+                var targetName = "NO TARGET";
+                var dist = "--";
 
-                target = $"{name} / {distance}";
+                if (Current != null)
+                {
+                    var t = Current.Entity;
+                    var d = (t.Position - selfPos).Length();
+
+                    targetName = t.Name;
+                    dist = d.ToString("0m");
+                }
+
+                var aimbot = "Off";
+
+                if (aimBotTargetShotSpeed > 0)
+                {
+
+                    switch (aimBotTargetShotSpeed)
+                    {
+                        case RAILGUN_SPEED:
+                            aimbot = "Rail";
+                            break;
+                        case ARTILLERY_SPEED:
+                            aimbot = "Art";
+                            break;
+                        default:
+                            aimbot = aimBotTargetShotSpeed.ToString("0 m/s");
+                            break;
+                    }
+                }
+
+
+                foreach (var lcd in hud)
+                {
+                    var sprites = GetHudState(targetName, dist, aimbot);
+
+                    using (var frame = lcd.DrawFrame())
+                    {
+                        frame.AddRange(sprites);
+                    }
+                }
+
+                lastUpdateHUD = now;
             }
+        }
 
-            if (beacon != null)
+        private MySprite[] GetHudState(string targetName, string dist, string aimbot)
+        {
+            var list = new List<MySprite>();
+
+            // target
+            list.Add(new MySprite()
             {
-                beacon.HudText = target;
-            }
+                Type = SpriteType.TEXT,
+                Data = "target",
+                Position = new Vector2(256, 0),
+                RotationOrScale = 0.8f,
+                Color = Color.Teal,
+                Alignment = TextAlignment.CENTER,
+                FontId = "White"
+            });
+
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = targetName,
+                Position = new Vector2(256, 20),
+                RotationOrScale = 1f,
+                Color = Color.White,
+                Alignment = TextAlignment.CENTER,
+                FontId = "White"
+            });
+
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = "dist",
+                Position = new Vector2(0, 0),
+                RotationOrScale = 0.8f,
+                Color = Color.Teal,
+                Alignment = TextAlignment.LEFT,
+                FontId = "White"
+            });
+
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = dist,
+                Position = new Vector2(0, 20),
+                RotationOrScale = 1f,
+                Color = Color.White,
+                Alignment = TextAlignment.LEFT,
+                FontId = "White"
+            });
+
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = "aimbot",
+                Position = new Vector2(0, 462),
+                RotationOrScale = 0.8f,
+                Color = Color.Teal,
+                Alignment = TextAlignment.LEFT,
+                FontId = "White"
+            });
+
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = aimbot,
+                Position = new Vector2(0, 482),
+                RotationOrScale = 1f,
+                Color = Color.White,
+                Alignment = TextAlignment.LEFT,
+                FontId = "White"
+            });
+
+
+            return list.ToArray();
         }
 
         private void UpdateLcdSystem()

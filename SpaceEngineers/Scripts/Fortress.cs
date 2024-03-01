@@ -46,6 +46,7 @@ namespace SpaceEngineers.Scripts.Fortress
 
             camera = grid.GetCamera("CAMERA");
 
+            var gyros = grid.GetBlocksOfType<IMyGyro>();
             var cockpit = grid.GetByFilterOrAny<IMyCockpit>();
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
@@ -55,10 +56,15 @@ namespace SpaceEngineers.Scripts.Fortress
             var lcdSystem = cockpit.GetSurface(2);
             var sound = grid.GetByFilterOrAny<IMySoundBlock>(x => x.CustomName.StartsWith("SOUND"));
 
+            var hud = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("HUD"));
+
+
             weapons = new WeaponController(
+                gyros,
                 cockpit,
                 cameras,
                 turrets,
+                hud,
                 lcdTargets,
                 lcdTorpedos,
                 lcdSystem,
