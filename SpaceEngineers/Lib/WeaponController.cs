@@ -135,6 +135,11 @@ namespace SpaceEngineers.Lib
             {
                 sound?.Play();
                 tracker.LockTarget(target);
+
+                // выбираем в залоченную цель в качестве текущей
+                targetId = target.Entity.EntityId;
+
+                FixTargetIndex();
             }
         }
 
@@ -283,10 +288,12 @@ namespace SpaceEngineers.Lib
                     }
                 }
 
+                var tCount = torpedos.Values.Count(t => t.Stage == LaunchStage.Ready);
+
 
                 foreach (var lcd in hud)
                 {
-                    var sprites = GetHudState(targetName, dist, aimbot);
+                    var sprites = GetHudState(targetName, dist, aimbot, tCount);
 
                     using (var frame = lcd.DrawFrame())
                     {
@@ -298,7 +305,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        private MySprite[] GetHudState(string targetName, string dist, string aimbot)
+        private MySprite[] GetHudState(string targetName, string dist, string aimbot, int tCount)
         {
             var list = new List<MySprite>();
 
@@ -325,6 +332,7 @@ namespace SpaceEngineers.Lib
                 FontId = "White"
             });
 
+            // target distance
             list.Add(new MySprite()
             {
                 Type = SpriteType.TEXT,
@@ -344,6 +352,29 @@ namespace SpaceEngineers.Lib
                 RotationOrScale = 1f,
                 Color = Color.White,
                 Alignment = TextAlignment.LEFT,
+                FontId = "White"
+            });
+
+            // torpedo count
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = "torpedos",
+                Position = new Vector2(512, 0),
+                RotationOrScale = 0.8f,
+                Color = Color.Teal,
+                Alignment = TextAlignment.RIGHT,
+                FontId = "White"
+            });
+
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = tCount.ToString(),
+                Position = new Vector2(512, 20),
+                RotationOrScale = 1f,
+                Color = Color.White,
+                Alignment = TextAlignment.RIGHT,
                 FontId = "White"
             });
 
@@ -368,7 +399,6 @@ namespace SpaceEngineers.Lib
                 Alignment = TextAlignment.LEFT,
                 FontId = "White"
             });
-
 
             return list.ToArray();
         }
@@ -418,6 +448,10 @@ namespace SpaceEngineers.Lib
         {
             sound?.Play();
 
+            FixTargetIndex();
+        }
+
+        private void FixTargetIndex() {
             var targets = tracker.GetTargets();
             targetIndex = Array.FindIndex(targets, t => t.Entity.EntityId == targetId);
 
