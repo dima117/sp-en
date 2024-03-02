@@ -61,7 +61,8 @@ namespace SpaceEngineers.Scripts.BattleShip
             var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");
             var lcdTargets = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_2");
             var lcdSystem = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_3");
-            var sound = grid.GetBlockWithName<IMySoundBlock>("ws_sound_1");
+            var sound = grid.GetSound("ws_sound_1", "SoundBlockEnemyDetected");
+            var soundEnemyLock = grid.GetSound("ws_sound_2", "SoundBlockAlert1");
 
             var group = GridTerminalSystem.GetBlockGroupWithName("ws_gdrive");
 
@@ -80,7 +81,8 @@ namespace SpaceEngineers.Scripts.BattleShip
                 lcdSystem,
                 IGC,
                 antennas,
-                sound
+                sound,
+                soundEnemyLock
               );
 
             weapons.OnError += HandleError;
@@ -143,6 +145,12 @@ namespace SpaceEngineers.Scripts.BattleShip
                     break;
                 case "start":
                     weapons.Launch();
+                    break;
+                case "set-enemy-lock":
+                    weapons.SetEnemyLock();
+                    break;
+                case "clear-enemy-lock":
+                    weapons.ClearEnemyLock();
                     break;
             }
 

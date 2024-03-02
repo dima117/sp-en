@@ -57,6 +57,31 @@ namespace SpaceEngineers.Lib
             return camera;
         }
 
+        public IMySoundBlock GetSound(string name, string soundName = "SoundBlockAlert2")
+        {
+            /*
+                SoundBlockLightsOn
+                SoundBlockLightsOff
+                SoundBlockEnemyDetected
+                SoundBlockObjectiveComplete
+                SoundBlockAlert1
+                SoundBlockAlert2
+                SoundBlockAlert3
+             */
+
+            var sound = GetBlockWithName<IMySoundBlock>(name);
+
+            if (sound != null)
+            {
+                sound.Enabled = true;
+                sound.SelectedSound = soundName;
+                sound.Volume = 1;
+                sound.Range = 100;
+            }
+
+            return sound;
+        }
+
         public T GetByFilterOrAny<T>(Func<T, bool> filter = null, Action<T> init = null) where T : class, IMyTerminalBlock
         {
             var all = new List<T>();

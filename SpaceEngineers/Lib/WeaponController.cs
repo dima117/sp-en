@@ -45,12 +45,15 @@ namespace SpaceEngineers.Lib
         private IMyTextSurface lcdSystem;
         private IMyShipController cockpit;
         private IMySoundBlock sound;
+        private IMySoundBlock soundEnemyLock;
         private IMyBeacon beacon;
         private IMyTextPanel[] hud;
 
         private bool onlyEnemies;
         private int targetIndex;
         private long targetId;
+
+        private DateTime? enemyLock;
 
         private DateTime lastUpdateHUD = DateTime.MinValue;
         private int aimBotTargetShotSpeed;
@@ -73,6 +76,7 @@ namespace SpaceEngineers.Lib
             IMyIntergridCommunicationSystem igc,
             IMyRadioAntenna[] antennas,
             IMySoundBlock sound,
+            IMySoundBlock soundEnemyLock,
             IMyBeacon beacon = null
         )
         {
@@ -83,7 +87,6 @@ namespace SpaceEngineers.Lib
             transmitter.Subscribe(MsgTags.SYNC_TARGETS, Transmitter_SyncTargets, true);
             transmitter.Subscribe(MsgTags.REMOTE_LOCK_TARGET, Transmitter_RemoteLock, true);
 
-            this.beacon = beacon;
             this.cockpit = cockpit;
             this.lcdTargets = lcdTargets;
             this.lcdTorpedos = lcdTorpedos;
@@ -91,13 +94,8 @@ namespace SpaceEngineers.Lib
             this.hud = hud;
 
             this.sound = sound;
-            if (sound != null)
-            {
-                sound.Enabled = true;
-                sound.SelectedSound = "ArcSoundBlockAlert2";
-                sound.Volume = 1;
-                sound.Range = 100;
-            }
+            this.soundEnemyLock = soundEnemyLock;
+            this.beacon = beacon;
 
             directionController = new DirectionController2(cockpit, gyros);
         }
@@ -176,6 +174,18 @@ namespace SpaceEngineers.Lib
             aimBotTargetShotSpeed = 0;
         }
 
+        public void SetEnemyLock()
+        {
+            enemyLock = DateTime.UtcNow;
+            soundEnemyLock?.Play();
+        }
+
+        public void ClearEnemyLock()
+        {
+            enemyLock = null;
+            soundEnemyLock?.Stop();
+        }
+
         public bool Launch()
         {
             // запускает торпеду по текущей цели
@@ -251,6 +261,13 @@ namespace SpaceEngineers.Lib
             lcdTorpedos?.WriteText(sb);
         }
 
+        private HashSet<MyRelationsBetweenPlayerAndBlock> friends = 
+            new HashSet<MyRelationsBetweenPlayerAndBlock> { 
+                MyRelationsBetweenPlayerAndBlock.Owner,
+                MyRelationsBetweenPlayerAndBlock.FactionShare,
+                MyRelationsBetweenPlayerAndBlock.Friends,
+            };
+
         private void UpdateHUD(Vector3D selfPos)
         {
             var now = DateTime.UtcNow;
@@ -265,7 +282,13 @@ namespace SpaceEngineers.Lib
                     var t = Current.Entity;
                     var d = (t.Position - selfPos).Length();
 
-                    targetName = t.Name;
+                    var size = t.Type == MyDetectedEntityType.SmallGrid ? "[SM]" : "[LG]";
+                    var name = TargetTracker2.GetName(t.EntityId);
+
+                    targetName = friends.Contains(t.Relationship)
+                        ? $"{size} {t.Name}"
+                        : $"{size} {name}";
+
                     dist = d.ToString("0m");
                 }
 
@@ -289,11 +312,16 @@ namespace SpaceEngineers.Lib
                 }
 
                 var tCount = torpedos.Values.Count(t => t.Stage == LaunchStage.Ready);
+                var enemyLock = false;
 
+                if (this.enemyLock.HasValue) { 
+                    var diff = (now - this.enemyLock.Value);
+                    enemyLock = diff.TotalSeconds > 4 || diff.Milliseconds < 600;
+                }
 
                 foreach (var lcd in hud)
                 {
-                    var sprites = GetHudState(targetName, dist, aimbot, tCount);
+                    var sprites = GetHudState(targetName, dist, aimbot, tCount, enemyLock);
 
                     using (var frame = lcd.DrawFrame())
                     {
@@ -305,7 +333,8 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        private MySprite[] GetHudState(string targetName, string dist, string aimbot, int tCount)
+        private MySprite[] GetHudState(
+            string targetName, string dist, string aimbot, int tCount, bool enemyLock)
         {
             var list = new List<MySprite>();
 
@@ -399,6 +428,20 @@ namespace SpaceEngineers.Lib
                 Alignment = TextAlignment.LEFT,
                 FontId = "White"
             });
+
+            // enemy lock
+            if (enemyLock) {
+                list.Add(new MySprite()
+                {
+                    Type = SpriteType.TEXT,
+                    Data = "ENEMY LOCK",
+                    Position = new Vector2(256, 482),
+                    RotationOrScale = 1f,
+                    Color = Color.OrangeRed,
+                    Alignment = TextAlignment.CENTER,
+                    FontId = "White"
+                });
+            }
 
             return list.ToArray();
         }
