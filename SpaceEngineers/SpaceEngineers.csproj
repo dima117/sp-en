@@ -82,7 +82,6 @@
     <Compile Include="Scripts\BattleShip.cs" />
     <Compile Include="Scripts\Fighter.cs" />
     <Compile Include="Scripts\Printer.cs" />
-    <Compile Include="Scripts\AimBot.cs" />
     <Compile Include="Scripts\Fortress.cs" />
     <Compile Include="Lib\Torpedos\BaseTorpedo.cs" />
     <Compile Include="Scripts\TowShip.cs" />

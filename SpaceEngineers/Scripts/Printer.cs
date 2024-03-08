@@ -32,7 +32,7 @@ namespace SpaceEngineers.Scripts.Printer
         // import:Lib\Grid.cs
         // import:Lib\DirectionController2.cs
 
-        const float FACTOR = 2;
+        const float FACTOR = 1.4f;
 
         readonly IMyCockpit cockpit;
         readonly IMyGyro[] gyros;
@@ -42,8 +42,8 @@ namespace SpaceEngineers.Scripts.Printer
         readonly IMyTextSurface lcdStatus;
         private readonly Grid grid;
 
-        private bool forward = false;
-        private Vector3D? direction;
+        private Vector3D? directionDown;
+        private Vector3D? directionForward;
 
         public Program()
         {
@@ -60,9 +60,19 @@ namespace SpaceEngineers.Scripts.Printer
             lcdStatus = cockpit.GetSurface(0);
 
             var x = Vector3D.Zero;
-            if (!Vector3D.TryParse(Me.CustomData, out x))
+            var lines = Me.CustomData.Split('\n');
+
+            if (lines.Length == 2)
             {
-                direction = x;
+                if (!Vector3D.TryParse(lines[0], out x))
+                {
+                    directionDown = x;
+                }
+
+                if (!Vector3D.TryParse(lines[1], out x))
+                {
+                    directionForward = x;
+                }
             }
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
@@ -74,16 +84,27 @@ namespace SpaceEngineers.Scripts.Printer
             {
                 var cubeGrid = connector.OtherConnector.CubeGrid;
 
-                direction = grid.GetBlocksOfType<IMyShipController>(w => w.CubeGrid == cubeGrid)
-                            .FirstOrDefault()?.WorldMatrix.Down;
+                IMyShipController cockpit = grid
+                    .GetBlocksOfType<IMyShipController>(w => w.CubeGrid == cubeGrid)
+                    .FirstOrDefault();
 
-                Me.CustomData = direction.HasValue ? direction.ToString() : string.Empty;
+                directionDown = cockpit?.WorldMatrix.Down;
+                directionForward = cockpit?.WorldMatrix.Forward;
+
+                if (directionDown.HasValue && directionForward.HasValue)
+                {
+                    Me.CustomData = directionDown.ToString() + "\n" + directionForward.ToString();
+                }
+                else
+                {
+                    Me.CustomData = string.Empty;
+                }
             }
         }
 
         private void Lock()
         {
-            if (direction.HasValue)
+            if (directionDown.HasValue)
             {
                 connector.Disconnect();
 
@@ -107,17 +128,21 @@ namespace SpaceEngineers.Scripts.Printer
 
         private void Align()
         {
-            if (direction.HasValue)
+            if (directionDown.HasValue && directionForward.HasValue)
             {
-                var projectionVector = forward ? cockpit.WorldMatrix.Forward : cockpit.WorldMatrix.Down;
+                var axisDown = DirectionController2.GetAxis(
+                    cockpit.WorldMatrix.Down,
+                    directionDown.Value);
 
-                var axis = DirectionController2.GetAxis(projectionVector, direction.Value);
+                var axisForward = DirectionController2.GetAxis(
+                    cockpit.WorldMatrix.Forward,
+                    directionForward.Value);
 
                 foreach (var gyro in gyros)
                 {
-                    gyro.Yaw = FACTOR * cockpit.RollIndicator;
-                    gyro.Pitch = FACTOR * Convert.ToSingle(axis.Dot(gyro.WorldMatrix.Right));
-                    gyro.Roll = FACTOR * Convert.ToSingle(axis.Dot(gyro.WorldMatrix.Backward));
+                    gyro.Yaw = FACTOR * Convert.ToSingle(axisForward.Dot(gyro.WorldMatrix.Up));
+                    gyro.Pitch = FACTOR * Convert.ToSingle(axisDown.Dot(gyro.WorldMatrix.Right));
+                    gyro.Roll = FACTOR * Convert.ToSingle(axisDown.Dot(gyro.WorldMatrix.Backward));
 
                     gyro.GyroOverride = true;
                 }
@@ -130,17 +155,13 @@ namespace SpaceEngineers.Scripts.Printer
 
             switch (argument)
             {
-                case "rotate":
-                    forward = !forward;
-                    break;
-
                 case "init":
                     SetDirection();
                     Lock();
                     break;
 
                 case "reset":
-                    direction = null;
+                    directionDown = null;
                     Me.CustomData = string.Empty;
                     Unlock();
                     break;
@@ -155,7 +176,7 @@ namespace SpaceEngineers.Scripts.Printer
 
             Align();
 
-            lcdStatus.WriteText($"Locked: {direction.HasValue}");
+            lcdStatus.WriteText($"Locked: {directionDown.HasValue}");
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());
