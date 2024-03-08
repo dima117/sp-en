@@ -26,6 +26,10 @@ namespace SpaceEngineers.Scripts.Printer
         // гироскоп должен быть сориентирован по направлению кабины
         // remote control а принтере должен быть сориентирован вверх
 
+        // TODO: двойной проход
+        // TODO: вычислять сигнал для двигателей на основе суммарной мощности двигателей и массы
+        // TODO: более точное позиционирование по высоте относительно начальной точки
+
         #region Copy
 
         // import:RuntimeTracker.cs
@@ -40,10 +44,13 @@ namespace SpaceEngineers.Scripts.Printer
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
         readonly IMyTextSurface lcdStatus;
+        readonly IMyThrust[] thrusters;
         private readonly Grid grid;
 
         private Vector3D? directionDown;
         private Vector3D? directionForward;
+        private Vector3D[] points;
+        private int index = 0;
 
         public Program()
         {
@@ -56,6 +63,8 @@ namespace SpaceEngineers.Scripts.Printer
             connector = grid.GetBlocksOfType<IMyShipConnector>(w => w.CubeGrid == Me.CubeGrid).First();
             cockpit = grid.GetBlocksOfType<IMyCockpit>(w => w.CubeGrid == Me.CubeGrid).First();
             gyros = grid.GetBlocksOfType<IMyGyro>(w => w.CubeGrid == Me.CubeGrid);
+
+            thrusters = grid.GetBlocksOfType<IMyThrust>(w => w.CubeGrid == Me.CubeGrid);
 
             lcdStatus = cockpit.GetSurface(0);
 
@@ -126,6 +135,59 @@ namespace SpaceEngineers.Scripts.Printer
             }
         }
 
+        private void Move()
+        {
+            if (points == null || index >= points.Length)
+            {
+                return;
+            }
+
+            var nextPoint = points[index];
+            var pos = cockpit.GetPosition();
+            var velocity = cockpit.GetShipVelocities().LinearVelocity;
+
+            var diff = nextPoint - pos;
+
+            if (diff.Length() < 0.3)
+            {
+                foreach (var t in thrusters)
+                {
+                    t.ThrustOverridePercentage = 0;
+                }
+
+                index++;
+                return;
+            }
+
+            var dir = Vector3D.Normalize(nextPoint - pos);
+            var vel = Vector3D.Normalize(velocity);
+
+            var v = velocity.Length();
+
+            if (v < 0.05 || (velocity.Length() < 0.5 && dir.Dot(vel) > 0.98))
+            {
+                cockpit.DampenersOverride = false;
+
+                foreach (var t in thrusters)
+                {
+                    var power = t.WorldMatrix.Backward.Dot(dir) * 100 * 0.05;
+
+                    if (power > 0)
+                    {
+                        t.ThrustOverridePercentage = Convert.ToSingle(power);
+                    }
+                }
+            }
+            else
+            {
+                cockpit.DampenersOverride = true;
+                foreach (var t in thrusters)
+                {
+                    t.ThrustOverridePercentage = 0;
+                }
+            }
+        }
+
         private void Align()
         {
             if (directionDown.HasValue && directionForward.HasValue)
@@ -172,14 +234,61 @@ namespace SpaceEngineers.Scripts.Printer
                 case "unlock":
                     Unlock();
                     break;
+                case "start":
+                    Start();
+                    break;
+                case "stop":
+                    points = null;
+                    break;
             }
 
             Align();
+            Move();
 
-            lcdStatus.WriteText($"Locked: {directionDown.HasValue}");
+            lcdStatus.WriteText($"Locked: {directionDown.HasValue && directionForward.HasValue}");
+            lcdStatus.WriteText($"Move: {points != null}", true);
+            lcdStatus.WriteText($"Index: {index}", true);
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());
+        }
+
+        private void Start()
+        {
+            if (!directionDown.HasValue || !directionForward.HasValue)
+            {
+                return;
+            }
+
+            var OFFSET = 20;
+            var LENGT = 120;
+            var STEP = 2.7;
+
+            var left = cockpit.WorldMatrix.Left * OFFSET;
+            var right = cockpit.WorldMatrix.Right * OFFSET;
+            var up = cockpit.WorldMatrix.Up * STEP;
+
+            var pos = cockpit.GetPosition();
+
+            var list = new List<Vector3D>();
+
+            for (var level = 0; level < LENGT / STEP; level++)
+            {
+                var pos1 = pos + level * up;
+
+                list.Add(pos1 + left);
+                list.Add(pos1 + right);
+                list.Add(pos1);
+                list.Add(pos1 + up);
+            }
+
+            points = list.ToArray();
+            index = 0;
+        }
+
+        private string FormatGPS(Vector3D point, string label)
+        {
+            return $"GPS:{label}:{point.X:0.00}:{point.Y:0.00}:{point.Z:0.00}:#FF89F175:";
         }
 
         #endregion
