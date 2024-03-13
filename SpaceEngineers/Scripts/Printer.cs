@@ -135,6 +135,70 @@ namespace SpaceEngineers.Scripts.Printer
             }
         }
 
+        private void ControlThrusters(
+            float mass,
+            IMyThrust[] forward,
+            IMyThrust[] back,
+            float velocity,
+            double distance)
+        {
+            var fPercent = 0f;
+            var bPercent = 0f;
+
+            const float vT = 2f;
+
+            var ft = forward;
+            var bt = back;
+            var v0 = velocity;
+            var d = distance;
+
+            if (distance < 0) {
+                ft = back;
+                bt = forward;
+                v0 = -velocity;
+                d = -distance;
+            }
+
+            // ускорение
+            var fa = ft.Sum(t => t.MaxThrust) / mass;
+            var ba = bt.Sum(t => t.MaxThrust) / mass;
+
+            // формула: a = (vT - v0) / t
+            // формула: t = (vT - v0) / a
+            // формула: S = v0 * t + (a * t * t) / 2
+
+            if (v0 < 0) {
+                // если движемся в обратную сторону, то сначала тормозим
+                fPercent = 100;
+            } else
+            {
+                // дистанция остановки с текущей скорости
+                var t = v0 / ba;
+                var s = (v0 * t) - ba * t * t / 2;
+
+                if (s <= distance)
+                {
+                    // если дистанция не достаточна для остановки с текущей скорости, то тормозим
+                    bPercent = 100;
+                }
+                else if (v0 < vT)
+                {
+                    // если дистанция позволяет разогнаться и затормозить и скорость меньше заданной, то разгоняемся
+                    fPercent = 100;
+                }
+            }
+
+            // включаем двигатели
+            foreach (var t in ft)
+            {
+                t.ThrustOverridePercentage = fPercent;
+            }
+            foreach (var t in bt)
+            {
+                t.ThrustOverridePercentage = bPercent;
+            }
+        }
+
         private void Move()
         {
             if (points == null || index >= points.Length)
@@ -145,6 +209,8 @@ namespace SpaceEngineers.Scripts.Printer
             var nextPoint = points[index];
             var pos = cockpit.GetPosition();
             var velocity = cockpit.GetShipVelocities().LinearVelocity;
+
+            var mass = cockpit.CalculateShipMass().TotalMass;
 
             var diff = nextPoint - pos;
 
