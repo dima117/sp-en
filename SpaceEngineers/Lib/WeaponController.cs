@@ -214,19 +214,29 @@ namespace SpaceEngineers.Lib
 
         public bool Update()
         {
-            var selfPos = cockpit.GetPosition();
+            try
+            {
 
-            // обновляем цели торпед
-            UpdateTorpedoTargets();
+                var selfPos = cockpit.GetPosition();
 
-            var controlDirection = UpdateAimBot();
+                // обновляем цели торпед
+                UpdateTorpedoTargets();
 
-            // обновляем содержимое экранов
-            UpdateHUD(selfPos);
-            UpdateLcdTargets(selfPos);
-            UpdateLcdSystem();
+                var controlDirection = UpdateAimBot();
 
-            return controlDirection;
+                // обновляем содержимое экранов
+                UpdateHUD(selfPos);
+                UpdateLcdTargets(selfPos);
+                UpdateLcdSystem();
+
+                return controlDirection;
+
+            }
+            catch (Exception e)
+            {
+                OnError(e);
+                return false;
+            }
         }
 
         private bool UpdateAimBot()
@@ -261,8 +271,8 @@ namespace SpaceEngineers.Lib
             lcdTorpedos?.WriteText(sb);
         }
 
-        private HashSet<MyRelationsBetweenPlayerAndBlock> friends = 
-            new HashSet<MyRelationsBetweenPlayerAndBlock> { 
+        private HashSet<MyRelationsBetweenPlayerAndBlock> friends =
+            new HashSet<MyRelationsBetweenPlayerAndBlock> {
                 MyRelationsBetweenPlayerAndBlock.Owner,
                 MyRelationsBetweenPlayerAndBlock.FactionShare,
                 MyRelationsBetweenPlayerAndBlock.Friends,
@@ -314,7 +324,8 @@ namespace SpaceEngineers.Lib
                 var tCount = torpedos.Values.Count(t => t.Stage == LaunchStage.Ready);
                 var enemyLock = false;
 
-                if (this.enemyLock.HasValue) { 
+                if (this.enemyLock.HasValue)
+                {
                     var diff = (now - this.enemyLock.Value);
                     enemyLock = diff.TotalSeconds > 4 || diff.Milliseconds < 600;
                 }
@@ -430,7 +441,8 @@ namespace SpaceEngineers.Lib
             });
 
             // enemy lock
-            if (enemyLock) {
+            if (enemyLock)
+            {
                 list.Add(new MySprite()
                 {
                     Type = SpriteType.TEXT,
@@ -494,7 +506,8 @@ namespace SpaceEngineers.Lib
             FixTargetIndex();
         }
 
-        private void FixTargetIndex() {
+        private void FixTargetIndex()
+        {
             var targets = tracker.GetTargets();
             targetIndex = Array.FindIndex(targets, t => t.Entity.EntityId == targetId);
 
