@@ -36,6 +36,43 @@ namespace SpaceEngineers.Scripts.Printer
         // import:Lib\Grid.cs
         // import:Lib\DirectionController2.cs
 
+        class PrintState
+        {
+            public int level = 0;
+            public Vector3D pos;
+            public Vector3D dir;
+        }
+
+        class X<T> where T : IMyTerminalBlock
+        {
+            public readonly T[] up;
+            public readonly T[] down;
+            public readonly T[] left;
+            public readonly T[] right;
+            public readonly T[] forward;
+            public readonly T[] back;
+            public readonly T[] all;
+
+            public X(MatrixD anchor, IEnumerable<T> blocks, Func<MatrixD, Vector3D> fn)
+            {
+                all = blocks.ToArray();
+                forward = all.Where(b => anchor.Forward == fn(b.WorldMatrix)).ToArray();
+                back = all.Where(b => anchor.Backward == fn(b.WorldMatrix)).ToArray();
+                up = all.Where(b => anchor.Up == fn(b.WorldMatrix)).ToArray();
+                down = all.Where(b => anchor.Down == fn(b.WorldMatrix)).ToArray();
+                left = all.Where(b => anchor.Left == fn(b.WorldMatrix)).ToArray();
+                right = all.Where(b => anchor.Right == fn(b.WorldMatrix)).ToArray();
+            }
+
+            public override string ToString()
+            {
+                return $"- up: {up.Length}, down: {down.Length}\n" +
+                    $"- left: {left.Length}, right: {right.Length}\n" +
+                    $"- forward: {forward.Length}, back: {back.Length}";
+            }
+        }
+
+
         const float FACTOR = 1.4f;
 
         readonly IMyCockpit cockpit;
@@ -44,13 +81,13 @@ namespace SpaceEngineers.Scripts.Printer
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
         readonly IMyTextSurface lcdStatus;
-        readonly IMyThrust[] thrusters;
         private readonly Grid grid;
+
+        private readonly X<IMyThrust> thrusters;
 
         private Vector3D? directionDown;
         private Vector3D? directionForward;
-        private Vector3D[] points;
-        private int index = 0;
+        private PrintState printState;
 
         public Program()
         {
@@ -64,7 +101,8 @@ namespace SpaceEngineers.Scripts.Printer
             cockpit = grid.GetBlocksOfType<IMyCockpit>(w => w.CubeGrid == Me.CubeGrid).First();
             gyros = grid.GetBlocksOfType<IMyGyro>(w => w.CubeGrid == Me.CubeGrid);
 
-            thrusters = grid.GetBlocksOfType<IMyThrust>(w => w.CubeGrid == Me.CubeGrid);
+            var t = grid.GetBlocksOfType<IMyThrust>(w => w.CubeGrid == Me.CubeGrid);
+            thrusters = new X<IMyThrust>(cockpit.WorldMatrix, t, m => m.Backward);
 
             lcdStatus = cockpit.GetSurface(0);
 
@@ -139,20 +177,21 @@ namespace SpaceEngineers.Scripts.Printer
             float mass,
             IMyThrust[] forward,
             IMyThrust[] back,
-            float velocity,
+            double velocity,
             double distance)
         {
             var fPercent = 0f;
             var bPercent = 0f;
 
-            const float vT = 2f;
+            const float vT = 1.5f;
 
             var ft = forward;
             var bt = back;
             var v0 = velocity;
             var d = distance;
 
-            if (distance < 0) {
+            if (distance < 0)
+            {
                 ft = back;
                 bt = forward;
                 v0 = -velocity;
@@ -167,26 +206,29 @@ namespace SpaceEngineers.Scripts.Printer
             // формула: t = (vT - v0) / a
             // формула: S = v0 * t + (a * t * t) / 2
 
-            if (v0 < 0) {
+            if (v0 < 0)
+            {
                 // если движемся в обратную сторону, то сначала тормозим
-                fPercent = 100;
-            } else
+                fPercent = 1;
+            }
+            else
             {
                 // дистанция остановки с текущей скорости
                 var t = v0 / ba;
                 var s = (v0 * t) - ba * t * t / 2;
 
-                if (s <= distance)
+                if (s >= d)
                 {
                     // если дистанция не достаточна для остановки с текущей скорости, то тормозим
-                    bPercent = 100;
+                    bPercent = 1;
                 }
                 else if (v0 < vT)
                 {
                     // если дистанция позволяет разогнаться и затормозить и скорость меньше заданной, то разгоняемся
-                    fPercent = 100;
+                    fPercent = 1;
                 }
             }
+
 
             // включаем двигатели
             foreach (var t in ft)
@@ -199,59 +241,29 @@ namespace SpaceEngineers.Scripts.Printer
             }
         }
 
-        private void Move()
+        private double Move()
         {
-            if (points == null || index >= points.Length)
-            {
-                return;
-            }
+            if (printState == null) { return 0; }
 
-            var nextPoint = points[index];
-            var pos = cockpit.GetPosition();
+            const float STEP = 2.5f;
+
+            var invertedMatrix = MatrixD.Invert(cockpit.WorldMatrix.GetOrientation());
+
             var velocity = cockpit.GetShipVelocities().LinearVelocity;
-
             var mass = cockpit.CalculateShipMass().TotalMass;
 
-            var diff = nextPoint - pos;
+            var target = printState.dir * printState.level * STEP;
+            var offset = cockpit.GetPosition() - printState.pos;
 
-            if (diff.Length() < 0.3)
-            {
-                foreach (var t in thrusters)
-                {
-                    t.ThrustOverridePercentage = 0;
-                }
+            var targetLocal = Vector3D.Transform(target, invertedMatrix);
+            var offsetLocal = Vector3D.Transform(offset, invertedMatrix);
+            var v0 = printState.dir.Dot(velocity);
 
-                index++;
-                return;
-            }
+            var dist = targetLocal.Y - offsetLocal.Y;
 
-            var dir = Vector3D.Normalize(nextPoint - pos);
-            var vel = Vector3D.Normalize(velocity);
+            ControlThrusters(mass, thrusters.up, thrusters.down, v0, dist);
 
-            var v = velocity.Length();
-
-            if (v < 0.05 || (velocity.Length() < 0.5 && dir.Dot(vel) > 0.98))
-            {
-                cockpit.DampenersOverride = false;
-
-                foreach (var t in thrusters)
-                {
-                    var power = t.WorldMatrix.Backward.Dot(dir) * 100 * 0.05;
-
-                    if (power > 0)
-                    {
-                        t.ThrustOverridePercentage = Convert.ToSingle(power);
-                    }
-                }
-            }
-            else
-            {
-                cockpit.DampenersOverride = true;
-                foreach (var t in thrusters)
-                {
-                    t.ThrustOverridePercentage = 0;
-                }
-            }
+            return offsetLocal.Y;
         }
 
         private void Align()
@@ -302,18 +314,42 @@ namespace SpaceEngineers.Scripts.Printer
                     break;
                 case "start":
                     Start();
+                    foreach (var t in thrusters.all)
+                    {
+                        t.Enabled = true;
+                    }
                     break;
                 case "stop":
-                    points = null;
+                    printState = null;
+                    foreach (var t in thrusters.all)
+                    {
+                        t.ThrustOverride = 0;
+                    }
+                    break;
+                case "up":
+                    if (printState != null)
+                    {
+                        printState.level++;
+                    }
+                    break;
+                case "down":
+                    if (printState != null && printState.level > 0)
+                    {
+                        printState.level--;
+                    }
                     break;
             }
 
             Align();
-            Move();
+            var currentHeight = Move();
 
-            lcdStatus.WriteText($"Locked: {directionDown.HasValue && directionForward.HasValue}");
-            lcdStatus.WriteText($"Move: {points != null}", true);
-            lcdStatus.WriteText($"Index: {index}", true);
+            var sb = new StringBuilder();
+            sb.AppendLine($"Locked: {directionDown.HasValue && directionForward.HasValue}");
+            sb.AppendLine($"Move: {printState != null}");
+            sb.AppendLine($"Level:\n{printState?.level ?? 0:0}");
+            sb.AppendLine($"Height:\n{currentHeight:0.0}");
+
+            lcdStatus.WriteText(sb);
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());
@@ -321,35 +357,13 @@ namespace SpaceEngineers.Scripts.Printer
 
         private void Start()
         {
-            if (!directionDown.HasValue || !directionForward.HasValue)
+            directionDown = cockpit.WorldMatrix.Down;
+            directionForward = cockpit.WorldMatrix.Forward;
+            printState = new PrintState
             {
-                return;
-            }
-
-            var OFFSET = 20;
-            var LENGT = 120;
-            var STEP = 2.7;
-
-            var left = cockpit.WorldMatrix.Left * OFFSET;
-            var right = cockpit.WorldMatrix.Right * OFFSET;
-            var up = cockpit.WorldMatrix.Up * STEP;
-
-            var pos = cockpit.GetPosition();
-
-            var list = new List<Vector3D>();
-
-            for (var level = 0; level < LENGT / STEP; level++)
-            {
-                var pos1 = pos + level * up;
-
-                list.Add(pos1 + left);
-                list.Add(pos1 + right);
-                list.Add(pos1);
-                list.Add(pos1 + up);
-            }
-
-            points = list.ToArray();
-            index = 0;
+                pos = cockpit.GetPosition(),
+                dir = cockpit.WorldMatrix.Up
+            };
         }
 
         private string FormatGPS(Vector3D point, string label)
