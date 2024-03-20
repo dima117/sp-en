@@ -16,7 +16,6 @@ using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using Sandbox.Game.Entities;
 using SpaceEngineers.Lib;
-using static VRageMath.Base6Directions;
 
 namespace SpaceEngineers.Scripts.Printer
 {
@@ -26,8 +25,8 @@ namespace SpaceEngineers.Scripts.Printer
         // гироскоп должен быть сориентирован по направлению кабины
         // remote control а принтере должен быть сориентирован вверх
 
-        // TODO: написать логику печати с двойным проходом
-        //   - передавать максимальные скорости, размеры
+        // TODO: выводить на экран текущие скорость и остаток расстояния по осям
+        // TODO: передавать максимальные скорости, размеры
         // TODO: собрать новый принтер
         //   - соединить через merge block, чтобы печатать принтер вместе
         //   - больше двигателей (включать последовательно)
@@ -42,9 +41,9 @@ namespace SpaceEngineers.Scripts.Printer
 
         class PrintState
         {
-            public int level = 0;
-            public Vector3D pos;
-            public Vector3D dir;
+            public int index = 0;
+            public Vector3D position;
+            public Vector3D[] points;
         }
 
         class X<T> where T : IMyTerminalBlock
@@ -76,6 +75,93 @@ namespace SpaceEngineers.Scripts.Printer
             }
         }
 
+        class OneDimensionMovementController
+        {
+
+            private readonly IMyThrust[] forward;
+            private readonly IMyThrust[] back;
+
+            public OneDimensionMovementController(IMyThrust[] forward, IMyThrust[] back)
+            {
+                this.forward = forward;
+                this.back = back;
+            }
+
+            public static bool ControlThrusters(
+                float mass,
+                IMyThrust[] forward,
+                IMyThrust[] back,
+                double velocity,
+                double distance)
+            {
+                var fPercent = 0f;
+                var bPercent = 0f;
+
+                const float vT = 1.5f;
+
+                // ускорение
+                var fa = forward.Sum(t => t.MaxThrust) / mass;
+                var ba = back.Sum(t => t.MaxThrust) / mass;
+
+                // формула: a = (vT - v0) / t
+                // формула: t = (vT - v0) / a
+                // формула: S = v0 * t + (a * t * t) / 2
+
+                if (velocity < 0)
+                {
+                    // если движемся в обратную сторону, то сначала тормозим
+                    fPercent = 1;
+                }
+                else
+                {
+                    // время и дистанция остановки с текущей скорости
+                    var t = velocity / ba;
+                    var s = (velocity * t) - ba * t * t / 2;
+
+                    if (s >= distance)
+                    {
+                        // если дистанция не достаточна для остановки с текущей скорости, то тормозим
+                        bPercent = 1;
+                    }
+                    else if (velocity < vT)
+                    {
+                        // если дистанция позволяет разогнаться и затормозить и скорость меньше заданной, то разгоняемся
+                        fPercent = 1;
+                    }
+                }
+
+
+                // включаем двигатели
+                foreach (var t in forward)
+                {
+                    t.ThrustOverridePercentage = fPercent;
+                }
+
+                foreach (var t in back)
+                {
+                    t.ThrustOverridePercentage = bPercent;
+                }
+
+                // возвращаем true, если было движение
+                return distance > 0.2f && Math.Abs(velocity) > 0.2f;
+            }
+
+            public bool Update(float mass, double velocity, double currentPos, double targetPos)
+            {
+                if (targetPos > currentPos)
+                {
+                    // движение вперед
+                    return ControlThrusters(mass, forward, back, velocity, targetPos - currentPos);
+                }
+                else
+                {
+                    // движение назад
+                    return ControlThrusters(mass, back, forward, -velocity, currentPos - targetPos);
+                }
+            }
+
+        }
+
 
         const float FACTOR = 1.4f;
 
@@ -85,13 +171,20 @@ namespace SpaceEngineers.Scripts.Printer
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
         readonly IMyTextSurface lcdStatus;
-        private readonly Grid grid;
 
+        private readonly Grid grid;
         private readonly X<IMyThrust> thrusters;
+        private readonly OneDimensionMovementController moveV;
+        private readonly OneDimensionMovementController moveH;
 
         private Vector3D? directionDown;
         private Vector3D? directionForward;
         private PrintState printState;
+
+        private bool sameGrid<T>(T b) where T : IMyTerminalBlock
+        {
+            return b.CubeGrid == Me.CubeGrid;
+        }
 
         public Program()
         {
@@ -101,12 +194,15 @@ namespace SpaceEngineers.Scripts.Printer
             lcd = Me.GetSurface(1);
             lcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
-            connector = grid.GetBlocksOfType<IMyShipConnector>(w => w.CubeGrid == Me.CubeGrid).First();
-            cockpit = grid.GetBlocksOfType<IMyCockpit>(w => w.CubeGrid == Me.CubeGrid).First();
-            gyros = grid.GetBlocksOfType<IMyGyro>(w => w.CubeGrid == Me.CubeGrid);
+            connector = grid.GetBlocksOfType<IMyShipConnector>(sameGrid).First();
+            cockpit = grid.GetBlocksOfType<IMyCockpit>(sameGrid).First();
+            gyros = grid.GetBlocksOfType<IMyGyro>(sameGrid);
 
-            var t = grid.GetBlocksOfType<IMyThrust>(w => w.CubeGrid == Me.CubeGrid);
+            var t = grid.GetBlocksOfType<IMyThrust>(sameGrid);
             thrusters = new X<IMyThrust>(cockpit.WorldMatrix, t, m => m.Backward);
+
+            moveV = new OneDimensionMovementController(thrusters.up, thrusters.down);
+            moveH = new OneDimensionMovementController(thrusters.right, thrusters.left);
 
             lcdStatus = cockpit.GetSurface(0);
 
@@ -245,29 +341,35 @@ namespace SpaceEngineers.Scripts.Printer
             }
         }
 
-        private double Move()
+        private void Move()
         {
-            if (printState == null) { return 0; }
+            if (printState == null) { return; }
 
-            const float STEP = 2.5f;
+            if (printState.index < 0 || printState.index >= printState.points.Length) { return; }
 
-            var invertedMatrix = MatrixD.Invert(cockpit.WorldMatrix.GetOrientation());
-
-            var velocity = cockpit.GetShipVelocities().LinearVelocity;
             var mass = cockpit.CalculateShipMass().TotalMass;
+            var velocity = cockpit.GetShipVelocities().LinearVelocity;
+            var matrix = MatrixD.Invert(cockpit.WorldMatrix.GetOrientation());
 
-            var target = printState.dir * printState.level * STEP;
-            var offset = cockpit.GetPosition() - printState.pos;
+            var target = printState.points[printState.index];
+            var offset = cockpit.GetPosition() - printState.position;
 
-            var targetLocal = Vector3D.Transform(target, invertedMatrix);
-            var offsetLocal = Vector3D.Transform(offset, invertedMatrix);
-            var v0 = printState.dir.Dot(velocity);
+            var targetLocal = Vector3D.Transform(target, matrix);
+            var offsetLocal = Vector3D.Transform(offset, matrix);
+            var velocityLocal = Vector3D.Transform(velocity, matrix);
+            //var v0 = printState.dir.Dot(velocity);
 
-            var dist = targetLocal.Y - offsetLocal.Y;
+            if (moveV.Update(mass, velocityLocal.Y, offsetLocal.Y, targetLocal.Y))
+            {
+                return;
+            }
 
-            ControlThrusters(mass, thrusters.up, thrusters.down, v0, dist);
+            if (moveH.Update(mass, velocityLocal.X, offsetLocal.X, targetLocal.X))
+            {
+                return;
+            }
 
-            return offsetLocal.Y;
+            printState.index++;
         }
 
         private void Align()
@@ -306,18 +408,12 @@ namespace SpaceEngineers.Scripts.Printer
 
                 case "reset":
                     directionDown = null;
+                    directionForward = null;
                     Me.CustomData = string.Empty;
                     Unlock();
                     break;
-
-                case "lock":
-                    Lock();
-                    break;
-                case "unlock":
-                    Unlock();
-                    break;
                 case "start":
-                    Start();
+                    Start(20, 50);
                     foreach (var t in thrusters.all)
                     {
                         t.Enabled = true;
@@ -330,28 +426,15 @@ namespace SpaceEngineers.Scripts.Printer
                         t.ThrustOverride = 0;
                     }
                     break;
-                case "up":
-                    if (printState != null)
-                    {
-                        printState.level++;
-                    }
-                    break;
-                case "down":
-                    if (printState != null && printState.level > 0)
-                    {
-                        printState.level--;
-                    }
-                    break;
             }
 
             Align();
-            var currentHeight = Move();
+            Move();
 
             var sb = new StringBuilder();
             sb.AppendLine($"Locked: {directionDown.HasValue && directionForward.HasValue}");
             sb.AppendLine($"Move: {printState != null}");
-            sb.AppendLine($"Level:\n{printState?.level ?? 0:0}");
-            sb.AppendLine($"Height:\n{currentHeight:0.0}");
+            sb.AppendLine($"Point:\n{printState?.index ?? 0:0}");
 
             lcdStatus.WriteText(sb);
 
@@ -359,14 +442,40 @@ namespace SpaceEngineers.Scripts.Printer
             lcd.WriteText(tracker.ToString());
         }
 
-        private void Start()
+        private void Start(
+            int width, // смещение вбок (в блоках)
+            int length) // длина (в блоках)
         {
-            directionDown = cockpit.WorldMatrix.Down;
-            directionForward = cockpit.WorldMatrix.Forward;
+            var STEP = 2.5;
+            var offset = Math.Ceiling(width / 2f) * STEP;
+
+            var pos = cockpit.GetPosition();
+            var m = cockpit.WorldMatrix;
+
+            var left = m.Left * offset;
+            var right = m.Right * offset;
+            var up = m.Up * STEP;
+
+            // формируем траекторию движения
+            var list = new List<Vector3D>();
+
+            for (var level = 0; level < length; level++)
+            {
+                var pos1 = pos + level * up;
+                list.Add(pos1 + right);
+                list.Add(pos1 + left);
+                list.Add(pos1 + right);
+                list.Add(pos1 + left);
+                list.Add(pos1);
+                list.Add(pos1 + up);
+            }
+
+            directionDown = m.Down;
+            directionForward = m.Forward;
             printState = new PrintState
             {
-                pos = cockpit.GetPosition(),
-                dir = cockpit.WorldMatrix.Up
+                position = pos,
+                points = list.ToArray()
             };
         }
 
