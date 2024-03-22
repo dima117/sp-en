@@ -24,9 +24,11 @@ namespace SpaceEngineers.Scripts.Printer
         // скрипт для выравнивания челнока в принтере кораблей
         // гироскоп должен быть сориентирован по направлению кабины
         // remote control а принтере должен быть сориентирован вверх
+        // TODO: динамическое формирование маршрута с учетом изменения массы
         // TODO: собрать новый принтер
         //   - соединить через merge block, чтобы печатать принтер вместе
-        //   - больше двигателей (включать последовательно)
+        //   - убрать звигатель, на который попадает пламя, заменить двигатели на большие
+        //   - добавить две полосы брони, чтобы не проваривались роторы и наклонные блоки
 
         #region Copy
 
@@ -42,7 +44,7 @@ namespace SpaceEngineers.Scripts.Printer
 
             int index = 0;
 
-            public Settings(Action<int, int> start, int height = 50, int width = 15)
+            public Settings(Action<int, int> start, int height = 50, int width = 22)
             {
                 this.start = start;
                 this.height = height;
@@ -97,9 +99,9 @@ namespace SpaceEngineers.Scripts.Printer
                 var sb = new StringBuilder();
 
                 sb.AppendLine("Parameters:\n--");
-                sb.AppendLine($"{Cur(0)}Height ++ ({height})");
+                sb.AppendLine($"{Cur(0)}Height ++ {height}");
                 sb.AppendLine($"{Cur(1)}Height --");
-                sb.AppendLine($"{Cur(2)}Width ++ ({width})");
+                sb.AppendLine($"{Cur(2)}Width ++ {width}");
                 sb.AppendLine($"{Cur(3)}Width --");
                 sb.AppendLine($"{Cur(4)}Start");
 
@@ -156,11 +158,13 @@ namespace SpaceEngineers.Scripts.Printer
 
             private readonly IMyThrust[] forward;
             private readonly IMyThrust[] back;
+            private readonly float vMax;
 
-            public OneDimensionMovementController(IMyThrust[] forward, IMyThrust[] back)
+            public OneDimensionMovementController(IMyThrust[] forward, IMyThrust[] back, float vMax)
             {
                 this.forward = forward;
                 this.back = back;
+                this.vMax = vMax;
             }
 
             public static void SetThrust(IMyThrust[] thrusters, float mass, float a)
@@ -181,11 +185,11 @@ namespace SpaceEngineers.Scripts.Printer
                 IMyThrust[] forward,
                 IMyThrust[] back,
                 double velocity,
-                double distance)
+                double distance,
+                float vMax)
             {
                 var direction = ThrustDirection.None;
 
-                const float vT = 1.5f;
                 const float aMax = 1f;
 
                 var thrustForward = forward.Sum(t => t.MaxThrust);
@@ -215,7 +219,7 @@ namespace SpaceEngineers.Scripts.Printer
                         // если дистанция не достаточна для остановки с текущей скорости, то тормозим
                         direction = ThrustDirection.Backward;
                     }
-                    else if (velocity < vT)
+                    else if (velocity < vMax)
                     {
                         // если дистанция позволяет разогнаться и затормозить и скорость меньше заданной, то разгоняемся
                         direction = ThrustDirection.Forward;
@@ -233,12 +237,12 @@ namespace SpaceEngineers.Scripts.Printer
                 if (targetPos > currentPos)
                 {
                     // движение вперед
-                    ControlThrusters(mass, forward, back, velocity, targetPos - currentPos);
+                    ControlThrusters(mass, forward, back, velocity, targetPos - currentPos, vMax);
                 }
                 else
                 {
                     // движение назад
-                    ControlThrusters(mass, back, forward, -velocity, currentPos - targetPos);
+                    ControlThrusters(mass, back, forward, -velocity, currentPos - targetPos, vMax);
                 }
             }
 
@@ -257,8 +261,9 @@ namespace SpaceEngineers.Scripts.Printer
 
         private readonly Grid grid;
         private readonly X<IMyThrust> thrusters;
-        private readonly OneDimensionMovementController moveV;
-        private readonly OneDimensionMovementController moveH;
+        private readonly OneDimensionMovementController moveX;
+        private readonly OneDimensionMovementController moveY;
+        private readonly OneDimensionMovementController moveZ;
         private readonly Settings settings;
 
         private Vector3D? directionDown;
@@ -285,8 +290,9 @@ namespace SpaceEngineers.Scripts.Printer
             var t = grid.GetBlocksOfType<IMyThrust>(sameGrid);
             thrusters = new X<IMyThrust>(cockpit.WorldMatrix, t, m => m.Backward);
 
-            moveV = new OneDimensionMovementController(thrusters.up, thrusters.down);
-            moveH = new OneDimensionMovementController(thrusters.right, thrusters.left);
+            moveX = new OneDimensionMovementController(thrusters.right, thrusters.left, 0.75f);
+            moveY = new OneDimensionMovementController(thrusters.up, thrusters.down, 0.2f);
+            moveZ = new OneDimensionMovementController(thrusters.back, thrusters.forward, 0.2f);
             settings = new Settings(Start);
 
             lcdStatus = cockpit.GetSurface(0);
@@ -393,23 +399,26 @@ namespace SpaceEngineers.Scripts.Printer
             var velocityLocal = Vector3D.Transform(velocity, matrix);
 
             // control
-            moveV.Update(mass, velocityLocal.Y, offsetLocal.Y, targetLocal.Y);
-            moveH.Update(mass, velocityLocal.X, offsetLocal.X, targetLocal.X);
+            moveX.Update(mass, velocityLocal.X, offsetLocal.X, targetLocal.X);
+            moveY.Update(mass, velocityLocal.Y, offsetLocal.Y, targetLocal.Y);
+            moveZ.Update(mass, velocityLocal.Z, offsetLocal.Z, targetLocal.Z);
 
             // status
             var sb = new StringBuilder();
             sb.AppendLine("Print state:\n--");
             sb.AppendLine($"Height: {offsetLocal.Y:0.00} / {targetLocal.Y:0.00}");
             sb.AppendLine($"Offset: {offsetLocal.X:0.00} / {targetLocal.X:0.00}");
+            sb.AppendLine($"Diff: {(target - offset).Length():0.00}");
+            sb.AppendLine($"Velocity: X {velocityLocal.X:0.00} / Y {velocityLocal.Y:0.00}");
             sb.AppendLine($"Point: {printState.index + 1} / {printState.points.Length}");
             sb.AppendLine("--\n> Stop");
             lcdDebug.WriteText(sb);
 
             // check next point
-            if ((target - offset).Length() < 0.2 && velocity.Length() < 0.2)
+            if ((target - offset).Length() < 0.5 && velocityLocal.X < 0.5 && velocityLocal.Y < 0.5)
             {
                 printState.index++;
-                printState.timestamp = DateTime.UtcNow.AddSeconds(1);
+                printState.timestamp = DateTime.UtcNow.AddSeconds(4);
             }
         }
 
@@ -513,15 +522,19 @@ namespace SpaceEngineers.Scripts.Printer
             // формируем траекторию движения
             var list = new List<Vector3D>();
 
+            list.Add(pos + left);
+
             for (var level = 0; level < length; level++)
             {
                 var pos1 = pos + level * up;
                 list.Add(pos1 + right);
                 list.Add(pos1 + left);
-                list.Add(pos1 + right);
-                list.Add(pos1 + left);
-                list.Add(pos1);
-                list.Add(pos1 + up);
+                //list.Add(pos1 + right);
+                //list.Add(pos1 + left);
+
+                // важно, чтобы изменение высоты было вне области действия сварщиков
+                // т.к. изменение массы корабля может помешать позиционированию
+                list.Add(pos1 + left+ up);
             }
 
             directionDown = m.Down;
