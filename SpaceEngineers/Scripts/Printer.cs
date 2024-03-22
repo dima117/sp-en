@@ -78,6 +78,13 @@ namespace SpaceEngineers.Scripts.Printer
 
         class OneDimensionMovementController
         {
+            enum ThrustDirection
+            {
+                None,
+                Forward,
+                Backward,
+            }
+
 
             private readonly IMyThrust[] forward;
             private readonly IMyThrust[] back;
@@ -88,6 +95,18 @@ namespace SpaceEngineers.Scripts.Printer
                 this.back = back;
             }
 
+            public static void SetThrust(IMyThrust[] thrusters, float mass, float a)
+            {
+                var totalThrust = mass * a;
+
+                foreach (var t in thrusters) { 
+                    var thrust = Math.Max(0, Math.Min(t.MaxThrust, totalThrust));
+
+                    t.ThrustOverride = thrust;
+                    totalThrust -= thrust;
+                }
+            }
+
             public static void ControlThrusters(
                 float mass,
                 IMyThrust[] forward,
@@ -95,14 +114,17 @@ namespace SpaceEngineers.Scripts.Printer
                 double velocity,
                 double distance)
             {
-                var fPercent = 0f;
-                var bPercent = 0f;
+                var direction = ThrustDirection.None;
 
                 const float vT = 1.5f;
+                const float aMax = 1f;
+
+                var thrustForward = forward.Sum(t => t.MaxThrust);
+                var thrustBack = back.Sum(t => t.MaxThrust);
 
                 // ускорение
-                var fa = forward.Sum(t => t.MaxThrust) / mass;
-                var ba = back.Sum(t => t.MaxThrust) / mass;
+                var fa = Math.Min(thrustForward / mass, aMax);
+                var ba = Math.Min(thrustBack / mass, aMax);
 
                 // формула: a = (vT - v0) / t
                 // формула: t = (vT - v0) / a
@@ -111,7 +133,7 @@ namespace SpaceEngineers.Scripts.Printer
                 if (velocity < 0)
                 {
                     // если движемся в обратную сторону, то сначала тормозим
-                    fPercent = 1;
+                    direction = ThrustDirection.Forward;
                 }
                 else
                 {
@@ -122,26 +144,19 @@ namespace SpaceEngineers.Scripts.Printer
                     if (s >= distance)
                     {
                         // если дистанция не достаточна для остановки с текущей скорости, то тормозим
-                        bPercent = 1;
+                        direction = ThrustDirection.Backward;
                     }
                     else if (velocity < vT)
                     {
                         // если дистанция позволяет разогнаться и затормозить и скорость меньше заданной, то разгоняемся
-                        fPercent = 1;
+                        direction = ThrustDirection.Forward;
                     }
                 }
 
 
                 // включаем двигатели
-                foreach (var t in forward)
-                {
-                    t.ThrustOverridePercentage = fPercent;
-                }
-
-                foreach (var t in back)
-                {
-                    t.ThrustOverridePercentage = bPercent;
-                }
+                SetThrust(forward, mass, direction == ThrustDirection.Forward ? fa : 0);
+                SetThrust(back, mass, direction == ThrustDirection.Backward ? ba : 0);
             }
 
             public void Update(float mass, double velocity, double currentPos, double targetPos)
@@ -283,7 +298,7 @@ namespace SpaceEngineers.Scripts.Printer
             {
                 cockpit.DampenersOverride = true;
 
-                foreach(var t in thrusters.all)
+                foreach (var t in thrusters.all)
                 {
                     t.ThrustOverride = 0;
                 }

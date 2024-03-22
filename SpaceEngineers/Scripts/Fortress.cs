@@ -36,6 +36,12 @@ namespace SpaceEngineers.Scripts.Fortress
 
         private readonly Grid grid;
         private readonly WeaponController weapons;
+
+        private bool sameGrid<T>(T b) where T : IMyTerminalBlock
+        {
+            return b.CubeGrid == Me.CubeGrid;
+        }
+
         public Program()
         {
             tracker = new RuntimeTracker(this);
@@ -46,15 +52,16 @@ namespace SpaceEngineers.Scripts.Fortress
 
             camera = grid.GetCamera("CAMERA");
 
-            var gyros = grid.GetBlocksOfType<IMyGyro>();
-            var cockpit = grid.GetByFilterOrAny<IMyCockpit>();
+            var gyros = grid.GetBlocksOfType<IMyGyro>(sameGrid);
+            var cockpit = grid.GetByFilterOrAny<IMyCockpit>(sameGrid);
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
             var lcdTargets = cockpit.GetSurface(0);
             var lcdTorpedos = cockpit.GetSurface(1);
             var lcdSystem = cockpit.GetSurface(2);
-            var sound = grid.GetByFilterOrAny<IMySoundBlock>(x => x.CustomName.StartsWith("SOUND"));
+            var sound = grid.GetSound("SOUND", "SoundBlockEnemyDetected");
+            var soundEnemyLock = grid.GetSound("LOCK_SOUND", "SoundBlockAlert1");
 
             var hud = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("HUD"));
 
@@ -70,7 +77,8 @@ namespace SpaceEngineers.Scripts.Fortress
                 lcdSystem,
                 IGC,
                 antennas,
-                sound
+                sound,
+                soundEnemyLock
               );
 
             weapons.OnError += HandleError;
