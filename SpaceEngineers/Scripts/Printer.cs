@@ -24,20 +24,88 @@ namespace SpaceEngineers.Scripts.Printer
         // скрипт для выравнивания челнока в принтере кораблей
         // гироскоп должен быть сориентирован по направлению кабины
         // remote control а принтере должен быть сориентирован вверх
-
-        // TODO: выводить на экран текущие скорость и остаток расстояния по осям
-        // TODO: передавать максимальные скорости, размеры
         // TODO: собрать новый принтер
         //   - соединить через merge block, чтобы печатать принтер вместе
         //   - больше двигателей (включать последовательно)
-        // TODO: выбирать настройки принтера через меню
-        // TODO: автостыковка 
 
         #region Copy
 
         // import:RuntimeTracker.cs
         // import:Lib\Grid.cs
         // import:Lib\DirectionController2.cs
+
+        class Settings
+        {
+            public int width;
+            public int height;
+            public Action<int, int> start;
+
+            int index = 0;
+
+            public Settings(Action<int, int> start, int height = 50, int width = 15)
+            {
+                this.start = start;
+                this.height = height;
+                this.width = width;
+            }
+
+            public void Prev()
+            {
+                if (index > 0)
+                {
+                    index--;
+                }
+            }
+            public void Next()
+            {
+                if (index < 5)
+                {
+                    index++;
+                }
+            }
+
+            public void Apply()
+            {
+                switch (index)
+                {
+                    case 0:
+                        height++;
+                        break;
+                    case 1:
+                        height--;
+                        break;
+                    case 2:
+                        width++;
+                        break;
+                    case 3:
+                        width--;
+                        break;
+                    case 4:
+                        start(width, height);
+                        break;
+                }
+            }
+
+            private string Cur(int i)
+            {
+                return index == i ? "> " : "";
+
+            }
+
+            public override string ToString()
+            {
+                var sb = new StringBuilder();
+
+                sb.AppendLine("Parameters:\n--");
+                sb.AppendLine($"{Cur(0)}Height ++ ({height})");
+                sb.AppendLine($"{Cur(1)}Height --");
+                sb.AppendLine($"{Cur(2)}Width ++ ({width})");
+                sb.AppendLine($"{Cur(3)}Width --");
+                sb.AppendLine($"{Cur(4)}Start");
+
+                return sb.ToString();
+            }
+        }
 
         class PrintState
         {
@@ -99,7 +167,8 @@ namespace SpaceEngineers.Scripts.Printer
             {
                 var totalThrust = mass * a;
 
-                foreach (var t in thrusters) { 
+                foreach (var t in thrusters)
+                {
                     var thrust = Math.Max(0, Math.Min(t.MaxThrust, totalThrust));
 
                     t.ThrustOverride = thrust;
@@ -190,6 +259,7 @@ namespace SpaceEngineers.Scripts.Printer
         private readonly X<IMyThrust> thrusters;
         private readonly OneDimensionMovementController moveV;
         private readonly OneDimensionMovementController moveH;
+        private readonly Settings settings;
 
         private Vector3D? directionDown;
         private Vector3D? directionForward;
@@ -217,6 +287,7 @@ namespace SpaceEngineers.Scripts.Printer
 
             moveV = new OneDimensionMovementController(thrusters.up, thrusters.down);
             moveH = new OneDimensionMovementController(thrusters.right, thrusters.left);
+            settings = new Settings(Start);
 
             lcdStatus = cockpit.GetSurface(0);
             lcdDebug = cockpit.GetSurface(2);
@@ -292,10 +363,12 @@ namespace SpaceEngineers.Scripts.Printer
         {
             if (printState == null) { return; }
 
-            if (printState.index < 0 || printState.index >= printState.points.Length) { return; }
+            var invalidState = printState.index < 0 || printState.index >= printState.points.Length;
+            var pause = DateTime.UtcNow < printState.timestamp;
 
-            if (DateTime.UtcNow < printState.timestamp)
+            if (invalidState || pause)
             {
+                // если закончили печать или на паузе, то останавливаемся
                 cockpit.DampenersOverride = true;
 
                 foreach (var t in thrusters.all)
@@ -319,19 +392,24 @@ namespace SpaceEngineers.Scripts.Printer
             var offsetLocal = Vector3D.Transform(offset, matrix);
             var velocityLocal = Vector3D.Transform(velocity, matrix);
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"cur height: {offsetLocal.Y:0.00}");
-            sb.AppendLine($"target height: {targetLocal.Y:0.00}");
-            sb.AppendLine($"point: {printState.index}");
-            lcdDebug.WriteText(sb);
-
+            // control
             moveV.Update(mass, velocityLocal.Y, offsetLocal.Y, targetLocal.Y);
             moveH.Update(mass, velocityLocal.X, offsetLocal.X, targetLocal.X);
 
+            // status
+            var sb = new StringBuilder();
+            sb.AppendLine("Print state:\n--");
+            sb.AppendLine($"Height: {offsetLocal.Y:0.00} / {targetLocal.Y:0.00}");
+            sb.AppendLine($"Offset: {offsetLocal.X:0.00} / {targetLocal.X:0.00}");
+            sb.AppendLine($"Point: {printState.index + 1} / {printState.points.Length}");
+            sb.AppendLine("--\n> Stop");
+            lcdDebug.WriteText(sb);
+
+            // check next point
             if ((target - offset).Length() < 0.2 && velocity.Length() < 0.2)
             {
                 printState.index++;
-                printState.timestamp = DateTime.UtcNow.AddSeconds(2);
+                printState.timestamp = DateTime.UtcNow.AddSeconds(1);
             }
         }
 
@@ -362,43 +440,56 @@ namespace SpaceEngineers.Scripts.Printer
         {
             tracker.AddRuntime();
 
-            switch (argument)
-            {
-                case "init":
-                    SetDirection();
-                    Lock();
-                    break;
-
-                case "reset":
-                    directionDown = null;
-                    directionForward = null;
-                    Me.CustomData = string.Empty;
-                    Unlock();
-                    break;
-                case "start":
-                    Start(10, 50);
-                    foreach (var t in thrusters.all)
-                    {
-                        t.Enabled = true;
-                    }
-                    break;
-                case "stop":
-                    printState = null;
-                    foreach (var t in thrusters.all)
-                    {
-                        t.ThrustOverride = 0;
-                    }
-                    break;
-            }
-
             Align();
-            Move();
+
+            if (printState == null)
+            {
+                switch (argument)
+                {
+                    case "init":
+                        SetDirection();
+                        Lock();
+                        break;
+
+                    case "reset":
+                        directionDown = null;
+                        directionForward = null;
+                        Me.CustomData = string.Empty;
+                        Unlock();
+                        break;
+                    case "up":
+                        settings.Prev();
+                        break;
+                    case "down":
+                        settings.Next();
+                        break;
+                    case "apply":
+                        settings.Apply();
+                        break;
+                }
+
+                lcdDebug.WriteText(settings.ToString());
+            }
+            else
+            {
+                switch (argument)
+                {
+                    case "apply":
+                        printState = null;
+                        cockpit.DampenersOverride = true;
+                        foreach (var t in thrusters.all)
+                        {
+                            t.ThrustOverride = 0;
+                        }
+                        break;
+                    default:
+                        Move();
+                        break;
+                }
+            }
 
             var sb = new StringBuilder();
             sb.AppendLine($"Locked: {directionDown.HasValue && directionForward.HasValue}");
-            sb.AppendLine($"Move: {printState != null}");
-            sb.AppendLine($"Point:\n{printState?.index ?? 0:0}");
-
             lcdStatus.WriteText(sb);
 
             tracker.AddInstructions();
@@ -406,7 +497,7 @@ namespace SpaceEngineers.Scripts.Printer
         }
 
         private void Start(
-            int width, // смещение вбок (в блоках)
+            int width, // ширина вбок (в блоках)
             int length) // длина (в блоках)
         {
             var STEP = 2.5;
@@ -441,6 +532,11 @@ namespace SpaceEngineers.Scripts.Printer
                 points = list.ToArray(),
                 timestamp = DateTime.UtcNow
             };
+
+            foreach (var t in thrusters.all)
+            {
+                t.Enabled = true;
+            }
         }
 
         private string FormatGPS(Vector3D point, string label)
