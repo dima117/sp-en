@@ -111,10 +111,25 @@ namespace SpaceEngineers.Scripts.Printer
 
         class PrintState
         {
-            public int index = 0;
             public Vector3D position;
-            public Vector3D[] points;
+
+            public Vector3D up;
+            public Vector3D right;
+
             public DateTime timestamp;
+
+            public int level = 0;
+            public bool moveTop = false;
+            public bool moveRight = true;
+            public float mass;
+            public int maxLevel;
+
+            public Vector3D GetCurrentPoint()
+            {
+                var offset = moveRight ? right : -right;
+
+                return position + level * up + offset;
+            }
         }
 
         class X<T> where T : IMyTerminalBlock
@@ -369,7 +384,7 @@ namespace SpaceEngineers.Scripts.Printer
         {
             if (printState == null) { return; }
 
-            var invalidState = printState.index < 0 || printState.index >= printState.points.Length;
+            var invalidState = printState.level < 0 || printState.level >= printState.maxLevel;
             var pause = DateTime.UtcNow < printState.timestamp;
 
             if (invalidState || pause)
@@ -391,7 +406,7 @@ namespace SpaceEngineers.Scripts.Printer
             var velocity = cockpit.GetShipVelocities().LinearVelocity;
             var matrix = MatrixD.Invert(cockpit.WorldMatrix.GetOrientation());
 
-            var target = printState.points[printState.index] - printState.position;
+            var target = printState.GetCurrentPoint() - printState.position;
             var offset = cockpit.GetPosition() - printState.position;
 
             var targetLocal = Vector3D.Transform(target, matrix);
@@ -410,14 +425,31 @@ namespace SpaceEngineers.Scripts.Printer
             sb.AppendLine($"Offset: {offsetLocal.X:0.00} / {targetLocal.X:0.00}");
             sb.AppendLine($"Diff: {(target - offset).Length():0.00}");
             sb.AppendLine($"Velocity: X {velocityLocal.X:0.00} / Y {velocityLocal.Y:0.00}");
-            sb.AppendLine($"Point: {printState.index + 1} / {printState.points.Length}");
+            sb.AppendLine($"Level: {printState.level}, direction {(printState.moveRight ? "RIGHT" : "LEFT")}");
             sb.AppendLine("--\n> Stop");
             lcdDebug.WriteText(sb);
 
             // check next point
             if ((target - offset).Length() < 0.5 && velocityLocal.X < 0.5 && velocityLocal.Y < 0.5)
             {
-                printState.index++;
+                if (printState.moveTop)
+                {
+                    printState.moveTop = false;
+                    printState.moveRight = !printState.moveRight;
+                }
+                else {
+                    if (mass > printState.mass)
+                    {
+                        printState.moveRight = !printState.moveRight;
+                    }
+                    else
+                    {
+                        printState.level++;
+                        printState.moveTop = true;
+                    }
+                }
+
+                printState.mass = mass;
                 printState.timestamp = DateTime.UtcNow.AddSeconds(4);
             }
         }
@@ -512,37 +544,21 @@ namespace SpaceEngineers.Scripts.Printer
             var STEP = 2.5;
             var offset = Math.Ceiling(width / 2f) * STEP;
 
+            var mass = cockpit.CalculateShipMass().TotalMass;
             var pos = cockpit.GetPosition();
             var m = cockpit.WorldMatrix;
-
-            var left = m.Left * offset;
             var right = m.Right * offset;
             var up = m.Up * STEP;
-
-            // формируем траекторию движения
-            var list = new List<Vector3D>();
-
-            list.Add(pos + left);
-
-            for (var level = 0; level < length; level++)
-            {
-                var pos1 = pos + level * up;
-                list.Add(pos1 + right);
-                list.Add(pos1 + left);
-                //list.Add(pos1 + right);
-                //list.Add(pos1 + left);
-
-                // важно, чтобы изменение высоты было вне области действия сварщиков
-                // т.к. изменение массы корабля может помешать позиционированию
-                list.Add(pos1 + left+ up);
-            }
 
             directionDown = m.Down;
             directionForward = m.Forward;
             printState = new PrintState
             {
+                maxLevel = length,
                 position = pos,
-                points = list.ToArray(),
+                right = right,
+                up = up,
+                mass = mass,
                 timestamp = DateTime.UtcNow
             };
 
