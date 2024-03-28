@@ -36,6 +36,10 @@ namespace SpaceEngineers.Scripts.Printer
         // import:Lib\Grid.cs
         // import:Lib\DirectionController2.cs
 
+        const float MAX_SPEED_H = 0.5f;
+        const float MAX_SPEED_V = 0.2f;
+        const int REPEAT = 3;
+
         class Settings
         {
             public int width;
@@ -121,7 +125,7 @@ namespace SpaceEngineers.Scripts.Printer
             public int level = 0;
             public bool moveTop = false;
             public bool moveRight = true;
-            public float mass;
+            public int repeat = REPEAT;
             public int maxLevel;
 
             public Vector3D GetCurrentPoint()
@@ -305,9 +309,9 @@ namespace SpaceEngineers.Scripts.Printer
             var t = grid.GetBlocksOfType<IMyThrust>(sameGrid);
             thrusters = new X<IMyThrust>(cockpit.WorldMatrix, t, m => m.Backward);
 
-            moveX = new OneDimensionMovementController(thrusters.right, thrusters.left, 0.75f);
-            moveY = new OneDimensionMovementController(thrusters.up, thrusters.down, 0.2f);
-            moveZ = new OneDimensionMovementController(thrusters.back, thrusters.forward, 0.2f);
+            moveX = new OneDimensionMovementController(thrusters.right, thrusters.left, MAX_SPEED_H);
+            moveY = new OneDimensionMovementController(thrusters.up, thrusters.down, MAX_SPEED_V);
+            moveZ = new OneDimensionMovementController(thrusters.back, thrusters.forward, MAX_SPEED_V);
             settings = new Settings(Start);
 
             lcdStatus = cockpit.GetSurface(0);
@@ -425,7 +429,7 @@ namespace SpaceEngineers.Scripts.Printer
             sb.AppendLine($"Offset: {offsetLocal.X:0.00} / {targetLocal.X:0.00}");
             sb.AppendLine($"Diff: {(target - offset).Length():0.00}");
             sb.AppendLine($"Velocity: X {velocityLocal.X:0.00} / Y {velocityLocal.Y:0.00}");
-            sb.AppendLine($"Level: {printState.level}, direction {(printState.moveRight ? "RIGHT" : "LEFT")}");
+            sb.AppendLine($"Level: {printState.level}, iteration left: {printState.repeat}, direction {(printState.moveRight ? "RIGHT" : "LEFT")}");
             sb.AppendLine("--\n> Stop");
             lcdDebug.WriteText(sb);
 
@@ -434,11 +438,14 @@ namespace SpaceEngineers.Scripts.Printer
             {
                 if (printState.moveTop)
                 {
+                    printState.repeat = REPEAT;
                     printState.moveTop = false;
                     printState.moveRight = !printState.moveRight;
                 }
                 else {
-                    if (mass > printState.mass)
+                    printState.repeat--;
+
+                    if (printState.repeat > 0)
                     {
                         printState.moveRight = !printState.moveRight;
                     }
@@ -449,7 +456,6 @@ namespace SpaceEngineers.Scripts.Printer
                     }
                 }
 
-                printState.mass = mass;
                 printState.timestamp = DateTime.UtcNow.AddSeconds(4);
             }
         }
@@ -544,7 +550,6 @@ namespace SpaceEngineers.Scripts.Printer
             var STEP = 2.5;
             var offset = Math.Ceiling(width / 2f) * STEP;
 
-            var mass = cockpit.CalculateShipMass().TotalMass;
             var pos = cockpit.GetPosition();
             var m = cockpit.WorldMatrix;
             var right = m.Right * offset;
@@ -558,7 +563,6 @@ namespace SpaceEngineers.Scripts.Printer
                 position = pos,
                 right = right,
                 up = up,
-                mass = mass,
                 timestamp = DateTime.UtcNow
             };
 
