@@ -41,15 +41,17 @@ namespace SpaceEngineers.Scripts.Printer
         const float MAX_SPEED_V = 0.2f;
         const int REPEAT = 3;
 
+        const float BLOCK_SIZE = 2.5f;
+
         class Settings
         {
-            public int width;
-            public int height;
-            public Action<int, int> start;
+            public uint width;
+            public uint height;
+            public Action<uint, uint> start;
 
             int index = 0;
 
-            public Settings(Action<int, int> start, int height = 50, int width = 22)
+            public Settings(Action<uint, uint> start, uint height = 50, uint width = 22)
             {
                 this.start = start;
                 this.height = height;
@@ -116,22 +118,73 @@ namespace SpaceEngineers.Scripts.Printer
 
         class PrintState
         {
+
             public Vector3D position;
 
-            public Vector3D up;
-            public Vector3D right;
-
-            public int level = 0;
+            public uint level = 0;
             public bool moveTop = false;
             public bool moveRight = true;
-            public int repeat = REPEAT;
-            public int maxLevel;
+            public uint repeat = REPEAT;
+            public uint maxLevel;
+            public uint offset;
 
-            public Vector3D GetCurrentPoint()
+            public Vector3D GetCurrentPoint(MatrixD wm)
             {
-                var offset = moveRight ? right : -right;
+                var up = wm.Up * level * BLOCK_SIZE;
 
-                return position + level * up + offset;
+                var offset = (moveRight ? wm.Right : wm.Left) * this.offset * BLOCK_SIZE;
+
+                return position + up + offset;
+            }
+
+            public void Serialize(StringBuilder sb)
+            {
+                Serializer.SerializeVector3D(position, sb);
+                sb.AppendLine(level.ToString());
+                sb.AppendLine(moveTop.ToString());
+                sb.AppendLine(moveRight.ToString());
+                sb.AppendLine(repeat.ToString());
+                sb.AppendLine(maxLevel.ToString());
+                sb.AppendLine(offset.ToString());
+            }
+
+            public static bool TryParse(StringReader reader, out PrintState v)
+            {
+                var success = true;
+
+                Vector3D position;
+                success &= Serializer.TryParseVector3D(reader, out position);
+
+                uint level;
+                success &= uint.TryParse(reader.GetNextLine(), out level);
+
+                bool moveTop;
+                success &= bool.TryParse(reader.GetNextLine(), out moveTop);
+
+                bool moveRight;
+                success &= bool.TryParse(reader.GetNextLine(), out moveRight);
+
+                uint repeat;
+                success &= uint.TryParse(reader.GetNextLine(), out repeat);
+
+                uint maxLevel;
+                success &= uint.TryParse(reader.GetNextLine(), out maxLevel);
+
+                uint offset;
+                success &= uint.TryParse(reader.GetNextLine(), out offset);
+
+                v = success ? new PrintState
+                {
+                    position = position,
+                    level = level,
+                    moveTop = moveTop,
+                    moveRight = moveRight,
+                    repeat = repeat,
+                    maxLevel = maxLevel,
+                    offset = offset,
+                } : null;
+
+                return success;
             }
         }
 
@@ -349,9 +402,36 @@ namespace SpaceEngineers.Scripts.Printer
                 orientation = tmp;
             }
 
+            PrintState ps;
+            if (PrintState.TryParse(reader, out ps))
+            {
+                printState = ps;
+            }
+
             Pause();
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
+        }
+
+
+        private void SaveState()
+        {
+            if (orientation == null)
+            {
+                Me.CustomData = string.Empty;
+
+                return;
+            }
+
+            var sb = new StringBuilder();
+            Serializer.SerializeMatrixD(orientation.Value, sb);
+
+            if (printState != null)
+            {
+                printState.Serialize(sb);
+            }
+
+            Me.CustomData = sb.ToString();
         }
 
         private void SetDirection()
@@ -366,17 +446,7 @@ namespace SpaceEngineers.Scripts.Printer
 
                 orientation = cockpit?.WorldMatrix;
 
-                if (orientation == null)
-                {
-                    Me.CustomData = string.Empty;
-                }
-                else
-                {
-                    var sb = new StringBuilder();
-                    Serializer.SerializeMatrixD(orientation.Value, sb);
-
-                    Me.CustomData = sb.ToString();
-                }
+                SaveState();
             }
         }
 
@@ -420,7 +490,7 @@ namespace SpaceEngineers.Scripts.Printer
             var velocity = cockpit.GetShipVelocities().LinearVelocity;
             var matrix = MatrixD.Invert(cockpit.WorldMatrix.GetOrientation());
 
-            var target = printState.GetCurrentPoint() - printState.position;
+            var target = printState.GetCurrentPoint(orientation.Value) - printState.position;
             var offset = cockpit.GetPosition() - printState.position;
 
             var targetLocal = Vector3D.Transform(target, matrix);
@@ -468,6 +538,7 @@ namespace SpaceEngineers.Scripts.Printer
                     }
                 }
 
+                SaveState();
                 Pause(5);
             }
         }
@@ -571,25 +642,15 @@ namespace SpaceEngineers.Scripts.Printer
         }
 
         private void Start(
-            int width, // ширина вбок (в блоках)
-            int length) // длина (в блоках)
+            uint width, // ширина вбок (в блоках)
+            uint length) // длина (в блоках)
         {
-            var STEP = 2.5;
-            var offset = Math.Ceiling(width / 2f) * STEP;
-
-            var pos = cockpit.GetPosition();
-            var m = cockpit.WorldMatrix;
-            var right = m.Right * offset;
-            var up = m.Up * STEP;
-
-
-            orientation = m;
+            orientation = cockpit.WorldMatrix;
             printState = new PrintState
             {
                 maxLevel = length,
-                position = pos,
-                right = right,
-                up = up,
+                offset = width / 2 + 1,
+                position = cockpit.GetPosition(),
             };
 
             foreach (var t in thrusters.all)
@@ -597,6 +658,7 @@ namespace SpaceEngineers.Scripts.Printer
                 t.Enabled = true;
             }
 
+            SaveState();
             Resume();
         }
 
