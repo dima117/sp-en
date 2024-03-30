@@ -291,7 +291,7 @@ namespace SpaceEngineers.Scripts.Printer
         // pause state
         private bool IsOnPause(DateTime? now = null)
         {
-            return (now ?? DateTime.UtcNow) > pauseTimestamp;
+            return pauseTimestamp > (now ?? DateTime.UtcNow);
         }
 
         private void Pause(int? s = null)
@@ -543,6 +543,21 @@ namespace SpaceEngineers.Scripts.Printer
                         Move();
                         break;
                 }
+            }
+
+            switch (argument)
+            {
+                case "pause":
+                    if (IsOnPause())
+                    {
+                        Resume();
+                    }
+                    else
+                    {
+                        Pause();
+                    }
+
+                    break;
             }
 
             var sb = new StringBuilder();
