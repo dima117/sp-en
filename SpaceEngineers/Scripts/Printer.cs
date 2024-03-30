@@ -34,6 +34,7 @@ namespace SpaceEngineers.Scripts.Printer
 
         // import:RuntimeTracker.cs
         // import:Lib\Grid.cs
+        // import:Lib\Serializer.cs
         // import:Lib\DirectionController2.cs
 
         const float MAX_SPEED_H = 0.5f;
@@ -285,8 +286,7 @@ namespace SpaceEngineers.Scripts.Printer
         private readonly OneDimensionMovementController moveZ;
         private readonly Settings settings;
 
-        private Vector3D? directionDown;
-        private Vector3D? directionForward;
+        private MatrixD? orientation;
         private PrintState printState;
 
         private bool sameGrid<T>(T b) where T : IMyTerminalBlock
@@ -317,20 +317,14 @@ namespace SpaceEngineers.Scripts.Printer
             lcdStatus = cockpit.GetSurface(0);
             lcdDebug = cockpit.GetSurface(2);
 
-            var x = Vector3D.Zero;
-            var lines = Me.CustomData.Split('\n');
 
-            if (lines.Length == 2)
+            var reader = new Serializer.StringReader(Me.CustomData);
+
+            MatrixD tmp;
+
+            if (Serializer.TryParseMatrixD(reader, out tmp))
             {
-                if (!Vector3D.TryParse(lines[0], out x))
-                {
-                    directionDown = x;
-                }
-
-                if (!Vector3D.TryParse(lines[1], out x))
-                {
-                    directionForward = x;
-                }
+                orientation = tmp;
             }
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
@@ -346,23 +340,25 @@ namespace SpaceEngineers.Scripts.Printer
                     .GetBlocksOfType<IMyShipController>(w => w.CubeGrid == cubeGrid)
                     .FirstOrDefault();
 
-                directionDown = cockpit?.WorldMatrix.Down;
-                directionForward = cockpit?.WorldMatrix.Forward;
+                orientation = cockpit?.WorldMatrix;
 
-                if (directionDown.HasValue && directionForward.HasValue)
+                if (orientation == null)
                 {
-                    Me.CustomData = directionDown.ToString() + "\n" + directionForward.ToString();
+                    Me.CustomData = string.Empty;
                 }
                 else
                 {
-                    Me.CustomData = string.Empty;
+                    var sb = new StringBuilder();
+                    Serializer.SerializeMatrixD(orientation.Value, sb);
+
+                    Me.CustomData = sb.ToString();
                 }
             }
         }
 
         private void Lock()
         {
-            if (directionDown.HasValue)
+            if (orientation.HasValue)
             {
                 connector.Disconnect();
 
@@ -442,7 +438,8 @@ namespace SpaceEngineers.Scripts.Printer
                     printState.moveTop = false;
                     printState.moveRight = !printState.moveRight;
                 }
-                else {
+                else
+                {
                     printState.repeat--;
 
                     if (printState.repeat > 0)
@@ -462,24 +459,23 @@ namespace SpaceEngineers.Scripts.Printer
 
         private void Align()
         {
-            if (directionDown.HasValue && directionForward.HasValue)
+            if (!orientation.HasValue)
             {
-                var axisDown = DirectionController2.GetAxis(
-                    cockpit.WorldMatrix.Down,
-                    directionDown.Value);
+                return;
+            }
 
-                var axisForward = DirectionController2.GetAxis(
-                    cockpit.WorldMatrix.Forward,
-                    directionForward.Value);
+            var m = orientation.Value;
 
-                foreach (var gyro in gyros)
-                {
-                    gyro.Yaw = FACTOR * Convert.ToSingle(axisForward.Dot(gyro.WorldMatrix.Up));
-                    gyro.Pitch = FACTOR * Convert.ToSingle(axisDown.Dot(gyro.WorldMatrix.Right));
-                    gyro.Roll = FACTOR * Convert.ToSingle(axisDown.Dot(gyro.WorldMatrix.Backward));
+            var axisDown = DirectionController2.GetAxis(cockpit.WorldMatrix.Down, m.Down);
+            var axisForward = DirectionController2.GetAxis(cockpit.WorldMatrix.Forward, m.Forward);
 
-                    gyro.GyroOverride = true;
-                }
+            foreach (var gyro in gyros)
+            {
+                gyro.Yaw = FACTOR * Convert.ToSingle(axisForward.Dot(gyro.WorldMatrix.Up));
+                gyro.Pitch = FACTOR * Convert.ToSingle(axisDown.Dot(gyro.WorldMatrix.Right));
+                gyro.Roll = FACTOR * Convert.ToSingle(axisDown.Dot(gyro.WorldMatrix.Backward));
+
+                gyro.GyroOverride = true;
             }
         }
 
@@ -499,8 +495,7 @@ namespace SpaceEngineers.Scripts.Printer
                         break;
 
                     case "reset":
-                        directionDown = null;
-                        directionForward = null;
+                        orientation = null;
                         Me.CustomData = string.Empty;
                         Unlock();
                         break;
@@ -536,7 +531,7 @@ namespace SpaceEngineers.Scripts.Printer
             }
 
             var sb = new StringBuilder();
-            sb.AppendLine($"Locked: {directionDown.HasValue && directionForward.HasValue}");
+            sb.AppendLine($"Locked: {orientation.HasValue}");
             lcdStatus.WriteText(sb);
 
             tracker.AddInstructions();
@@ -555,8 +550,8 @@ namespace SpaceEngineers.Scripts.Printer
             var right = m.Right * offset;
             var up = m.Up * STEP;
 
-            directionDown = m.Down;
-            directionForward = m.Forward;
+
+            orientation = m;
             printState = new PrintState
             {
                 maxLevel = length,
