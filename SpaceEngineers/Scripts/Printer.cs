@@ -121,8 +121,6 @@ namespace SpaceEngineers.Scripts.Printer
             public Vector3D up;
             public Vector3D right;
 
-            public DateTime timestamp;
-
             public int level = 0;
             public bool moveTop = false;
             public bool moveRight = true;
@@ -287,7 +285,31 @@ namespace SpaceEngineers.Scripts.Printer
         private readonly Settings settings;
 
         private MatrixD? orientation;
+        private DateTime pauseTimestamp = DateTime.MaxValue;
         private PrintState printState;
+
+        // pause state
+        private bool IsOnPause(DateTime? now = null)
+        {
+            return (now ?? DateTime.UtcNow) > pauseTimestamp;
+        }
+
+        private void Pause(int? s = null)
+        {
+            pauseTimestamp = s.HasValue ? DateTime.UtcNow.AddSeconds(s.Value) : DateTime.MaxValue;
+
+            cockpit.DampenersOverride = true;
+
+            foreach (var t in thrusters.all)
+            {
+                t.ThrustOverride = 0;
+            }
+        }
+
+        private void Resume()
+        {
+            pauseTimestamp = DateTime.MinValue;
+        }
 
         private bool sameGrid<T>(T b) where T : IMyTerminalBlock
         {
@@ -326,6 +348,8 @@ namespace SpaceEngineers.Scripts.Printer
             {
                 orientation = tmp;
             }
+
+            Pause();
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
@@ -382,25 +406,15 @@ namespace SpaceEngineers.Scripts.Printer
 
         private void Move()
         {
-            if (printState == null) { return; }
+            if (printState == null || IsOnPause()) { return; }
 
-            var invalidState = printState.level < 0 || printState.level >= printState.maxLevel;
-            var pause = DateTime.UtcNow < printState.timestamp;
-
-            if (invalidState || pause)
+            if (printState.level < 0 || printState.level >= printState.maxLevel)
             {
                 // если закончили печать или на паузе, то останавливаемся
-                cockpit.DampenersOverride = true;
-
-                foreach (var t in thrusters.all)
-                {
-                    t.ThrustOverride = 0;
-                }
+                Pause();
 
                 return;
             }
-
-            cockpit.DampenersOverride = false;
 
             var mass = cockpit.CalculateShipMass().TotalMass;
             var velocity = cockpit.GetShipVelocities().LinearVelocity;
@@ -414,6 +428,7 @@ namespace SpaceEngineers.Scripts.Printer
             var velocityLocal = Vector3D.Transform(velocity, matrix);
 
             // control
+            cockpit.DampenersOverride = false;
             moveX.Update(mass, velocityLocal.X, offsetLocal.X, targetLocal.X);
             moveY.Update(mass, velocityLocal.Y, offsetLocal.Y, targetLocal.Y);
             moveZ.Update(mass, velocityLocal.Z, offsetLocal.Z, targetLocal.Z);
@@ -453,7 +468,7 @@ namespace SpaceEngineers.Scripts.Printer
                     }
                 }
 
-                printState.timestamp = DateTime.UtcNow.AddSeconds(4);
+                Pause(5);
             }
         }
 
@@ -532,6 +547,8 @@ namespace SpaceEngineers.Scripts.Printer
 
             var sb = new StringBuilder();
             sb.AppendLine($"Locked: {orientation.HasValue}");
+            sb.AppendLine($"Id printing: {printState != null}");
+            sb.AppendLine($"Is on pause: {IsOnPause()}");
             lcdStatus.WriteText(sb);
 
             tracker.AddInstructions();
@@ -558,13 +575,14 @@ namespace SpaceEngineers.Scripts.Printer
                 position = pos,
                 right = right,
                 up = up,
-                timestamp = DateTime.UtcNow
             };
 
             foreach (var t in thrusters.all)
             {
                 t.Enabled = true;
             }
+
+            Resume();
         }
 
         private string FormatGPS(Vector3D point, string label)
