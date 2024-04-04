@@ -148,7 +148,7 @@ namespace SpaceEngineers.Scripts.Printer
                 sb.AppendLine(offset.ToString());
             }
 
-            public static bool TryParse(StringReader reader, out PrintState v)
+            public static bool TryParse(Serializer.StringReader reader, out PrintState v)
             {
                 var success = true;
 

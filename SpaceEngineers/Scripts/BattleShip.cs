@@ -41,6 +41,9 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly IMyCameraBlock cameraTop;
         readonly IMyCameraBlock cameraBottom;
 
+        private int updateIndex = 0;
+        private int tickIndex = 0;
+
         public Program()
         {
             tracker = new RuntimeTracker(this);
@@ -99,8 +102,6 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             tracker.AddRuntime();
 
-            weapons.Execute(argument, updateSource);
-
             switch (argument)
             {
                 // gdrive
@@ -152,10 +153,23 @@ namespace SpaceEngineers.Scripts.BattleShip
                 case "clear-enemy-lock":
                     weapons.ClearEnemyLock();
                     break;
-            }
 
-            var directionControlledByAimBot = weapons.Update();
-            gdrive.Update(!directionControlledByAimBot);
+                default:
+                    tickIndex = (tickIndex + 1) % 3;
+
+                    if (tickIndex == 0)
+                    {
+                        gdrive.Update(!weapons.AimbotEnabled);
+                    }
+                    else
+                    {
+                        weapons.UpdateNext(argument, updateSource, updateIndex);
+
+                        updateIndex = (updateIndex + 1) % 4;
+                    }
+
+                    break;
+            }
 
             tracker.AddInstructions();
             lcd.WriteText(tracker.ToString());

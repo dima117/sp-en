@@ -203,43 +203,74 @@ namespace SpaceEngineers.Lib
             return true;
         }
 
-        public void Execute(string argument, UpdateType updateSource)
-        {
-            // обрабатываем принятые сообщения
-            transmitter.Update(argument, updateSource);
+        public void UpdateNext(string argument, UpdateType updateSource, int updateIndex) { 
+            
+            switch(updateIndex)
+            {
+                case 0:
+                    // обрабатываем принятые сообщения
+                    transmitter.Update(argument, updateSource);
 
-            // обновлям данные о цели
-            tracker.Update();
+                    // обновлям данные о цели
+                    tracker.Update();
+                    break;
+                case 1:
+                    // обновляем цели торпед
+                    UpdateTorpedoTargets();
+                    break;
+                case 2:
+                    // обновляем наведение курсовых орудий
+                    UpdateAimBot();
+                    break;
+                case 3:
+                    var selfPos = cockpit.GetPosition();
+
+                    // обновляем содержимое экранов
+                    UpdateHUD(selfPos);
+                    UpdateLcdTargets(selfPos);
+                    UpdateLcdSystem();
+                    break;
+            }
         }
 
-        public bool Update()
+
+        public void Update(string argument, UpdateType updateSource)
         {
             try
             {
+                // обрабатываем принятые сообщения
+                transmitter.Update(argument, updateSource);
+
+                // обновлям данные о цели
+                tracker.Update();
 
                 var selfPos = cockpit.GetPosition();
 
                 // обновляем цели торпед
                 UpdateTorpedoTargets();
 
-                var controlDirection = UpdateAimBot();
+                UpdateAimBot();
 
                 // обновляем содержимое экранов
                 UpdateHUD(selfPos);
                 UpdateLcdTargets(selfPos);
                 UpdateLcdSystem();
-
-                return controlDirection;
-
             }
             catch (Exception e)
             {
                 OnError(e);
-                return false;
             }
         }
 
-        private bool UpdateAimBot()
+        public bool AimbotEnabled
+        {
+            get
+            {
+                return aimBotTargetShotSpeed > 0;
+            }
+        }
+
+        private void UpdateAimBot()
         {
             if (aimBotTargetShotSpeed > 0)
             {
@@ -248,11 +279,8 @@ namespace SpaceEngineers.Lib
                 if (target != null)
                 {
                     directionController.InterceptShot(target.Entity, aimBotTargetShotSpeed);
-                    return true;
                 }
             }
-
-            return false;
         }
 
         private void UpdateTorpedoTargets()
