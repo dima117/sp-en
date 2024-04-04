@@ -30,7 +30,7 @@ namespace SpaceEngineers.Lib
 
             public string GetNextLine()
             {
-                return lines[nextPos++];
+                return nextPos >= lines.Length ? "" : lines[nextPos++];
             }
         }
 

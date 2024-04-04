@@ -203,7 +203,9 @@ namespace SpaceEngineers.Lib
             return true;
         }
 
-        public void UpdateNext(string argument, UpdateType updateSource, int updateIndex) { 
+        private int updateIndex = 0;
+
+        public void UpdateNext(string argument, UpdateType updateSource) { 
             
             switch(updateIndex)
             {
@@ -231,6 +233,8 @@ namespace SpaceEngineers.Lib
                     UpdateLcdSystem();
                     break;
             }
+
+            updateIndex = (updateIndex + 1) % 4;
         }
 
 

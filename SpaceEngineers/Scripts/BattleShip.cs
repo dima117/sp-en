@@ -41,9 +41,6 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly IMyCameraBlock cameraTop;
         readonly IMyCameraBlock cameraBottom;
 
-        private int updateIndex = 0;
-        private int tickIndex = 0;
-
         public Program()
         {
             tracker = new RuntimeTracker(this);
@@ -155,18 +152,9 @@ namespace SpaceEngineers.Scripts.BattleShip
                     break;
 
                 default:
-                    tickIndex = (tickIndex + 1) % 3;
 
-                    if (tickIndex == 0)
-                    {
-                        gdrive.Update(!weapons.AimbotEnabled);
-                    }
-                    else
-                    {
-                        weapons.UpdateNext(argument, updateSource, updateIndex);
-
-                        updateIndex = (updateIndex + 1) % 4;
-                    }
+                    gdrive.Update(!weapons.AimbotEnabled);
+                    weapons.UpdateNext(argument, updateSource);
 
                     break;
             }
