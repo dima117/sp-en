@@ -41,6 +41,8 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly IMyCameraBlock cameraTop;
         readonly IMyCameraBlock cameraBottom;
 
+        private bool iii = false;
+
         public Program()
         {
             tracker = new RuntimeTracker(this);
@@ -153,8 +155,16 @@ namespace SpaceEngineers.Scripts.BattleShip
 
                 default:
 
-                    gdrive.Update(!weapons.AimbotEnabled);
-                    weapons.UpdateNext(argument, updateSource);
+                    if (iii)
+                    {
+                        gdrive.Update(!weapons.AimbotEnabled);
+                    }
+                    else
+                    {
+                        weapons.UpdateNext(argument, updateSource);
+                    }
+
+                    iii = !iii;
 
                     break;
             }
