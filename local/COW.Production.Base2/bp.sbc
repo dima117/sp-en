@@ -6,20 +6,22 @@
       <DisplayName>fox_tracks</DisplayName>
       <DLC>HeavyIndustry</DLC>
       <DLC>DecorativeBlocks3</DLC>
+      <DLC>DecorativeBlocks2</DLC>
       <DLC>DecorativeBlocks</DLC>
+      <DLC>Warfare2</DLC>
       <CubeGrids>
         <CubeGrid>
           <SubtypeName />
           <EntityId>127097424565656005</EntityId>
           <PersistentFlags>CastShadows InScene</PersistentFlags>
           <PositionAndOrientation>
-            <Position x="1158.9537786203573" y="-5116.4785781111277" z="8793.3358747197872" />
-            <Forward x="-0.00035681302" y="-0.000175034336" z="-0.99999994" />
-            <Up x="0.00101887225" y="0.999999464" z="-0.000175397814" />
+            <Position x="1158.9537665358148" y="-5116.4793862861543" z="8793.33579126628" />
+            <Forward x="-0.0003568121" y="-0.000175057357" z="-0.99999994" />
+            <Up x="0.00101887062" y="0.999999464" z="-0.000175420835" />
             <Orientation>
-              <X>-8.760805E-05</X>
-              <Y>0.000178361923</Y>
-              <Z>-0.0005094519</Z>
+              <X>-8.761956E-05</X>
+              <Y>0.000178361443</Y>
+              <Z>-0.0005094511</Z>
               <W>0.9999998</W>
             </Orientation>
           </PositionAndOrientation>
@@ -1238,7 +1240,7 @@
                       <TimerEnabled>true</TimerEnabled>
                       <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
                       <TimerType>Frame10</TimerType>
-                      <FramesFromLastTrigger>50</FramesFromLastTrigger>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
                       <TimerTickInFrames>60</TimerTickInFrames>
                       <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
                     </Component>
@@ -1804,7 +1806,7 @@
                       <TimerEnabled>true</TimerEnabled>
                       <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
                       <TimerType>Frame10</TimerType>
-                      <FramesFromLastTrigger>70</FramesFromLastTrigger>
+                      <FramesFromLastTrigger>40</FramesFromLastTrigger>
                       <TimerTickInFrames>80</TimerTickInFrames>
                       <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
                     </Component>
@@ -1860,7 +1862,7 @@
                       <TimerEnabled>true</TimerEnabled>
                       <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
                       <TimerType>Frame10</TimerType>
-                      <FramesFromLastTrigger>10</FramesFromLastTrigger>
+                      <FramesFromLastTrigger>60</FramesFromLastTrigger>
                       <TimerTickInFrames>80</TimerTickInFrames>
                       <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
                     </Component>
@@ -1916,7 +1918,7 @@
                       <TimerEnabled>true</TimerEnabled>
                       <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
                       <TimerType>Frame10</TimerType>
-                      <FramesFromLastTrigger>60</FramesFromLastTrigger>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
                       <TimerTickInFrames>80</TimerTickInFrames>
                       <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
                     </Component>
@@ -1972,7 +1974,7 @@
                       <TimerEnabled>true</TimerEnabled>
                       <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
                       <TimerType>Frame10</TimerType>
-                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
                       <TimerTickInFrames>80</TimerTickInFrames>
                       <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
                     </Component>
@@ -2205,61 +2207,14 @@
               <ColorMaskHSV x="0.74444443" y="-0.52" z="0.2" />
               <BuiltBy>144115188075855895</BuiltBy>
             </MyObjectBuilder_CubeBlock>
-            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipConnector">
-              <SubtypeName>Connector</SubtypeName>
-              <EntityId>79017820572083883</EntityId>
-              <Min x="1" y="-5" z="11" />
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>125791535855226934</EntityId>
+              <Min x="1" y="4" z="2" />
               <BlockOrientation Forward="Down" Up="Right" />
               <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
-              <Owner>144115188075855895</Owner>
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
               <BuiltBy>144115188075855895</BuiltBy>
-              <ShareMode>Faction</ShareMode>
-              <DeformationRatio>0.5</DeformationRatio>
-              <ComponentContainer>
-                <Components>
-                  <ComponentData>
-                    <TypeId>MyInventoryBase</TypeId>
-                    <Component xsi:type="MyObjectBuilder_Inventory">
-                      <Items />
-                      <nextItemId>0</nextItemId>
-                      <Volume>8</Volume>
-                      <Mass>9223372036854.775807</Mass>
-                      <MaxItemCount>2147483647</MaxItemCount>
-                      <Size xsi:nil="true" />
-                      <InventoryFlags>CanReceive CanSend</InventoryFlags>
-                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
-                    </Component>
-                  </ComponentData>
-                  <ComponentData>
-                    <TypeId>MyTimerComponent</TypeId>
-                    <Component xsi:type="MyObjectBuilder_TimerComponent">
-                      <Repeat>true</Repeat>
-                      <TimeToEvent>0</TimeToEvent>
-                      <SetTimeMinutes>0</SetTimeMinutes>
-                      <TimerEnabled>true</TimerEnabled>
-                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
-                      <TimerType>Frame10</TimerType>
-                      <FramesFromLastTrigger>20</FramesFromLastTrigger>
-                      <TimerTickInFrames>80</TimerTickInFrames>
-                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
-                    </Component>
-                  </ComponentData>
-                </Components>
-              </ComponentContainer>
-              <ShowOnHUD>false</ShowOnHUD>
-              <ShowInTerminal>true</ShowInTerminal>
-              <ShowInToolbarConfig>true</ShowInToolbarConfig>
-              <ShowInInventory>true</ShowInInventory>
-              <NumberInGrid>5</NumberInGrid>
-              <Enabled>true</Enabled>
-              <MasterToSlaveTransform xsi:nil="true" />
-              <MasterToSlaveGrid xsi:nil="true" />
-              <IsMaster>true</IsMaster>
-              <TradingEnabled>false</TradingEnabled>
-              <AutoUnlockTime>0</AutoUnlockTime>
-              <TimeOfConnection>0</TimeOfConnection>
-              <IsParkingEnabled>true</IsParkingEnabled>
-              <IsPowerTransferOverrideEnabled>false</IsPowerTransferOverrideEnabled>
             </MyObjectBuilder_CubeBlock>
             <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
               <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
@@ -2362,7 +2317,7 @@
                       <TimerEnabled>false</TimerEnabled>
                       <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
                       <TimerType>Frame10</TimerType>
-                      <FramesFromLastTrigger>290</FramesFromLastTrigger>
+                      <FramesFromLastTrigger>100</FramesFromLastTrigger>
                       <TimerTickInFrames>300</TimerTickInFrames>
                       <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
                     </Component>
@@ -2533,7 +2488,7 @@
                       <TimerEnabled>false</TimerEnabled>
                       <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
                       <TimerType>Frame10</TimerType>
-                      <FramesFromLastTrigger>200</FramesFromLastTrigger>
+                      <FramesFromLastTrigger>10</FramesFromLastTrigger>
                       <TimerTickInFrames>300</TimerTickInFrames>
                       <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
                     </Component>
@@ -2547,20 +2502,1002 @@
               <NumberInGrid>2</NumberInGrid>
               <Enabled>true</Enabled>
             </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>111071757203804289</EntityId>
+              <Min x="1" y="2" z="11" />
+              <BlockOrientation Forward="Forward" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.13" />
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
             <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Conveyor">
-              <SubtypeName>LargeBlockConveyor</SubtypeName>
-              <EntityId>109079241639401754</EntityId>
-              <Min x="1" y="-4" z="11" />
-              <BlockOrientation Forward="Forward" Up="Down" />
+              <SubtypeName>ConveyorTubeDuctT</SubtypeName>
+              <EntityId>131225856978001611</EntityId>
+              <Min x="1" y="1" z="11" />
+              <BlockOrientation Forward="Left" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipWelder">
+              <SubtypeName>LargeShipWelder</SubtypeName>
+              <EntityId>114316314880231294</EntityId>
+              <Min x="1" y="4" z="1" />
+              <BlockOrientation Forward="Up" Up="Right" />
               <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <DeformationRatio>0.5</DeformationRatio>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>15.625</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanSend</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <CustomName>Welder 6</CustomName>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>12</NumberInGrid>
+              <Enabled>false</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipWelder">
+              <SubtypeName>LargeShipWelder</SubtypeName>
+              <EntityId>142421126603785294</EntityId>
+              <Min x="1" y="4" z="3" />
+              <BlockOrientation Forward="Up" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <DeformationRatio>0.5</DeformationRatio>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>15.625</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanSend</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <CustomName>Welder 5</CustomName>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>11</NumberInGrid>
+              <Enabled>false</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>122070666911015324</EntityId>
+              <Min x="1" y="4" z="4" />
+              <BlockOrientation Forward="Down" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipWelder">
+              <SubtypeName>LargeShipWelder</SubtypeName>
+              <EntityId>143481646963426803</EntityId>
+              <Min x="1" y="4" z="5" />
+              <BlockOrientation Forward="Up" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <DeformationRatio>0.5</DeformationRatio>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>15.625</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanSend</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <CustomName>Welder 4</CustomName>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>10</NumberInGrid>
+              <Enabled>false</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>121929649778419137</EntityId>
+              <Min x="1" y="4" z="6" />
+              <BlockOrientation Forward="Down" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipWelder">
+              <SubtypeName>LargeShipWelder</SubtypeName>
+              <EntityId>118655105085169604</EntityId>
+              <Min x="1" y="4" z="7" />
+              <BlockOrientation Forward="Up" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <DeformationRatio>0.5</DeformationRatio>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>15.625</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanSend</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <CustomName>Welder 3</CustomName>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>9</NumberInGrid>
+              <Enabled>false</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>89212182914841370</EntityId>
+              <Min x="1" y="4" z="8" />
+              <BlockOrientation Forward="Down" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipWelder">
+              <SubtypeName>LargeShipWelder</SubtypeName>
+              <EntityId>116420088070578921</EntityId>
+              <Min x="1" y="4" z="9" />
+              <BlockOrientation Forward="Up" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <DeformationRatio>0.5</DeformationRatio>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>15.625</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanSend</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <CustomName>Welder 2</CustomName>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>8</NumberInGrid>
+              <Enabled>false</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>125001811642378515</EntityId>
+              <Min x="1" y="4" z="10" />
+              <BlockOrientation Forward="Down" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="4" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipWelder">
+              <SubtypeName>LargeShipWelder</SubtypeName>
+              <EntityId>97135067593804026</EntityId>
+              <Min x="1" y="4" z="11" />
+              <BlockOrientation Forward="Up" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <DeformationRatio>0.5</DeformationRatio>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>15.625</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanSend</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <CustomName>Welder 1</CustomName>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>7</NumberInGrid>
+              <Enabled>false</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>81612565047675632</EntityId>
+              <Min x="1" y="3" z="11" />
+              <BlockOrientation Forward="Forward" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.13" />
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="4" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="1" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="2" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="7" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="8" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="9" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="11" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="4" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="1" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="2" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="7" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="8" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="9" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="11" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="4" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="11" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="9" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="8" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="7" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="2" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="1" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="5" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="11" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="9" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="8" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="7" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="2" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="1" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="-1" y="5" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="5" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="5" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="5" z="8" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="5" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="5" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="5" z="2" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="5" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="1" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="2" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="7" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="8" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="9" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="11" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="2" y="5" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="11" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="9" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="8" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="7" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="2" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="1" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="3" y="5" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="-0.25" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>116335468229878321</EntityId>
+              <Min x="1" y="6" z="12" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>101608987041116770</EntityId>
+              <Min x="1" y="6" z="11" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>83952267263497318</EntityId>
+              <Min x="1" y="6" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>120951294035306063</EntityId>
+              <Min x="1" y="6" z="9" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>111902630198795372</EntityId>
+              <Min x="1" y="6" z="8" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>85461837800818268</EntityId>
+              <Min x="1" y="6" z="7" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>86840288911213782</EntityId>
+              <Min x="1" y="6" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>136342937362677459</EntityId>
+              <Min x="1" y="6" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>120508535006821432</EntityId>
+              <Min x="1" y="6" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>99373261654039586</EntityId>
+              <Min x="1" y="6" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>127098278164762458</EntityId>
+              <Min x="1" y="6" z="2" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>139641067293671027</EntityId>
+              <Min x="1" y="6" z="1" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>Catwalk</SubtypeName>
+              <EntityId>131442971322421720</EntityId>
+              <Min x="1" y="6" z="0" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
               <BuiltBy>144115188075855895</BuiltBy>
             </MyObjectBuilder_CubeBlock>
             <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Cockpit">
               <SubtypeName>LargeBlockCockpitIndustrial</SubtypeName>
-              <EntityId>78858909374939049</EntityId>
-              <Min x="1" y="1" z="8" />
-              <BlockOrientation Forward="Backward" Up="Down" />
-              <ColorMaskHSV x="0.572222233" y="-0.53" z="-0.03" />
+              <EntityId>107756752359575593</EntityId>
+              <Min x="1" y="3" z="9" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
               <Owner>144115188075855895</Owner>
               <BuiltBy>144115188075855895</BuiltBy>
               <ShareMode>Faction</ShareMode>
@@ -2914,12 +3851,33 @@
               <ShowInTerminal>true</ShowInTerminal>
               <ShowInToolbarConfig>true</ShowInToolbarConfig>
               <ShowInInventory>true</ShowInInventory>
-              <NumberInGrid>1</NumberInGrid>
+              <NumberInGrid>2</NumberInGrid>
               <UseSingleWeaponMode>false</UseSingleWeaponMode>
               <Toolbar>
                 <ToolbarType>Character</ToolbarType>
                 <SelectedSlot xsi:nil="true" />
-                <Slots />
+                <Slots>
+                  <Slot>
+                    <Index>0</Index>
+                    <Item />
+                    <Data xsi:type="MyObjectBuilder_ToolbarItemTerminalGroup">
+                      <Action>OnOff_On</Action>
+                      <GridEntityId>0</GridEntityId>
+                      <BlockEntityId>107756752359575593</BlockEntityId>
+                      <GroupName>base_Welders</GroupName>
+                    </Data>
+                  </Slot>
+                  <Slot>
+                    <Index>1</Index>
+                    <Item />
+                    <Data xsi:type="MyObjectBuilder_ToolbarItemTerminalGroup">
+                      <Action>OnOff_Off</Action>
+                      <GridEntityId>0</GridEntityId>
+                      <BlockEntityId>107756752359575593</BlockEntityId>
+                      <GroupName>base_Welders</GroupName>
+                    </Data>
+                  </Slot>
+                </Slots>
                 <SlotsGamepad />
               </Toolbar>
               <SelectedGunId xsi:nil="true" />
@@ -2935,7 +3893,17 @@
                 <Slots />
                 <SlotsGamepad />
               </OnLockedToolbar>
-              <PilotRelativeWorld xsi:nil="true" />
+              <PilotRelativeWorld>
+                <Position x="3.4253416061401367" y="-2.0605390071868896" z="0.061334617435932159" />
+                <Forward x="-0.941341758" y="0.165298536" z="-0.294197023" />
+                <Up x="0.125023082" y="0.9806065" z="0.150930732" />
+                <Orientation>
+                  <X>0.09828099</X>
+                  <Y>0.585868835</Y>
+                  <Z>-0.006130987</Z>
+                  <W>0.804401</W>
+                </Orientation>
+              </PilotRelativeWorld>
               <PilotGunDefinition xsi:nil="true" />
               <IsInFirstPersonView>true</IsInFirstPersonView>
               <OxygenLevel>1</OxygenLevel>
@@ -2945,7 +3913,469 @@
                 <IsTargetLocked>false</IsTargetLocked>
                 <LockingProgress>0</LockingProgress>
               </TargetData>
-              <SitAnimation>0</SitAnimation>
+              <SitAnimation>356316</SitAnimation>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>83980375316062578</EntityId>
+              <Min x="1" y="1" z="7" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>1</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>78660748876973503</EntityId>
+              <Min x="1" y="1" z="8" />
+              <BlockOrientation Forward="Left" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>2</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>122937853392152156</EntityId>
+              <Min x="1" y="-4" z="8" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>3</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>84125100861754825</EntityId>
+              <Min x="1" y="-4" z="7" />
+              <BlockOrientation Forward="Left" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>4</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>133556923958136515</EntityId>
+              <Min x="1" y="-4" z="11" />
+              <BlockOrientation Forward="Left" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>5</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>119778907204588379</EntityId>
+              <Min x="1" y="-4" z="12" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>6</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>128784744381079265</EntityId>
+              <Min x="1" y="-3" z="12" />
+              <BlockOrientation Forward="Left" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>7</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="0" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="1" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="1" y="2" z="10" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>115200257277443599</EntityId>
+              <Min x="1" y="1" z="12" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>8</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>82886655931417591</EntityId>
+              <Min x="1" y="0" z="12" />
+              <BlockOrientation Forward="Left" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>9</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
             </MyObjectBuilder_CubeBlock>
           </CubeBlocks>
           <ConveyorLines>
@@ -3457,14 +4887,163 @@
               <ConveyorLineType>LARGE_LINE</ConveyorLineType>
             </MyObjectBuilder_ConveyorLine>
             <MyObjectBuilder_ConveyorLine>
-              <StartPosition x="1" y="-4" z="11" />
+              <StartPosition x="1" y="4" z="5" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="1" y="4" z="3" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="-3" z="8" />
               <StartDirection>Down</StartDirection>
-              <EndPosition x="1" y="-5" z="11" />
+              <EndPosition x="1" y="-4" z="8" />
+              <EndDirection>Up</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="4" z="11" />
+              <StartDirection>Down</StartDirection>
+              <EndPosition x="1" y="1" z="11" />
+              <EndDirection>Up</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="4" z="3" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="1" y="4" z="1" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="4" z="7" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="1" y="4" z="5" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="4" z="9" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="1" y="4" z="7" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="4" z="9" />
+              <StartDirection>Down</StartDirection>
+              <EndPosition x="1" y="3" z="9" />
+              <EndDirection>Up</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="4" z="11" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="1" y="4" z="9" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="1" z="7" />
+              <StartDirection>Backward</StartDirection>
+              <EndPosition x="1" y="1" z="8" />
+              <EndDirection>Forward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="-4" z="8" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="1" y="-4" z="7" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="-4" z="11" />
+              <StartDirection>Backward</StartDirection>
+              <EndPosition x="1" y="-4" z="12" />
+              <EndDirection>Forward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="-4" z="12" />
+              <StartDirection>Up</StartDirection>
+              <EndPosition x="1" y="-3" z="12" />
+              <EndDirection>Down</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="0" z="11" />
+              <StartDirection>Up</StartDirection>
+              <EndPosition x="1" y="1" z="11" />
+              <EndDirection>Down</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="1" z="11" />
+              <StartDirection>Backward</StartDirection>
+              <EndPosition x="1" y="1" z="12" />
+              <EndDirection>Forward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="1" y="1" z="12" />
+              <StartDirection>Down</StartDirection>
+              <EndPosition x="1" y="0" z="12" />
               <EndDirection>Up</EndDirection>
               <Sections />
               <ConveyorLineType>LARGE_LINE</ConveyorLineType>
             </MyObjectBuilder_ConveyorLine>
           </ConveyorLines>
+          <BlockGroups>
+            <MyObjectBuilder_BlockGroup>
+              <Name>base_Welders</Name>
+              <Blocks>
+                <Vector3I>
+                  <X>1</X>
+                  <Y>4</Y>
+                  <Z>11</Z>
+                </Vector3I>
+                <Vector3I>
+                  <X>1</X>
+                  <Y>4</Y>
+                  <Z>9</Z>
+                </Vector3I>
+                <Vector3I>
+                  <X>1</X>
+                  <Y>4</Y>
+                  <Z>7</Z>
+                </Vector3I>
+                <Vector3I>
+                  <X>1</X>
+                  <Y>4</Y>
+                  <Z>5</Z>
+                </Vector3I>
+                <Vector3I>
+                  <X>1</X>
+                  <Y>4</Y>
+                  <Z>3</Z>
+                </Vector3I>
+                <Vector3I>
+                  <X>1</X>
+                  <Y>4</Y>
+                  <Z>1</Z>
+                </Vector3I>
+              </Blocks>
+            </MyObjectBuilder_BlockGroup>
+          </BlockGroups>
           <DisplayName>COW.Production.Base2</DisplayName>
           <DestructibleBlocks>true</DestructibleBlocks>
           <IsRespawnGrid>false</IsRespawnGrid>
