@@ -440,8 +440,8 @@ namespace SpaceEngineers.Scripts.Printer
             {
                 var cubeGrid = connector.OtherConnector.CubeGrid;
 
-                IMyShipController cockpit = grid
-                    .GetBlocksOfType<IMyShipController>(w => w.CubeGrid == cubeGrid)
+                IMyCockpit cockpit = grid
+                    .GetBlocksOfType<IMyCockpit>(w => w.CubeGrid == cubeGrid)
                     .FirstOrDefault();
 
                 orientation = cockpit?.WorldMatrix;
