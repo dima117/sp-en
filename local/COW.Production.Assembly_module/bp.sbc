@@ -1,0 +1,3072 @@
+<?xml version="1.0"?>
+<Definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ShipBlueprints>
+    <ShipBlueprint xsi:type="MyObjectBuilder_ShipBlueprintDefinition">
+      <Id Type="MyObjectBuilder_ShipBlueprintDefinition" Subtype="COW.Production.Assembly_module" />
+      <DisplayName>dima117</DisplayName>
+      <DLC>HeavyIndustry</DLC>
+      <DLC>Warfare2</DLC>
+      <CubeGrids>
+        <CubeGrid>
+          <SubtypeName />
+          <EntityId>74652137735014773</EntityId>
+          <PersistentFlags>CastShadows InScene</PersistentFlags>
+          <PositionAndOrientation>
+            <Position x="-2397.1088371330115" y="-13862.593204898007" z="22421.647931313288" />
+            <Forward x="2.2471194E-07" y="-1.19140019E-07" z="-1" />
+            <Up x="1.38562484E-06" y="1" z="-1.19139706E-07" />
+            <Orientation>
+              <X>-5.956993E-08</X>
+              <Y>-1.12356012E-07</Y>
+              <Z>-6.928124E-07</Z>
+              <W>1</W>
+            </Orientation>
+          </PositionAndOrientation>
+          <LocalPositionAndOrientation xsi:nil="true" />
+          <GridSizeEnum>Large</GridSizeEnum>
+          <CubeBlocks>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssemblerIndustrial</SubtypeName>
+              <EntityId>134792565121521570</EntityId>
+              <Min x="-2" y="7" z="6" />
+              <BlockOrientation Forward="Left" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>1</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="8" z="6" />
+              <BlockOrientation Forward="Forward" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>86206384250122022</EntityId>
+              <Min x="-2" y="9" z="6" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>1</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>81674722851124246</EntityId>
+              <Min x="-2" y="8" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>2</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>135257019430345281</EntityId>
+              <Min x="-2" y="7" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>3</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>125216841034559575</EntityId>
+              <Min x="-2" y="6" z="6" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>4</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssemblerIndustrial</SubtypeName>
+              <EntityId>76959064015586312</EntityId>
+              <Min x="-4" y="7" z="6" />
+              <BlockOrientation Forward="Left" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>3</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="8" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundCorner</SubtypeName>
+              <Min x="0" y="9" z="6" />
+              <BlockOrientation Forward="Forward" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>123680790049560000</EntityId>
+              <Min x="-2" y="9" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>10</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>89209238577177035</EntityId>
+              <Min x="-4" y="9" z="6" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>31</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>129172597480554933</EntityId>
+              <Min x="-2" y="8" z="4" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>6</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>127243828388949422</EntityId>
+              <Min x="-4" y="8" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>26</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="7" z="5" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>129149545496845220</EntityId>
+              <Min x="-2" y="7" z="4" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>5</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>125780123778391286</EntityId>
+              <Min x="-2" y="6" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>9</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>134437574715202739</EntityId>
+              <Min x="-4" y="7" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>25</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundCorner</SubtypeName>
+              <Min x="0" y="6" z="6" />
+              <BlockOrientation Forward="Up" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>139452185501137216</EntityId>
+              <Min x="-4" y="6" z="6" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>30</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Conveyor">
+              <SubtypeName>LargeBlockConveyor</SubtypeName>
+              <EntityId>109113458720764155</EntityId>
+              <Min x="-5" y="7" z="6" />
+              <BlockOrientation Forward="Forward" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>117028015697786554</EntityId>
+              <Min x="-5" y="8" z="6" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_MergeBlock">
+              <SubtypeName>LargeShipMergeBlock</SubtypeName>
+              <EntityId>110505308936993648</EntityId>
+              <Min x="0" y="8" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>1</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="9" z="5" />
+              <BlockOrientation Forward="Down" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssembler</SubtypeName>
+              <EntityId>116490061520905499</EntityId>
+              <Min x="-2" y="9" z="4" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>2</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>81991294288257368</EntityId>
+              <Min x="-4" y="9" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>24</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuctCurved</SubtypeName>
+              <EntityId>128962997679592583</EntityId>
+              <Min x="-5" y="9" z="6" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>131305821114370145</EntityId>
+              <Min x="-2" y="8" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>14</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>120875410982999723</EntityId>
+              <Min x="-4" y="8" z="4" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>21</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="6" z="5" />
+              <BlockOrientation Forward="Up" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="7" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssembler</SubtypeName>
+              <EntityId>118073924087099292</EntityId>
+              <Min x="-2" y="6" z="4" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>1</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>102741797174335230</EntityId>
+              <Min x="-2" y="7" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>13</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>104957249759839077</EntityId>
+              <Min x="-4" y="7" z="4" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>19</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>77226404208974868</EntityId>
+              <Min x="-4" y="6" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>23</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Reactor">
+              <SubtypeName>LargeBlockSmallGeneratorWarfare2</SubtypeName>
+              <EntityId>118589613649911693</EntityId>
+              <Min x="-5" y="7" z="5" />
+              <BlockOrientation Forward="Left" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>1</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>false</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame100</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>900</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>2</NumberInGrid>
+              <Enabled>true</Enabled>
+              <Capacity>1</Capacity>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuctCurved</SubtypeName>
+              <EntityId>86904898033271873</EntityId>
+              <Min x="-5" y="6" z="6" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssemblerIndustrial</SubtypeName>
+              <EntityId>134584989386205841</EntityId>
+              <Min x="-7" y="7" z="6" />
+              <BlockOrientation Forward="Left" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>10</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>7</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="8" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="9" z="4" />
+              <BlockOrientation Forward="Down" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>128381162028916602</EntityId>
+              <Min x="-2" y="9" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>7</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>111030063403926270</EntityId>
+              <Min x="-2" y="10" z="4" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>11</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssembler</SubtypeName>
+              <EntityId>75564054840616164</EntityId>
+              <Min x="-4" y="9" z="4" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>4</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Conveyor">
+              <SubtypeName>ConveyorTubeDuctT</SubtypeName>
+              <EntityId>123296667748456356</EntityId>
+              <Min x="-5" y="9" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>99951654489766220</EntityId>
+              <Min x="-7" y="9" z="6" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>35</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssemblerIndustrial</SubtypeName>
+              <EntityId>72171124335913688</EntityId>
+              <Min x="-2" y="7" z="2" />
+              <BlockOrientation Forward="Left" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>2</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>128997154093388869</EntityId>
+              <Min x="-4" y="8" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>28</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_BatteryBlock">
+              <SubtypeName>LargeBlockBatteryBlock</SubtypeName>
+              <EntityId>125347348228138008</EntityId>
+              <Min x="-5" y="8" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>1</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentStoredPower>3</CurrentStoredPower>
+              <ProducerEnabled>true</ProducerEnabled>
+              <MaxStoredPower>0</MaxStoredPower>
+              <SemiautoEnabled>false</SemiautoEnabled>
+              <OnlyDischargeEnabled>false</OnlyDischargeEnabled>
+              <ChargeMode>0</ChargeMode>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="6" z="4" />
+              <BlockOrientation Forward="Up" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorBlock</SubtypeName>
+              <Min x="0" y="7" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>77164406174943406</EntityId>
+              <Min x="-2" y="6" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>8</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>77751568482534494</EntityId>
+              <Min x="-2" y="5" z="4" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>12</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssembler</SubtypeName>
+              <EntityId>105486078372087983</EntityId>
+              <Min x="-4" y="6" z="4" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>3</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>92167410142827323</EntityId>
+              <Min x="-4" y="7" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>27</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_BatteryBlock">
+              <SubtypeName>LargeBlockBatteryBlock</SubtypeName>
+              <EntityId>106681458992328800</EntityId>
+              <Min x="-5" y="7" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>3</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentStoredPower>3</CurrentStoredPower>
+              <ProducerEnabled>true</ProducerEnabled>
+              <MaxStoredPower>0</MaxStoredPower>
+              <SemiautoEnabled>false</SemiautoEnabled>
+              <OnlyDischargeEnabled>false</OnlyDischargeEnabled>
+              <ChargeMode>0</ChargeMode>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>98047805157596133</EntityId>
+              <Min x="-5" y="6" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>99326509644763083</EntityId>
+              <Min x="-7" y="7" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>48</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>105188360249648550</EntityId>
+              <Min x="-7" y="6" z="6" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>37</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssemblerIndustrial</SubtypeName>
+              <EntityId>142694468467558639</EntityId>
+              <Min x="-9" y="7" z="6" />
+              <BlockOrientation Forward="Left" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>20</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>8</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>83240877965166116</EntityId>
+              <Min x="-7" y="8" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>47</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="8" z="2" />
+              <BlockOrientation Forward="Backward" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="9" z="3" />
+              <BlockOrientation Forward="Down" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="7" z="6" />
+              <BlockOrientation Forward="Forward" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>85217170838104869</EntityId>
+              <Min x="-2" y="9" z="2" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>16</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>84577216775220198</EntityId>
+              <Min x="-4" y="9" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>17</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>143385998211746371</EntityId>
+              <Min x="-4" y="10" z="4" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>20</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Conveyor">
+              <SubtypeName>LargeBlockConveyor</SubtypeName>
+              <EntityId>76169447382817849</EntityId>
+              <Min x="-5" y="9" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipConnector">
+              <SubtypeName>Connector</SubtypeName>
+              <EntityId>130366825291815159</EntityId>
+              <Min x="-5" y="10" z="5" />
+              <BlockOrientation Forward="Up" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <DeformationRatio>0.5</DeformationRatio>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>8</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive CanSend</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>60</FramesFromLastTrigger>
+                      <TimerTickInFrames>80</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>2</NumberInGrid>
+              <Enabled>true</Enabled>
+              <MasterToSlaveTransform xsi:nil="true" />
+              <MasterToSlaveGrid xsi:nil="true" />
+              <IsMaster>true</IsMaster>
+              <TradingEnabled>false</TradingEnabled>
+              <AutoUnlockTime>0</AutoUnlockTime>
+              <TimeOfConnection>0</TimeOfConnection>
+              <IsParkingEnabled>true</IsParkingEnabled>
+              <IsPowerTransferOverrideEnabled>false</IsPowerTransferOverrideEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>84522579602214362</EntityId>
+              <Min x="-7" y="9" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>33</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>79969933941621104</EntityId>
+              <Min x="-9" y="9" z="6" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>36</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="7" z="2" />
+              <BlockOrientation Forward="Backward" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>135438416636071875</EntityId>
+              <Min x="-2" y="6" z="2" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>15</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssemblerIndustrial</SubtypeName>
+              <EntityId>116612172006729569</EntityId>
+              <Min x="-4" y="7" z="2" />
+              <BlockOrientation Forward="Left" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>30</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>4</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>82770979080251352</EntityId>
+              <Min x="-7" y="8" z="4" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>56</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_MergeBlock">
+              <SubtypeName>LargeShipMergeBlock</SubtypeName>
+              <EntityId>96421543811519232</EntityId>
+              <Min x="1" y="8" z="4" />
+              <BlockOrientation Forward="Backward" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>2</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="0" y="6" z="3" />
+              <BlockOrientation Forward="Up" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>119910124845543667</EntityId>
+              <Min x="-4" y="6" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>18</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>88292362464054576</EntityId>
+              <Min x="-4" y="5" z="4" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>22</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Conveyor">
+              <SubtypeName>LargeBlockConveyor</SubtypeName>
+              <EntityId>116127195745985258</EntityId>
+              <Min x="-5" y="6" z="4" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Beacon">
+              <SubtypeName>LargeBlockBeacon</SubtypeName>
+              <EntityId>87598577930226159</EntityId>
+              <Min x="-5" y="7" z="3" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>1</NumberInGrid>
+              <Enabled>true</Enabled>
+              <BroadcastRadius>1</BroadcastRadius>
+              <HudText />
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>137650820732114371</EntityId>
+              <Min x="-7" y="7" z="4" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>53</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>108295176195821434</EntityId>
+              <Min x="-7" y="6" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>39</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>108829148057470976</EntityId>
+              <Min x="-9" y="7" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>49</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>117091467358621706</EntityId>
+              <Min x="-9" y="6" z="6" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>38</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>93901916031045384</EntityId>
+              <Min x="-9" y="8" z="5" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>50</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="7" z="6" />
+              <BlockOrientation Forward="Forward" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="8" z="6" />
+              <BlockOrientation Forward="Forward" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundCorner</SubtypeName>
+              <Min x="0" y="9" z="2" />
+              <BlockOrientation Forward="Down" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>133611867030417100</EntityId>
+              <Min x="-4" y="9" z="2" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>32</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Conveyor">
+              <SubtypeName>ConveyorTubeDuctT</SubtypeName>
+              <EntityId>142834822536888222</EntityId>
+              <Min x="-5" y="9" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssembler</SubtypeName>
+              <EntityId>121982283294024523</EntityId>
+              <Min x="-7" y="9" z="4" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>50</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>11</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>131598407248147007</EntityId>
+              <Min x="-9" y="9" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>34</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundCorner</SubtypeName>
+              <Min x="-10" y="9" z="6" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundCorner</SubtypeName>
+              <Min x="0" y="6" z="2" />
+              <BlockOrientation Forward="Backward" Up="Right" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>92068317961277937</EntityId>
+              <Min x="-4" y="6" z="2" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>29</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Conveyor">
+              <SubtypeName>LargeBlockConveyor</SubtypeName>
+              <EntityId>126717227712951555</EntityId>
+              <Min x="-5" y="8" z="2" />
+              <BlockOrientation Forward="Forward" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>115601215108536814</EntityId>
+              <Min x="-5" y="7" z="2" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>78087049664389105</EntityId>
+              <Min x="-9" y="8" z="4" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>57</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>82078431126393460</EntityId>
+              <Min x="-7" y="8" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>58</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuct</SubtypeName>
+              <EntityId>104052137137649624</EntityId>
+              <Min x="-5" y="6" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssembler</SubtypeName>
+              <EntityId>73345197680532692</EntityId>
+              <Min x="-7" y="6" z="4" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>20</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>9</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>131140962538198971</EntityId>
+              <Min x="-7" y="7" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>59</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>137188647234980540</EntityId>
+              <Min x="-9" y="7" z="4" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>54</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>108250643868502968</EntityId>
+              <Min x="-9" y="6" z="5" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>40</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundCorner</SubtypeName>
+              <Min x="-10" y="6" z="6" />
+              <BlockOrientation Forward="Up" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuctCurved</SubtypeName>
+              <EntityId>130371476569274810</EntityId>
+              <Min x="-5" y="9" z="2" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ShipConnector">
+              <SubtypeName>Connector</SubtypeName>
+              <EntityId>105698799373358714</EntityId>
+              <Min x="-5" y="10" z="3" />
+              <BlockOrientation Forward="Up" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <DeformationRatio>0.5</DeformationRatio>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_Inventory">
+                      <Items />
+                      <nextItemId>0</nextItemId>
+                      <Volume>8</Volume>
+                      <Mass>9223372036854.775807</Mass>
+                      <MaxItemCount>2147483647</MaxItemCount>
+                      <Size xsi:nil="true" />
+                      <InventoryFlags>CanReceive CanSend</InventoryFlags>
+                      <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>0</FramesFromLastTrigger>
+                      <TimerTickInFrames>80</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>1</NumberInGrid>
+              <Enabled>true</Enabled>
+              <MasterToSlaveTransform xsi:nil="true" />
+              <MasterToSlaveGrid xsi:nil="true" />
+              <IsMaster>true</IsMaster>
+              <TradingEnabled>false</TradingEnabled>
+              <AutoUnlockTime>0</AutoUnlockTime>
+              <TimeOfConnection>0</TimeOfConnection>
+              <IsParkingEnabled>true</IsParkingEnabled>
+              <IsPowerTransferOverrideEnabled>false</IsPowerTransferOverrideEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>99001118987870607</EntityId>
+              <Min x="-7" y="9" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>45</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssembler</SubtypeName>
+              <EntityId>81169917783074730</EntityId>
+              <Min x="-9" y="9" z="4" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>20</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>12</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>119945593970351201</EntityId>
+              <Min x="-7" y="10" z="4" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>43</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="9" z="5" />
+              <BlockOrientation Forward="Down" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_ConveyorConnector">
+              <SubtypeName>ConveyorTubeDuctCurved</SubtypeName>
+              <EntityId>121291645530325380</EntityId>
+              <Min x="-5" y="6" z="2" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssemblerIndustrial</SubtypeName>
+              <EntityId>98788544822507435</EntityId>
+              <Min x="-7" y="7" z="2" />
+              <BlockOrientation Forward="Left" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>40</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>9</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>92583308621571170</EntityId>
+              <Min x="-9" y="8" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>60</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>97034193527070106</EntityId>
+              <Min x="-7" y="6" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>51</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssembler</SubtypeName>
+              <EntityId>97172896614617898</EntityId>
+              <Min x="-9" y="6" z="4" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>20</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>10</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>100977773299495488</EntityId>
+              <Min x="-7" y="5" z="4" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>41</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>116174601109855840</EntityId>
+              <Min x="-9" y="7" z="3" />
+              <BlockOrientation Forward="Right" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>61</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="6" z="5" />
+              <BlockOrientation Forward="Up" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>138426339342258299</EntityId>
+              <Min x="-7" y="9" z="2" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>64</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>125869948987284110</EntityId>
+              <Min x="-9" y="9" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>46</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>79757650767305682</EntityId>
+              <Min x="-9" y="10" z="4" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>44</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="9" z="4" />
+              <BlockOrientation Forward="Down" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>90349022660125495</EntityId>
+              <Min x="-7" y="6" z="2" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>62</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_Assembler">
+              <SubtypeName>LargeAssemblerIndustrial</SubtypeName>
+              <EntityId>114857186028437710</EntityId>
+              <Min x="-9" y="7" z="2" />
+              <BlockOrientation Forward="Left" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ComponentContainer>
+                <Components>
+                  <ComponentData>
+                    <TypeId>MyInventoryBase</TypeId>
+                    <Component xsi:type="MyObjectBuilder_InventoryAggregate">
+                      <InventoryId>Inventory</InventoryId>
+                      <Inventories>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanReceive</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                        <MyObjectBuilder_InventoryBase xsi:type="MyObjectBuilder_Inventory">
+                          <Items />
+                          <nextItemId>0</nextItemId>
+                          <Volume>4</Volume>
+                          <Mass>9223372036854.775807</Mass>
+                          <MaxItemCount>2147483647</MaxItemCount>
+                          <Size xsi:nil="true" />
+                          <InventoryFlags>CanSend</InventoryFlags>
+                          <RemoveEntityOnEmpty>false</RemoveEntityOnEmpty>
+                        </MyObjectBuilder_InventoryBase>
+                      </Inventories>
+                    </Component>
+                  </ComponentData>
+                  <ComponentData>
+                    <TypeId>MyTimerComponent</TypeId>
+                    <Component xsi:type="MyObjectBuilder_TimerComponent">
+                      <Repeat>true</Repeat>
+                      <TimeToEvent>0</TimeToEvent>
+                      <SetTimeMinutes>0</SetTimeMinutes>
+                      <TimerEnabled>true</TimerEnabled>
+                      <RemoveEntityOnTimer>false</RemoveEntityOnTimer>
+                      <TimerType>Frame10</TimerType>
+                      <FramesFromLastTrigger>10</FramesFromLastTrigger>
+                      <TimerTickInFrames>60</TimerTickInFrames>
+                      <IsSessionUpdateEnabled>false</IsSessionUpdateEnabled>
+                    </Component>
+                  </ComponentData>
+                </Components>
+              </ComponentContainer>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>10</NumberInGrid>
+              <Enabled>true</Enabled>
+              <CurrentProgress>0</CurrentProgress>
+              <DisassembleEnabled>false</DisassembleEnabled>
+              <RepeatAssembleEnabled>false</RepeatAssembleEnabled>
+              <RepeatDisassembleEnabled>false</RepeatDisassembleEnabled>
+              <SlaveEnabled>false</SlaveEnabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>80001596072107263</EntityId>
+              <Min x="-9" y="6" z="3" />
+              <BlockOrientation Forward="Right" Up="Up" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>52</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>111486572380431178</EntityId>
+              <Min x="-9" y="5" z="4" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>42</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="6" z="4" />
+              <BlockOrientation Forward="Up" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>132285449322302740</EntityId>
+              <Min x="-9" y="9" z="2" />
+              <BlockOrientation Forward="Right" Up="Backward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>65</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="9" z="3" />
+              <BlockOrientation Forward="Down" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_UpgradeModule">
+              <SubtypeName>LargeProductivityModule</SubtypeName>
+              <EntityId>125167698432200015</EntityId>
+              <Min x="-9" y="6" z="2" />
+              <BlockOrientation Forward="Right" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <Owner>144115188075855895</Owner>
+              <BuiltBy>144115188075855895</BuiltBy>
+              <ShareMode>Faction</ShareMode>
+              <ShowOnHUD>false</ShowOnHUD>
+              <ShowInTerminal>true</ShowInTerminal>
+              <ShowInToolbarConfig>true</ShowInToolbarConfig>
+              <ShowInInventory>true</ShowInInventory>
+              <NumberInGrid>63</NumberInGrid>
+              <Enabled>true</Enabled>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="8" z="2" />
+              <BlockOrientation Forward="Backward" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="7" z="2" />
+              <BlockOrientation Forward="Backward" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundSlope</SubtypeName>
+              <Min x="-10" y="6" z="3" />
+              <BlockOrientation Forward="Up" Up="Left" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundCorner</SubtypeName>
+              <Min x="-10" y="9" z="2" />
+              <BlockOrientation Forward="Down" Up="Forward" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+            <MyObjectBuilder_CubeBlock xsi:type="MyObjectBuilder_CubeBlock">
+              <SubtypeName>LargeBlockArmorRoundCorner</SubtypeName>
+              <Min x="-10" y="6" z="2" />
+              <BlockOrientation Forward="Backward" Up="Down" />
+              <ColorMaskHSV x="0" y="-0.8" z="0.55" />
+              <SkinSubtypeId>Weldless</SkinSubtypeId>
+              <BuiltBy>144115188075855895</BuiltBy>
+            </MyObjectBuilder_CubeBlock>
+          </CubeBlocks>
+          <ConveyorLines>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-2" y="7" z="6" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-3" y="7" z="6" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-4" y="7" z="6" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-5" y="7" z="6" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="7" z="6" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-6" y="7" z="6" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="7" z="6" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="-5" y="7" z="5" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="7" z="6" />
+              <StartDirection>Up</StartDirection>
+              <EndPosition x="-5" y="9" z="5" />
+              <EndDirection>Backward</EndDirection>
+              <Sections>
+                <Section Direction="Up" Length="2" />
+                <Section Direction="Forward" Length="1" />
+              </Sections>
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="7" z="6" />
+              <StartDirection>Down</StartDirection>
+              <EndPosition x="-5" y="6" z="4" />
+              <EndDirection>Backward</EndDirection>
+              <Sections>
+                <Section Direction="Down" Length="1" />
+                <Section Direction="Forward" Length="2" />
+              </Sections>
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-2" y="9" z="4" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-3" y="9" z="4" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-2" y="6" z="4" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-3" y="6" z="4" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-7" y="7" z="6" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-8" y="7" z="6" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-4" y="9" z="4" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-5" y="9" z="4" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="9" z="5" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="-5" y="9" z="4" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="9" z="5" />
+              <StartDirection>Up</StartDirection>
+              <EndPosition x="-5" y="10" z="5" />
+              <EndDirection>Down</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-2" y="8" z="2" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-3" y="8" z="2" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-4" y="6" z="4" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-5" y="6" z="4" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="9" z="4" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="-5" y="9" z="3" />
+              <EndDirection>Backward</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="9" z="4" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-6" y="9" z="4" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-4" y="8" z="2" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-5" y="8" z="2" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="6" z="4" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="-5" y="8" z="2" />
+              <EndDirection>Down</EndDirection>
+              <Sections>
+                <Section Direction="Forward" Length="2" />
+                <Section Direction="Up" Length="2" />
+              </Sections>
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="6" z="4" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-6" y="6" z="4" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="9" z="3" />
+              <StartDirection>Up</StartDirection>
+              <EndPosition x="-5" y="10" z="3" />
+              <EndDirection>Down</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-7" y="9" z="4" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-8" y="9" z="4" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="8" z="2" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-6" y="8" z="2" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-5" y="9" z="3" />
+              <StartDirection>Forward</StartDirection>
+              <EndPosition x="-5" y="8" z="2" />
+              <EndDirection>Up</EndDirection>
+              <Sections>
+                <Section Direction="Forward" Length="1" />
+                <Section Direction="Down" Length="1" />
+              </Sections>
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-7" y="8" z="2" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-8" y="8" z="2" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+            <MyObjectBuilder_ConveyorLine>
+              <StartPosition x="-7" y="6" z="4" />
+              <StartDirection>Left</StartDirection>
+              <EndPosition x="-8" y="6" z="4" />
+              <EndDirection>Right</EndDirection>
+              <Sections />
+              <ConveyorLineType>LARGE_LINE</ConveyorLineType>
+            </MyObjectBuilder_ConveyorLine>
+          </ConveyorLines>
+          <DisplayName>COW.Production.Assembly_module</DisplayName>
+          <DestructibleBlocks>true</DestructibleBlocks>
+          <IsRespawnGrid>false</IsRespawnGrid>
+          <LocalCoordSys>0</LocalCoordSys>
+          <TargetingTargets />
+        </CubeGrid>
+      </CubeGrids>
+      <EnvironmentType>None</EnvironmentType>
+      <WorkshopId>0</WorkshopId>
+      <OwnerSteamId>76561198025150913</OwnerSteamId>
+      <Points>0</Points>
+    </ShipBlueprint>
+  </ShipBlueprints>
+</Definitions>
