@@ -511,36 +511,39 @@ namespace SpaceEngineers.Lib
             }
 
             // railguns
-            list.Add(new MySprite()
+            if (rgTotal > 0)
             {
-                Type = SpriteType.TEXT,
-                Data = "railgun",
-                Position = new Vector2(512, 458),
-                RotationOrScale = 0.8f,
-                Color = Color.Teal,
-                Alignment = TextAlignment.RIGHT,
-                FontId = "White"
-            });
+                list.Add(new MySprite()
+                {
+                    Type = SpriteType.TEXT,
+                    Data = "railgun",
+                    Position = new Vector2(512, 458),
+                    RotationOrScale = 0.8f,
+                    Color = Color.Teal,
+                    Alignment = TextAlignment.RIGHT,
+                    FontId = "White"
+                });
 
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXT,
-                Data = $"{rgReady} / {rgTotal}",
-                Position = new Vector2(512, 478),
-                RotationOrScale = 1f,
-                Color = Color.White,
-                Alignment = TextAlignment.RIGHT,
-                FontId = "White"
-            });
+                list.Add(new MySprite()
+                {
+                    Type = SpriteType.TEXT,
+                    Data = $"{rgReady} / {rgTotal}",
+                    Position = new Vector2(512, 478),
+                    RotationOrScale = 1f,
+                    Color = Color.White,
+                    Alignment = TextAlignment.RIGHT,
+                    FontId = "White"
+                });
 
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXTURE,
-                Data = "SquareSimple",
-                Position = new Vector2(452, 509),
-                Size = new Vector2(Convert.ToInt32(60 * rgChargeLevel), 3),
-                Color = Color.Teal,
-            });
+                list.Add(new MySprite()
+                {
+                    Type = SpriteType.TEXTURE,
+                    Data = "SquareSimple",
+                    Position = new Vector2(452, 509),
+                    Size = new Vector2(Convert.ToInt32(60 * rgChargeLevel), 3),
+                    Color = Color.Teal,
+                });
+            }
 
             return list.ToArray();
         }
