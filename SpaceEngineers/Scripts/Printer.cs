@@ -440,9 +440,11 @@ namespace SpaceEngineers.Scripts.Printer
             {
                 var cubeGrid = connector.OtherConnector.CubeGrid;
 
-                IMyCockpit cockpit = grid
-                    .GetBlocksOfType<IMyCockpit>(w => w.CubeGrid == cubeGrid)
-                    .FirstOrDefault();
+                IMyShipController[] list = grid
+                    .GetBlocksOfType<IMyShipController>(w => w.CubeGrid == cubeGrid);
+
+                var cockpit = list.FirstOrDefault(b => b.CustomName.ToLower().Contains("[csp]"))
+                    ?? list.FirstOrDefault();
 
                 orientation = cockpit?.WorldMatrix;
 

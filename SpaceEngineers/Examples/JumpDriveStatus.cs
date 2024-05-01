@@ -14,8 +14,6 @@ using VRage.Collections;
 using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
-using VRageRender;
-using System.Text.RegularExpressions;
 
 namespace xxx2
 {

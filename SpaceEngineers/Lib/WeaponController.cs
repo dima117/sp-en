@@ -48,6 +48,7 @@ namespace SpaceEngineers.Lib
         private IMySoundBlock soundEnemyLock;
         private IMyBeacon beacon;
         private IMyTextPanel[] hud;
+        private IMySmallMissileLauncherReload[] railguns;
 
         private bool onlyEnemies;
         private int targetIndex;
@@ -69,6 +70,7 @@ namespace SpaceEngineers.Lib
             IMyShipController cockpit,
             IMyCameraBlock[] cameras,
             IMyLargeTurretBase[] turrets,
+            IMySmallMissileLauncherReload[] railguns,
             IMyTextPanel[] hud,
             IMyTextSurface lcdTargets,
             IMyTextSurface lcdTorpedos,
@@ -92,6 +94,8 @@ namespace SpaceEngineers.Lib
             this.lcdTorpedos = lcdTorpedos;
             this.lcdSystem = lcdSystem;
             this.hud = hud;
+
+            this.railguns = railguns;
 
             this.sound = sound;
             this.soundEnemyLock = soundEnemyLock;
@@ -205,9 +209,10 @@ namespace SpaceEngineers.Lib
 
         private int updateIndex = 0;
 
-        public void UpdateNext(string argument, UpdateType updateSource) { 
-            
-            switch(updateIndex)
+        public void UpdateNext(string argument, UpdateType updateSource)
+        {
+
+            switch (updateIndex)
             {
                 case 0:
                     // обрабатываем принятые сообщения
@@ -353,6 +358,19 @@ namespace SpaceEngineers.Lib
                     }
                 }
 
+                var rg = railguns.Where(r => r.IsWorking).ToArray();
+                int rgReadyCount = 0;
+                float rgPercent = 0;
+
+                for (int i = 0; i < rg.Length; i++)
+                {
+                    var value = GetRailgunChargeLevel(rg[i]);
+
+                    if (value > 0.99) { rgReadyCount++; }
+
+                    if (value < 0.99 && value > rgPercent) { rgPercent = value; }
+                }
+
                 var tCount = torpedos.Values.Count(t => t.Stage == LaunchStage.Ready);
                 var enemyLock = false;
 
@@ -362,10 +380,13 @@ namespace SpaceEngineers.Lib
                     enemyLock = diff.TotalSeconds > 4 || diff.Milliseconds < 600;
                 }
 
+                var sprites = GetHudState(
+                    targetName, dist, aimbot,
+                    tCount, enemyLock,
+                    rg.Length, rgReadyCount, rgPercent);
+
                 foreach (var lcd in hud)
                 {
-                    var sprites = GetHudState(targetName, dist, aimbot, tCount, enemyLock);
-
                     using (var frame = lcd.DrawFrame())
                     {
                         frame.AddRange(sprites);
@@ -377,7 +398,8 @@ namespace SpaceEngineers.Lib
         }
 
         private MySprite[] GetHudState(
-            string targetName, string dist, string aimbot, int tCount, bool enemyLock)
+            string targetName, string dist, string aimbot, int tCount, bool enemyLock,
+            int rgTotal, int rgReady, float rgChargeLevel)
         {
             var list = new List<MySprite>();
 
@@ -450,11 +472,12 @@ namespace SpaceEngineers.Lib
                 FontId = "White"
             });
 
+            // aimbot
             list.Add(new MySprite()
             {
                 Type = SpriteType.TEXT,
                 Data = "aimbot",
-                Position = new Vector2(0, 462),
+                Position = new Vector2(0, 458),
                 RotationOrScale = 0.8f,
                 Color = Color.Teal,
                 Alignment = TextAlignment.LEFT,
@@ -465,7 +488,7 @@ namespace SpaceEngineers.Lib
             {
                 Type = SpriteType.TEXT,
                 Data = aimbot,
-                Position = new Vector2(0, 482),
+                Position = new Vector2(0, 478),
                 RotationOrScale = 1f,
                 Color = Color.White,
                 Alignment = TextAlignment.LEFT,
@@ -479,13 +502,45 @@ namespace SpaceEngineers.Lib
                 {
                     Type = SpriteType.TEXT,
                     Data = "ENEMY LOCK",
-                    Position = new Vector2(256, 482),
+                    Position = new Vector2(256, 478),
                     RotationOrScale = 1f,
                     Color = Color.OrangeRed,
                     Alignment = TextAlignment.CENTER,
                     FontId = "White"
                 });
             }
+
+            // railguns
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = "railgun",
+                Position = new Vector2(512, 458),
+                RotationOrScale = 0.8f,
+                Color = Color.Teal,
+                Alignment = TextAlignment.RIGHT,
+                FontId = "White"
+            });
+
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXT,
+                Data = $"{rgReady} / {rgTotal}",
+                Position = new Vector2(512, 478),
+                RotationOrScale = 1f,
+                Color = Color.White,
+                Alignment = TextAlignment.RIGHT,
+                FontId = "White"
+            });
+
+            list.Add(new MySprite()
+            {
+                Type = SpriteType.TEXTURE,
+                Data = "SquareSimple",
+                Position = new Vector2(452, 509),
+                Size = new Vector2(Convert.ToInt32(60 * rgChargeLevel), 3),
+                Color = Color.Teal,
+            });
 
             return list.ToArray();
         }
@@ -586,6 +641,40 @@ namespace SpaceEngineers.Lib
             {
                 OnError?.Invoke(ex);
             }
+        }
+
+        private float GetRailgunChargeLevel(IMySmallMissileLauncherReload railgun, float max = 500)
+        {
+            // возвращает число от 0 до 1
+            if (railgun.BlockDefinition.SubtypeId != "LargeRailgun")
+            {
+                return 0f;
+            }
+
+            var lines = railgun.DetailedInfo.Split('\n');
+            var chargeInfo = lines[1];
+
+            // parse number
+            var start = 0;
+
+            while (!char.IsDigit(chargeInfo[start]))
+            {
+                start++;
+            }
+
+            var end = start + 1;
+
+            while (char.IsDigit(chargeInfo[end]) || chargeInfo[end] == '.')
+            {
+                end++;
+            }
+
+            var strValue = chargeInfo.Substring(start, end - start);
+            var current = Convert.ToSingle(strValue);
+
+            float result = current / max;
+
+            return result;
         }
     }
 

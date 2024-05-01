@@ -1,12 +1,19 @@
-﻿using Sandbox.Game.GameSystems;
-using Sandbox.ModAPI.Ingame;
-using System;
+﻿using System;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VRageMath;
+using VRage.Game;
+using VRage.Game.GUI.TextPanel;
+using Sandbox.ModAPI.Interfaces;
+using Sandbox.ModAPI.Ingame;
+using Sandbox.Game.EntityComponents;
+using VRage.Game.Components;
+using VRage.Collections;
+using VRage.Game.ObjectBuilders.Definitions;
+using VRage.Game.ModAPI.Ingame;
+using SpaceEngineers.Game.ModAPI.Ingame;
 
 namespace SpaceEngineers.Lib
 {
@@ -55,6 +62,13 @@ namespace SpaceEngineers.Lib
             }
 
             return camera;
+        }
+
+        public IMySmallMissileLauncherReload[] GetLargeRailguns(Func<IMySmallMissileLauncherReload, bool> filter = null)
+        {
+            return GetBlocksOfType<IMySmallMissileLauncherReload>(
+                b => b.BlockDefinition.SubtypeId == "LargeRailgun" &&
+                (filter == null || filter(b))).ToArray();
         }
 
         public IMySoundBlock GetSound(string name, string soundName = "SoundBlockAlert2")
