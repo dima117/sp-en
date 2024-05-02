@@ -322,19 +322,19 @@ namespace SpaceEngineers.Lib
             if (hud.Any() && (now - lastUpdateHUD).TotalMilliseconds > 100)
             {
                 var targetName = "NO TARGET";
-                var dist = "--";
+                string dist = null;
 
                 if (Current != null)
                 {
                     var t = Current.Entity;
                     var d = (t.Position - selfPos).Length();
 
-                    var size = t.Type == MyDetectedEntityType.SmallGrid ? "[SM]" : "[LG]";
+                    var size = t.Type == MyDetectedEntityType.SmallGrid ? "SM" : "LG";
                     var name = TargetTracker2.GetName(t.EntityId);
 
                     targetName = friends.Contains(t.Relationship)
-                        ? $"{size} {t.Name}"
-                        : $"{size} {name}";
+                        ? $"{size} — {t.Name}"
+                        : $"{size} — {name}";
 
                     dist = d.ToString("0m");
                 }
@@ -404,136 +404,33 @@ namespace SpaceEngineers.Lib
             var list = new List<MySprite>();
 
             // target
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXT,
-                Data = "target",
-                Position = new Vector2(256, 0),
-                RotationOrScale = 0.8f,
-                Color = Color.Teal,
-                Alignment = TextAlignment.CENTER,
-                FontId = "White"
-            });
 
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXT,
-                Data = targetName,
-                Position = new Vector2(256, 20),
-                RotationOrScale = 1f,
-                Color = Color.White,
-                Alignment = TextAlignment.CENTER,
-                FontId = "White"
-            });
+            list.AddRange(Text("target", targetName, TextAlignment.CENTER, TOP));
 
-            // target distance
-            list.Add(new MySprite()
+            if (dist != null)
             {
-                Type = SpriteType.TEXT,
-                Data = "dist",
-                Position = new Vector2(0, 0),
-                RotationOrScale = 0.8f,
-                Color = Color.Teal,
-                Alignment = TextAlignment.LEFT,
-                FontId = "White"
-            });
+                list.AddRange(Text("dist", dist, TextAlignment.LEFT, TOP));
+            }
 
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXT,
-                Data = dist,
-                Position = new Vector2(0, 20),
-                RotationOrScale = 1f,
-                Color = Color.White,
-                Alignment = TextAlignment.LEFT,
-                FontId = "White"
-            });
 
             // torpedo count
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXT,
-                Data = "torpedos",
-                Position = new Vector2(512, 0),
-                RotationOrScale = 0.8f,
-                Color = Color.Teal,
-                Alignment = TextAlignment.RIGHT,
-                FontId = "White"
-            });
+            list.AddRange(Text("torpedos", tCount.ToString(), TextAlignment.RIGHT, TOP));
 
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXT,
-                Data = tCount.ToString(),
-                Position = new Vector2(512, 20),
-                RotationOrScale = 1f,
-                Color = Color.White,
-                Alignment = TextAlignment.RIGHT,
-                FontId = "White"
-            });
 
             // aimbot
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXT,
-                Data = "aimbot",
-                Position = new Vector2(0, 458),
-                RotationOrScale = 0.8f,
-                Color = Color.Teal,
-                Alignment = TextAlignment.LEFT,
-                FontId = "White"
-            });
+            list.AddRange(Text("aimbot", aimbot, TextAlignment.LEFT, BOTTOM));
 
-            list.Add(new MySprite()
-            {
-                Type = SpriteType.TEXT,
-                Data = aimbot,
-                Position = new Vector2(0, 478),
-                RotationOrScale = 1f,
-                Color = Color.White,
-                Alignment = TextAlignment.LEFT,
-                FontId = "White"
-            });
 
             // enemy lock
             if (enemyLock)
             {
-                list.Add(new MySprite()
-                {
-                    Type = SpriteType.TEXT,
-                    Data = "ENEMY LOCK",
-                    Position = new Vector2(256, 478),
-                    RotationOrScale = 1f,
-                    Color = Color.OrangeRed,
-                    Alignment = TextAlignment.CENTER,
-                    FontId = "White"
-                });
+                list.AddRange(Text(null, "ENEMY LOCK", TextAlignment.CENTER, BOTTOM, Color.OrangeRed));
             }
 
             // railguns
             if (rgTotal > 0)
             {
-                list.Add(new MySprite()
-                {
-                    Type = SpriteType.TEXT,
-                    Data = "railgun",
-                    Position = new Vector2(512, 458),
-                    RotationOrScale = 0.8f,
-                    Color = Color.Teal,
-                    Alignment = TextAlignment.RIGHT,
-                    FontId = "White"
-                });
-
-                list.Add(new MySprite()
-                {
-                    Type = SpriteType.TEXT,
-                    Data = $"{rgReady} / {rgTotal}",
-                    Position = new Vector2(512, 478),
-                    RotationOrScale = 1f,
-                    Color = Color.White,
-                    Alignment = TextAlignment.RIGHT,
-                    FontId = "White"
-                });
+                list.AddRange(Text("railgun", $"{rgReady} / {rgTotal}", TextAlignment.RIGHT, BOTTOM));
 
                 list.Add(new MySprite()
                 {
@@ -546,6 +443,62 @@ namespace SpaceEngineers.Lib
             }
 
             return list.ToArray();
+        }
+
+        const int TOP = 0;
+        const int BOTTOM = 9;
+        const int LABEL_HEIGHT = 20;
+        const int VALUE_HEIGHT = 30;
+        const int LINE_HEIGHT = 51; // label + value + space
+
+        private MySprite[] Text(string label, string text, TextAlignment alignment, byte line = TOP, Color? color = null)
+        {
+            int x = 0;
+
+            switch (alignment)
+            {
+                case TextAlignment.LEFT:
+                    x = 0;
+                    break;
+                case TextAlignment.RIGHT:
+                    x = 512;
+                    break;
+                case TextAlignment.CENTER:
+                    x = 256;
+                    break;
+            }
+
+            int y = line * LINE_HEIGHT;
+
+            var valueSprite = new MySprite() // text
+            {
+                Type = SpriteType.TEXT,
+                Data = text,
+                Position = new Vector2(x, y + LABEL_HEIGHT),
+                RotationOrScale = 1f,
+                Color = color ?? Color.White,
+                Alignment = alignment,
+                FontId = "White"
+            };
+
+            if (string.IsNullOrEmpty(label))
+            {
+                return new[] { valueSprite };
+            }
+
+            return new[] {
+                new MySprite() // label
+                {
+                    Type = SpriteType.TEXT,
+                    Data = label,
+                    Position = new Vector2(x, y),
+                    RotationOrScale = 0.8f,
+                    Color = Color.Teal,
+                    Alignment = alignment,
+                    FontId = "White"
+                },
+                valueSprite
+            };
         }
 
         private void UpdateLcdSystem()

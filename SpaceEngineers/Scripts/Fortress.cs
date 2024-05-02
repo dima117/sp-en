@@ -56,6 +56,7 @@ namespace SpaceEngineers.Scripts.Fortress
             var cockpit = grid.GetByFilterOrAny<IMyCockpit>(sameGrid);
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
+            var railguns = grid.GetLargeRailguns();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
             var lcdTargets = cockpit.GetSurface(0);
             var lcdTorpedos = cockpit.GetSurface(1);
@@ -71,6 +72,7 @@ namespace SpaceEngineers.Scripts.Fortress
                 cockpit,
                 cameras,
                 turrets,
+                railguns,
                 hud,
                 lcdTargets,
                 lcdTorpedos,
@@ -95,8 +97,6 @@ namespace SpaceEngineers.Scripts.Fortress
         {
             tracker.AddRuntime();
 
-            weapons.Execute(argument, updateSource);
-
             switch (argument)
             {
                 case "filter":
@@ -120,7 +120,7 @@ namespace SpaceEngineers.Scripts.Fortress
                     break;
             }
 
-            weapons.Update();
+            weapons.UpdateNext(argument, updateSource);
 
             //switch (argument)
             //{
