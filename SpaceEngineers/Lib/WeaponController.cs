@@ -149,7 +149,7 @@ namespace SpaceEngineers.Lib
         {
             foreach (var gr in groups)
             {
-                var tmp = new SpaceTorpedo(gr, factor: 3f, lifespan: TORPEDO_LIFESPAN);
+                var tmp = new SpaceTorpedo(gr, factor: 2.5f, lifespan: TORPEDO_LIFESPAN);
 
                 // добавляем новые торпеды
                 if (!torpedos.ContainsKey(tmp.EntityId))
@@ -168,9 +168,10 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void Aim(int shotSpeed)
+        public void Aim()
         {
-            aimBotTargetShotSpeed = shotSpeed;
+            aimBotTargetShotSpeed = aimBotTargetShotSpeed == ARTILLERY_SPEED
+                ? RAILGUN_SPEED : ARTILLERY_SPEED;
         }
 
         public void ClearAimBotTarget()

@@ -118,11 +118,8 @@ namespace SpaceEngineers.Scripts.BattleShip
                     break;
 
                 // weapons
-                case "aim-railgun":
-                    weapons.Aim(WeaponController.RAILGUN_SPEED);
-                    break;
-                case "aim-artillery":
-                    weapons.Aim(WeaponController.ARTILLERY_SPEED);
+                case "aim-set":
+                    weapons.Aim();
                     break;
                 case "aim-clear":
                     weapons.ClearAimBotTarget();
