@@ -66,6 +66,7 @@ namespace SpaceEngineers.Lib
 
             //Store this error as last error
             lastError = axis;
+            lastErrorTimestamp = now;
 
             //Construct output
             return Kp * axis + Ki * errorSum + Kd * errorDerivative;
@@ -96,7 +97,7 @@ namespace SpaceEngineers.Lib
 
     public class Aimbot
     {
-        private readonly PID pid = new DecayingIntegralPID(1, 0.2, 0.3, 1000, 0.1);
+        private readonly PID pid = new DecayingIntegralPID(1, 1, 0, 1000, 0);
 
         private readonly IMyShipController remoteControl;
         private readonly IEnumerable<IMyGyro> gyroList;
