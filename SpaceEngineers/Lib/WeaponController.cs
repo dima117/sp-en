@@ -27,6 +27,7 @@ namespace SpaceEngineers.Lib
     // import:Serializer.cs
     // import:Transmitter2.cs
     // import:TargetTracker2.cs
+    // import:Aimbot.cs
     // import:DirectionController2.cs
     // import:Torpedos\SpaceTorpedo.cs
 
@@ -46,7 +47,6 @@ namespace SpaceEngineers.Lib
         private IMyShipController cockpit;
         private IMySoundBlock sound;
         private IMySoundBlock soundEnemyLock;
-        private IMyBeacon beacon;
         private IMyTextPanel[] hud;
         private IMySmallMissileLauncherReload[] railguns;
 
@@ -57,11 +57,11 @@ namespace SpaceEngineers.Lib
         private DateTime? enemyLock;
 
         private DateTime lastUpdateHUD = DateTime.MinValue;
-        private int aimBotTargetShotSpeed;
+        private int aimbotTargetShotSpeed;
 
         public event Action<Exception> OnError;
 
-        readonly DirectionController2 directionController;
+        readonly Aimbot aimbot;
         readonly Dictionary<long, SpaceTorpedo> torpedos = new Dictionary<long, SpaceTorpedo>();
         readonly Dictionary<long, long> targeting = new Dictionary<long, long>(); // цели торпед
 
@@ -78,8 +78,7 @@ namespace SpaceEngineers.Lib
             IMyIntergridCommunicationSystem igc,
             IMyRadioAntenna[] antennas,
             IMySoundBlock sound,
-            IMySoundBlock soundEnemyLock,
-            IMyBeacon beacon = null
+            IMySoundBlock soundEnemyLock
         )
         {
             tracker = new TargetTracker2(cameras, turrets);
@@ -99,9 +98,8 @@ namespace SpaceEngineers.Lib
 
             this.sound = sound;
             this.soundEnemyLock = soundEnemyLock;
-            this.beacon = beacon;
 
-            directionController = new DirectionController2(cockpit, gyros);
+            aimbot = new Aimbot(cockpit, gyros);
         }
 
         public TargetInfo Current => tracker.GetByEntityId(targetId);
@@ -170,13 +168,15 @@ namespace SpaceEngineers.Lib
 
         public void Aim()
         {
-            aimBotTargetShotSpeed = aimBotTargetShotSpeed == ARTILLERY_SPEED
+            aimbotTargetShotSpeed = aimbotTargetShotSpeed == ARTILLERY_SPEED
                 ? RAILGUN_SPEED : ARTILLERY_SPEED;
+
+            aimbot.Reset();
         }
 
         public void ClearAimBotTarget()
         {
-            aimBotTargetShotSpeed = 0;
+            aimbotTargetShotSpeed = 0;
         }
 
         public void SetEnemyLock()
@@ -276,19 +276,19 @@ namespace SpaceEngineers.Lib
         {
             get
             {
-                return aimBotTargetShotSpeed > 0;
+                return aimbotTargetShotSpeed > 0;
             }
         }
 
         private void UpdateAimBot()
         {
-            if (aimBotTargetShotSpeed > 0)
+            if (aimbotTargetShotSpeed > 0)
             {
                 var target = Current;
 
                 if (target != null)
                 {
-                    directionController.InterceptShot(target.Entity, aimBotTargetShotSpeed);
+                    aimbot.Aim(target.Entity, aimbotTargetShotSpeed);
                 }
             }
         }
@@ -342,10 +342,10 @@ namespace SpaceEngineers.Lib
 
                 var aimbot = "Off";
 
-                if (aimBotTargetShotSpeed > 0)
+                if (aimbotTargetShotSpeed > 0)
                 {
 
-                    switch (aimBotTargetShotSpeed)
+                    switch (aimbotTargetShotSpeed)
                     {
                         case RAILGUN_SPEED:
                             aimbot = "Rail";
@@ -354,7 +354,7 @@ namespace SpaceEngineers.Lib
                             aimbot = "Art";
                             break;
                         default:
-                            aimbot = aimBotTargetShotSpeed.ToString("0 m/s");
+                            aimbot = aimbotTargetShotSpeed.ToString("0 m/s");
                             break;
                     }
                 }
