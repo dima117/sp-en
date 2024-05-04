@@ -32,43 +32,41 @@ namespace SpaceEngineers.Lib
         private Vector3D lastError;
         private DateTime lastErrorTimestamp;
         private bool firstRun = true;
-        private long periodMs;
 
-        public PID(double kp, double ki, double kd, long periodMs = 1000)
+        public PID(double kp, double ki, double kd)
         {
             Kp = kp;
             Ki = ki;
             Kd = kd;
-
-            this.periodMs = periodMs;
         }
 
-        protected virtual Vector3D GetIntegral(Vector3D currentError, Vector3D errorSum, double timeStep)
+        protected virtual Vector3D GetIntegral(Vector3D currentError, Vector3D errorSum, double dt)
         {
-            return errorSum + currentError * timeStep;
+            return errorSum + currentError * dt;
         }
 
         public Vector3D Control(Vector3D axis, DateTime now)
         {
-            var timeStep = (now - lastErrorTimestamp).TotalMilliseconds / periodMs;
-
-            //Compute derivative term
-            Vector3D errorDerivative = (axis - lastError) / timeStep;
-
             if (firstRun)
             {
-                errorDerivative = Vector3D.Zero;
+                lastError = Vector3D.Zero;
+                lastErrorTimestamp = now;
                 firstRun = false;
             }
 
-            //Get error sum
-            errorSum = GetIntegral(axis, errorSum, timeStep);
+            var dt = (now - lastErrorTimestamp).TotalSeconds;
 
-            //Store this error as last error
+            // compute derivative term
+            Vector3D errorDerivative = (axis - lastError) / dt;
+
+            // get error sum
+            errorSum = GetIntegral(axis, errorSum, dt);
+
+            // store this error as last error
             lastError = axis;
             lastErrorTimestamp = now;
 
-            //Construct output
+            // construct output
             return Kp * axis + Ki * errorSum + Kd * errorDerivative;
         }
 
@@ -84,20 +82,20 @@ namespace SpaceEngineers.Lib
     {
         public double IntegralDecayRatio { get; set; }
 
-        public DecayingIntegralPID(double kp, double ki, double kd, long periodMs, double decayRatio) : base(kp, ki, kd, periodMs)
+        public DecayingIntegralPID(double kp, double ki, double kd, double decayRatio) : base(kp, ki, kd)
         {
             IntegralDecayRatio = decayRatio;
         }
 
         protected override Vector3D GetIntegral(Vector3D currentError, Vector3D errorSum, double timeStep)
         {
-            return errorSum * (1.0 - IntegralDecayRatio) + currentError * timeStep;
+            return (1.0 - IntegralDecayRatio) * errorSum + currentError * timeStep;
         }
     }
 
     public class Aimbot
     {
-        private readonly PID pid = new DecayingIntegralPID(1, 1, 0, 1000, 0);
+        private readonly PID pid = new DecayingIntegralPID(1, 8, 0.2, 0.3);
 
         private readonly IMyShipController remoteControl;
         private readonly IEnumerable<IMyGyro> gyroList;
