@@ -33,6 +33,11 @@ namespace SpaceEngineers.Lib
         private DateTime lastErrorTimestamp;
         private bool firstRun = true;
 
+        public Vector3D LastError
+        {
+            get { return this.lastError; }
+        }
+
         public PID(double kp, double ki, double kd)
         {
             Kp = kp;
@@ -45,10 +50,19 @@ namespace SpaceEngineers.Lib
             return errorSum + currentError * dt;
         }
 
-        public Vector3D Control(Vector3D axis, DateTime now)
+        public Vector3D Control(Vector3D axis, DateTime now, bool proportionalOnly = false)
         {
+            var Sp = Kp * axis;
+
+            if (proportionalOnly)
+            {
+                firstRun = true;
+                return Sp;
+            }
+
             if (firstRun)
             {
+                errorSum = Vector3D.Zero;
                 lastError = Vector3D.Zero;
                 lastErrorTimestamp = now;
                 firstRun = false;
@@ -67,13 +81,11 @@ namespace SpaceEngineers.Lib
             lastErrorTimestamp = now;
 
             // construct output
-            return Kp * axis + Ki * errorSum + Kd * errorDerivative;
+            return Sp + Ki * errorSum + Kd * errorDerivative;
         }
 
         public virtual void Reset()
         {
-            errorSum = Vector3D.Zero;
-            lastError = Vector3D.Zero;
             firstRun = true;
         }
     }
@@ -93,9 +105,20 @@ namespace SpaceEngineers.Lib
         }
     }
 
+    public enum AimbotState
+    {
+        UNKNOWN,
+        READY,
+        TOO_CLOSE
+    }
+
     public class Aimbot
     {
-        private readonly PID pid = new DecayingIntegralPID(1, 8, 0.2, 0.3);
+        private const double PROPORTIONAL_MODE_LIMIT = 0.07;
+        private const double MIN_DISTANCE = 600;
+        private const double ACCURACY_LIMIT = 0.012;
+
+        private readonly PID pid = new DecayingIntegralPID(1, 1, 0, 0);
 
         private readonly IMyShipController remoteControl;
         private readonly IEnumerable<IMyGyro> gyroList;
@@ -106,7 +129,7 @@ namespace SpaceEngineers.Lib
             this.gyroList = gyroList;
         }
 
-        public Vector3D Aim(MyDetectedEntityInfo target, double bulletSpeed)
+        public AimbotState Aim(MyDetectedEntityInfo target, double bulletSpeed)
         {
             var ownPos = remoteControl.GetPosition();
             var ownVelocity = remoteControl.GetShipVelocities().LinearVelocity;
@@ -122,16 +145,27 @@ namespace SpaceEngineers.Lib
             var axis = DirectionController2.GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
 
             // fix error
-            axis = pid.Control(axis, DateTime.UtcNow);
+            axis = pid.Control(axis, DateTime.UtcNow, axis.Length() > PROPORTIONAL_MODE_LIMIT);
 
             DirectionController2.SetGyroByAxis(axis, gyroList);
 
-            return axis;
+            if (targetVector.Length() < MIN_DISTANCE)
+            {
+                return AimbotState.TOO_CLOSE;
+            }
+            else if (pid.LastError.Length() < ACCURACY_LIMIT)
+            {
+                return AimbotState.READY;
+            }
+
+            return AimbotState.UNKNOWN;
         }
 
-        public void Reset()
+        public AimbotState Reset()
         {
             pid.Reset();
+
+            return AimbotState.UNKNOWN;
         }
     }
 

@@ -57,7 +57,20 @@ namespace SpaceEngineers.Lib
         private DateTime? enemyLock;
 
         private DateTime lastUpdateHUD = DateTime.MinValue;
+
         private int aimbotTargetShotSpeed;
+        private AimbotState lastAimbotState = AimbotState.UNKNOWN;
+        private DateTime lastAimbotStateUpdated;
+        private void SetAimbotState(AimbotState state)
+        {
+            if (state != lastAimbotState)
+            {
+                lastAimbotStateUpdated = DateTime.UtcNow;
+            }
+
+            lastAimbotState = state;
+        }
+
 
         public event Action<Exception> OnError;
 
@@ -171,7 +184,7 @@ namespace SpaceEngineers.Lib
             aimbotTargetShotSpeed = aimbotTargetShotSpeed == ARTILLERY_SPEED
                 ? RAILGUN_SPEED : ARTILLERY_SPEED;
 
-            aimbot.Reset();
+            SetAimbotState(aimbot.Reset());
         }
 
         public void ClearAimBotTarget()
@@ -288,7 +301,7 @@ namespace SpaceEngineers.Lib
 
                 if (target != null)
                 {
-                    aimbot.Aim(target.Entity, aimbotTargetShotSpeed);
+                    SetAimbotState(aimbot.Aim(target.Entity, aimbotTargetShotSpeed));
                 }
             }
         }
@@ -355,6 +368,16 @@ namespace SpaceEngineers.Lib
                             break;
                         default:
                             aimbot = aimbotTargetShotSpeed.ToString("0 m/s");
+                            break;
+                    }
+
+                    switch (lastAimbotState)
+                    {
+                        case AimbotState.READY:
+                            aimbot += $" :: READY";
+                            break;
+                        case AimbotState.TOO_CLOSE:
+                            aimbot += $" :: TOO CLOSE";
                             break;
                     }
                 }
