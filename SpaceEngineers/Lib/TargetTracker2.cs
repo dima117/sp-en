@@ -61,8 +61,6 @@ namespace SpaceEngineers.Lib
             MyDetectedEntityType.LargeGrid
         };
 
-        private readonly IMyTurretControlBlock[] turretControllers;
-        private readonly IMyLargeTurretBase[] turrets;
         private readonly IMyCameraBlock[] cameras;
 
         private int camIndex = 0;
@@ -84,15 +82,9 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public TargetTracker2(
-            IMyCameraBlock[] cameras = null,
-            IMyLargeTurretBase[] turrets = null,
-            IMyTurretControlBlock[] turretControllers = null
-            )
+        public TargetTracker2(IMyCameraBlock[] cameras)
         {
-            this.cameras = cameras ?? new IMyCameraBlock[0];
-            this.turrets = turrets ?? new IMyLargeTurretBase[0];
-            this.turretControllers = turretControllers ?? new IMyTurretControlBlock[0];
+            this.cameras = cameras;
 
             foreach (var cam in this.cameras)
             {
@@ -182,7 +174,7 @@ namespace SpaceEngineers.Lib
             var now = DateTime.UtcNow;
             var nextScan = now.AddMilliseconds(SCAN_DELAY_MS);
 
-            var isChanged = UpdateFromTurrets(now, nextScan);
+            var isChanged = false;
 
             if (Count >= MIN_CAM_COUN)
             {
@@ -270,33 +262,6 @@ namespace SpaceEngineers.Lib
             {
                 target.Update(scanResult, now, nextScan);
             }
-        }
-
-        private bool UpdateFromTurrets(DateTime now, DateTime nextScan)
-        {
-            var changed = false;
-
-            foreach (var t in turrets)
-            {
-                if (!t.Closed && t.HasTarget)
-                {
-                    var entity = t.GetTargetedEntity();
-
-                    changed |= AddOrUpdateTarget(entity, t.GetPosition(), now, nextScan);
-                }
-            }
-
-            foreach (var t in turretControllers)
-            {
-                if (!t.Closed && t.HasTarget)
-                {
-                    var entity = t.GetTargetedEntity();
-
-                    changed |= AddOrUpdateTarget(entity, t.GetPosition(), now, nextScan);
-                }
-            }
-
-            return changed;
         }
 
         private static Vector3D CalculateTargetLocation(TargetInfo info, TimeSpan timePassed)

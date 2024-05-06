@@ -94,7 +94,7 @@ namespace SpaceEngineers.Lib
             IMySoundBlock soundEnemyLock
         )
         {
-            tracker = new TargetTracker2(cameras, turrets);
+            tracker = new TargetTracker2(cameras);
             tracker.TargetListChanged += Tracker_TargetListChanged;
 
             transmitter = new Transmitter2(igc, antennas);

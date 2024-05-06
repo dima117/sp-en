@@ -116,7 +116,6 @@ namespace Builder
             var files = new string[] {
                 "Scripts\\BattleShip.cs",
                 "Scripts\\Debug\\RotorTest.cs",
-                "Scripts\\Fighter.cs",
                 "Scripts\\Fortress.cs",
                 "Scripts\\Spotter.cs",
                 "Scripts\\TowShip.cs",
