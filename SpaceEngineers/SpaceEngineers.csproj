@@ -78,6 +78,7 @@
     <Compile Include="RotorTurret.cs" />
     <Compile Include="RuntimeTracker.cs" />
     <Compile Include="Scripts\Debug\GravDriveBalancing.cs" />
+    <Compile Include="Scripts\Debug\Debug.cs" />
     <Compile Include="Scripts\Debug\NukeTest.cs" />
     <Compile Include="Scripts\Debug\RotorTest.cs" />
     <Compile Include="Scripts\BattleShip.cs" />

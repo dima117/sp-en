@@ -109,13 +109,15 @@ namespace SpaceEngineers.Lib
     {
         UNKNOWN,
         READY,
-        TOO_CLOSE
+        TOO_CLOSE,
+        TOO_FAR,
     }
 
     public class Aimbot
     {
         private const double PROPORTIONAL_MODE_LIMIT = 0.07;
         private const double MIN_DISTANCE = 600;
+        private const double MAX_DISTANCE = 1900;
         private const double ACCURACY_LIMIT = 0.012;
 
         private readonly PID pid = new DecayingIntegralPID(1, 1, 0, 0);
@@ -129,7 +131,7 @@ namespace SpaceEngineers.Lib
             this.gyroList = gyroList;
         }
 
-        public AimbotState Aim(MyDetectedEntityInfo target, double bulletSpeed)
+        public AimbotState Aim(MyDetectedEntityInfo target, double bulletSpeed, DateTime now)
         {
             var ownPos = remoteControl.GetPosition();
             var ownVelocity = remoteControl.GetShipVelocities().LinearVelocity;
@@ -145,15 +147,22 @@ namespace SpaceEngineers.Lib
             var axis = DirectionController2.GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
 
             // fix error
-            axis = pid.Control(axis, DateTime.UtcNow, axis.Length() > PROPORTIONAL_MODE_LIMIT);
+            var proportionalMode = axis.Length() > PROPORTIONAL_MODE_LIMIT;
+            axis = pid.Control(axis, now, proportionalMode);
 
             DirectionController2.SetGyroByAxis(axis, gyroList);
 
-            if (targetVector.Length() < MIN_DISTANCE)
+            var distance = targetVector.Length();
+
+            if (distance < MIN_DISTANCE)
             {
                 return AimbotState.TOO_CLOSE;
             }
-            else if (pid.LastError.Length() < ACCURACY_LIMIT)
+            else if (distance > MAX_DISTANCE)
+            {
+                return AimbotState.TOO_FAR;
+            }
+            else if (!proportionalMode && pid.LastError.Length() < ACCURACY_LIMIT)
             {
                 return AimbotState.READY;
             }

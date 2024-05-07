@@ -49,6 +49,7 @@ namespace SpaceEngineers.Lib
         private IMySoundBlock soundEnemyLock;
         private IMyTextPanel[] hud;
         private IMySmallMissileLauncherReload[] railguns;
+        private IMySmallMissileLauncher[] artillery;
 
         private bool onlyEnemies;
         private int targetIndex;
@@ -84,6 +85,7 @@ namespace SpaceEngineers.Lib
             IMyCameraBlock[] cameras,
             IMyLargeTurretBase[] turrets,
             IMySmallMissileLauncherReload[] railguns,
+            IMySmallMissileLauncher[] artillery,
             IMyTextPanel[] hud,
             IMyTextSurface lcdTargets,
             IMyTextSurface lcdTorpedos,
@@ -108,6 +110,7 @@ namespace SpaceEngineers.Lib
             this.hud = hud;
 
             this.railguns = railguns;
+            this.artillery = artillery;
 
             this.sound = sound;
             this.soundEnemyLock = soundEnemyLock;
@@ -295,13 +298,40 @@ namespace SpaceEngineers.Lib
 
         private void UpdateAimBot()
         {
+            var now = DateTime.UtcNow;
+
             if (aimbotTargetShotSpeed > 0)
             {
                 var target = Current;
 
                 if (target != null)
                 {
-                    SetAimbotState(aimbot.Aim(target.Entity, aimbotTargetShotSpeed));
+                    SetAimbotState(aimbot.Aim(target.Entity, aimbotTargetShotSpeed, now));
+
+                    if (lastAimbotState == AimbotState.READY &&
+                       (now - lastAimbotStateUpdated).TotalMilliseconds > 500)
+                    {
+                        IMyUserControllableGun[] list = null;
+
+                        switch (aimbotTargetShotSpeed)
+                        {
+                            case RAILGUN_SPEED:
+                                list = railguns.Where(r => r.IsWorking).ToArray();
+                                break;
+                            case ARTILLERY_SPEED:
+                                list = artillery.Where(r => r.IsWorking).ToArray();
+
+                                break;
+                        }
+
+                        if (list != null && list.Any())
+                        {
+                            foreach (var r in list)
+                            {
+                                r.ShootOnce();
+                            }
+                        }
+                    }
                 }
             }
         }

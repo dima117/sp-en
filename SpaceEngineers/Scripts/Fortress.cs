@@ -57,6 +57,7 @@ namespace SpaceEngineers.Scripts.Fortress
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
             var railguns = grid.GetLargeRailguns();
+            var artillery = grid.GetArtillery();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
             var lcdTargets = cockpit.GetSurface(0);
             var lcdTorpedos = cockpit.GetSurface(1);
@@ -73,6 +74,7 @@ namespace SpaceEngineers.Scripts.Fortress
                 cameras,
                 turrets,
                 railguns,
+                artillery,
                 hud,
                 lcdTargets,
                 lcdTorpedos,

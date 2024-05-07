@@ -60,6 +60,7 @@ namespace SpaceEngineers.Scripts.BattleShip
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
 
             var railguns = grid.GetLargeRailguns();
+            var artillery = grid.GetArtillery();
 
             var hud = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("ws_hud"));
             var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");
@@ -80,6 +81,7 @@ namespace SpaceEngineers.Scripts.BattleShip
                 cameras,
                 turrets,
                 railguns,
+                artillery,
                 hud,
                 lcdTargets,
                 lcdTorpedos,
