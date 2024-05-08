@@ -43,6 +43,11 @@ namespace SpaceEngineers.Scripts.BattleShip
 
         private bool iii = false;
 
+        private bool sameGrid<T>(T b) where T : IMyTerminalBlock
+        {
+            return b.CubeGrid == Me.CubeGrid;
+        }
+
         public Program()
         {
             tracker = new RuntimeTracker(this);
@@ -58,9 +63,9 @@ namespace SpaceEngineers.Scripts.BattleShip
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
 
-            var railguns = grid.GetLargeRailguns();
-            var artillery = grid.GetArtillery();
-            var turrets = grid.GetArtilleryTurrets();
+            var railguns = grid.GetLargeRailguns(sameGrid);
+            var artillery = grid.GetArtillery(sameGrid);
+            var turrets = grid.GetArtilleryTurrets(sameGrid);
 
             var hud = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("ws_hud"));
             var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");

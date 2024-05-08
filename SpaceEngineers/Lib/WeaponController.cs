@@ -436,11 +436,14 @@ namespace SpaceEngineers.Lib
                     dist = d.ToString("0m");
                 }
 
+                var tc = this.turrets.Count(t => t.IsWorking);
+                var tm = courseFiringMode ? "Fwd" : "Auto";
+                var turrets = tc > 0 ? $"{tc} | {tm}" : tm;
+
                 var aimbot = "Off";
 
                 if (aimbotTargetShotSpeed > 0)
                 {
-
                     switch (aimbotTargetShotSpeed)
                     {
                         case RAILGUN_SPEED:
@@ -457,10 +460,10 @@ namespace SpaceEngineers.Lib
                     switch (lastAimbotState)
                     {
                         case AimbotState.READY:
-                            aimbot += $" :: READY";
+                            aimbot += $" | READY";
                             break;
                         case AimbotState.TOO_CLOSE:
-                            aimbot += $" :: TOO CLOSE";
+                            aimbot += $" | TOO CLOSE";
                             break;
                     }
                 }
@@ -488,7 +491,7 @@ namespace SpaceEngineers.Lib
                 }
 
                 var sprites = GetHudState(
-                    targetName, dist, aimbot,
+                    targetName, dist, aimbot, turrets,
                     tCount, enemyLock,
                     rg.Length, rgReadyCount, rgPercent);
 
@@ -505,7 +508,7 @@ namespace SpaceEngineers.Lib
         }
 
         private MySprite[] GetHudState(
-            string targetName, string dist, string aimbot, int tCount, bool enemyLock,
+            string targetName, string dist, string aimbot, string turrets, int tCount, bool enemyLock,
             int rgTotal, int rgReady, float rgChargeLevel)
         {
             var list = new List<MySprite>();
@@ -525,13 +528,14 @@ namespace SpaceEngineers.Lib
 
 
             // aimbot
-            list.AddRange(Text("aimbot", aimbot, TextAlignment.LEFT, BOTTOM));
+            list.AddRange(Text("aimbot", aimbot, TextAlignment.CENTER, BOTTOM));
+            list.AddRange(Text("turrets", turrets, TextAlignment.LEFT, BOTTOM));
 
 
             // enemy lock
             if (enemyLock)
             {
-                list.AddRange(Text(null, "ENEMY LOCK", TextAlignment.CENTER, BOTTOM, Color.OrangeRed));
+                list.AddRange(Text(null, "ENEMY LOCK", TextAlignment.CENTER, BOTTOM - 1, color: Color.OrangeRed));
             }
 
             // railguns
@@ -557,18 +561,25 @@ namespace SpaceEngineers.Lib
         const int LABEL_HEIGHT = 20;
         const int VALUE_HEIGHT = 30;
         const int LINE_HEIGHT = 51; // label + value + space
+        const int CELL_WIDTH = 128;
 
-        private MySprite[] Text(string label, string text, TextAlignment alignment, byte line = TOP, Color? color = null)
+        private MySprite[] Text(
+            string label,
+            string text,
+            TextAlignment alignment,
+            byte line = TOP,
+            byte offset = 0,
+            Color? color = null)
         {
             int x = 0;
 
             switch (alignment)
             {
                 case TextAlignment.LEFT:
-                    x = 0;
+                    x = 0 + offset * CELL_WIDTH;
                     break;
                 case TextAlignment.RIGHT:
-                    x = 512;
+                    x = 512 - offset * CELL_WIDTH;
                     break;
                 case TextAlignment.CENTER:
                     x = 256;
