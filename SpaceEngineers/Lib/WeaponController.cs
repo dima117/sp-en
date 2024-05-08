@@ -50,10 +50,13 @@ namespace SpaceEngineers.Lib
         private IMyTextPanel[] hud;
         private IMySmallMissileLauncherReload[] railguns;
         private IMySmallMissileLauncher[] artillery;
+        private IMyLargeMissileTurret[] turrets;
 
         private bool onlyEnemies;
         private int targetIndex;
         private long targetId;
+
+        private bool courseFiringMode = false;
 
         private DateTime? enemyLock;
 
@@ -83,7 +86,7 @@ namespace SpaceEngineers.Lib
             IMyGyro[] gyros,
             IMyShipController cockpit,
             IMyCameraBlock[] cameras,
-            IMyLargeTurretBase[] turrets,
+            IMyLargeMissileTurret[] turrets,
             IMySmallMissileLauncherReload[] railguns,
             IMySmallMissileLauncher[] artillery,
             IMyTextPanel[] hud,
@@ -111,6 +114,7 @@ namespace SpaceEngineers.Lib
 
             this.railguns = railguns;
             this.artillery = artillery;
+            this.turrets = turrets;
 
             this.sound = sound;
             this.soundEnemyLock = soundEnemyLock;
@@ -207,6 +211,28 @@ namespace SpaceEngineers.Lib
             soundEnemyLock?.Stop();
         }
 
+        public void ToggleFiringMode()
+        {
+            courseFiringMode = !courseFiringMode;
+
+            foreach (var t in turrets)
+            {
+                if (courseFiringMode)
+                {
+                    t.Range = 0;
+                    t.EnableIdleRotation = false;
+                    t.SyncEnableIdleRotation();
+                }
+                else
+                {
+                    t.Range = 1000;
+                    t.EnableIdleRotation = true;
+                    t.SyncEnableIdleRotation();
+                }
+            }
+
+        }
+
         public bool Launch()
         {
             // запускает торпеду по текущей цели
@@ -300,6 +326,17 @@ namespace SpaceEngineers.Lib
         {
             var now = DateTime.UtcNow;
 
+            if (courseFiringMode)
+            {
+                foreach (var t in turrets)
+                {
+                    t.Range = 0;
+                    t.SetManualAzimuthAndElevation(0, 0);
+                    t.SyncAzimuth();
+                    t.SyncElevation();
+                }
+            }
+
             if (aimbotTargetShotSpeed > 0)
             {
                 var target = Current;
@@ -312,6 +349,7 @@ namespace SpaceEngineers.Lib
                        (now - lastAimbotStateUpdated).TotalMilliseconds > 500)
                     {
                         IMyUserControllableGun[] list = null;
+                        IMyLargeMissileTurret[] listTurrets = null;
 
                         switch (aimbotTargetShotSpeed)
                         {
@@ -321,12 +359,27 @@ namespace SpaceEngineers.Lib
                             case ARTILLERY_SPEED:
                                 list = artillery.Where(r => r.IsWorking).ToArray();
 
+                                if (courseFiringMode)
+                                {
+                                    listTurrets = turrets.Where(r => r.IsWorking
+                                        && r.Azimuth < 0.001
+                                        && r.Elevation < 0.001).ToArray();
+                                }
+
                                 break;
                         }
 
                         if (list != null && list.Any())
                         {
                             foreach (var r in list)
+                            {
+                                r.ShootOnce();
+                            }
+                        }
+
+                        if (listTurrets != null && listTurrets.Any())
+                        {
+                            foreach (var r in listTurrets)
                             {
                                 r.ShootOnce();
                             }

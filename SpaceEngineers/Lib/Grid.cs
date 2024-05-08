@@ -78,6 +78,13 @@ namespace SpaceEngineers.Lib
                 (filter == null || filter(b))).ToArray();
         }
 
+        public IMyLargeMissileTurret[] GetArtilleryTurrets(Func<IMyLargeMissileTurret, bool> filter = null)
+        {
+            return GetBlocksOfType<IMyLargeMissileTurret>(
+                b => b.BlockDefinition.SubtypeId == "LargeCalibreTurret" &&
+                (filter == null || filter(b))).ToArray();
+        }
+
         public IMySoundBlock GetSound(string name, string soundName = "SoundBlockAlert2")
         {
             /*

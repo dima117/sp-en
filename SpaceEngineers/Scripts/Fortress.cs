@@ -55,7 +55,8 @@ namespace SpaceEngineers.Scripts.Fortress
             var gyros = grid.GetBlocksOfType<IMyGyro>(sameGrid);
             var cockpit = grid.GetByFilterOrAny<IMyCockpit>(sameGrid);
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
-            var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
+            var turrets = grid.GetArtilleryTurrets();
+
             var railguns = grid.GetLargeRailguns();
             var artillery = grid.GetArtillery();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();

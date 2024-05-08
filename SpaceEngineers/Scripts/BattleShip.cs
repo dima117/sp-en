@@ -56,11 +56,11 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             var cockpit = grid.GetBlockWithName<IMyCockpit>("ws_cockpit");
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
-            var turrets = grid.GetBlocksOfType<IMyLargeTurretBase>();
             var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
 
             var railguns = grid.GetLargeRailguns();
             var artillery = grid.GetArtillery();
+            var turrets = grid.GetArtilleryTurrets();
 
             var hud = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("ws_hud"));
             var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");
@@ -128,6 +128,9 @@ namespace SpaceEngineers.Scripts.BattleShip
                     break;
                 case "filter":
                     weapons.ToggleFilter();
+                    break;
+                case "mode":
+                    weapons.ToggleFiringMode();
                     break;
                 case "prev":
                     weapons.PrevTarget();

@@ -29,11 +29,27 @@ namespace SpaceEngineers.Scripts.Debug
 
         public void Main(string argument, UpdateType updateSource)
         {
+            //IMyLargeMissileTurret
+            // LargeCalibreTurret
             var art = GridTerminalSystem.GetBlockWithName("xxx");
 
             Echo(art.GetType().Name);
             Echo(art.BlockDefinition.SubtypeId);
             Me.CustomData = art.BlockDefinition.SubtypeName;
+
+            if (argument == "aaa")
+            {
+                var t = art as IMyLargeMissileTurret;
+
+                if (t != null)
+                {
+                    t.Range = 0;
+                    t.SetManualAzimuthAndElevation(0, 0);
+
+                    t.SyncAzimuth();
+                    t.SyncElevation();
+                }
+            }
         }
 
         #endregion
