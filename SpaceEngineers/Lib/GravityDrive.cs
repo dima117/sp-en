@@ -192,7 +192,7 @@ namespace SpaceEngineers.Lib
                 b.Enabled = enabled;
             }
 
-            foreach (IMyGravityGenerator b in allGens)
+            foreach (var b in allGens)
             {
                 b.Enabled = enabled;
                 b.GravityAcceleration = 0f;
