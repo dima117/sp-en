@@ -53,13 +53,15 @@ namespace SpaceEngineers.Lib
         readonly List<IMyArtificialMassBlock> massBlocks = new List<IMyArtificialMassBlock>();
         readonly List<IMyGyro> gyroBlocks = new List<IMyGyro>();
 
-        readonly List<IMyGravityGenerator> allGens = new List<IMyGravityGenerator>();
-        readonly List<IMyGravityGenerator> upGens = new List<IMyGravityGenerator>();
-        readonly List<IMyGravityGenerator> downGens = new List<IMyGravityGenerator>();
-        readonly List<IMyGravityGenerator> leftGens = new List<IMyGravityGenerator>();
-        readonly List<IMyGravityGenerator> rightGens = new List<IMyGravityGenerator>();
-        readonly List<IMyGravityGenerator> fowardGens = new List<IMyGravityGenerator>();
-        readonly List<IMyGravityGenerator> backwardGens = new List<IMyGravityGenerator>();
+        // сферические генерации нужно ставить по краям, направляя верх в сторону блоков массы
+        // например, генераторы сзади, верх которых направлен вперед, будут усиливать движение вперед/назад
+        readonly List<IMyGravityGeneratorBase> allGens = new List<IMyGravityGeneratorBase>();
+        readonly List<IMyGravityGeneratorBase> upGens = new List<IMyGravityGeneratorBase>();
+        readonly List<IMyGravityGeneratorBase> downGens = new List<IMyGravityGeneratorBase>();
+        readonly List<IMyGravityGeneratorBase> leftGens = new List<IMyGravityGeneratorBase>();
+        readonly List<IMyGravityGeneratorBase> rightGens = new List<IMyGravityGeneratorBase>();
+        readonly List<IMyGravityGeneratorBase> forwardGens = new List<IMyGravityGeneratorBase>();
+        readonly List<IMyGravityGeneratorBase> backwardGens = new List<IMyGravityGeneratorBase>();
 
         const float GRAVITY_RATIO = 9.8f;
         const float DAMPENERS_RATIO = 0.1f;
@@ -78,7 +80,7 @@ namespace SpaceEngineers.Lib
             foreach (var block in allGens)
             {
                 if (cockpit.WorldMatrix.Forward == block.WorldMatrix.Down)
-                    fowardGens.Add(block);
+                    forwardGens.Add(block);
                 else if (cockpit.WorldMatrix.Backward == block.WorldMatrix.Down)
                     backwardGens.Add(block);
                 else if (cockpit.WorldMatrix.Left == block.WorldMatrix.Down)
@@ -156,12 +158,12 @@ namespace SpaceEngineers.Lib
 
             SetGravityAcceleration(input.X, localVelocity.X, rightGens, leftGens);
             SetGravityAcceleration(input.Y, localVelocity.Y, upGens, downGens);
-            SetGravityAcceleration(input.Z, localVelocity.Z, backwardGens, fowardGens);
+            SetGravityAcceleration(input.Z, localVelocity.Z, backwardGens, forwardGens);
         }
 
         private bool IsZero(float value) => Math.Abs(value) < 0.00001;
 
-        private void SetGravityAcceleration(float input, float velocity, IList<IMyGravityGenerator> positive, IList<IMyGravityGenerator> negative)
+        private void SetGravityAcceleration(float input, float velocity, IList<IMyGravityGeneratorBase> positive, IList<IMyGravityGeneratorBase> negative)
         {
             var value = IsZero(input) && DampenersOverride ? -velocity * DAMPENERS_RATIO : input;
             var enabled = Enabled && !IsZero(value);
