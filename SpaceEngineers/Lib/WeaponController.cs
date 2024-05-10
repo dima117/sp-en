@@ -343,7 +343,7 @@ namespace SpaceEngineers.Lib
 
                 if (target != null)
                 {
-                    SetAimbotState(aimbot.Aim(target.Entity, aimbotTargetShotSpeed, now));
+                    SetAimbotState(aimbot.Aim(target, aimbotTargetShotSpeed, now));
 
                     if (lastAimbotState == AimbotState.READY &&
                        (now - lastAimbotStateUpdated).TotalMilliseconds > 500)

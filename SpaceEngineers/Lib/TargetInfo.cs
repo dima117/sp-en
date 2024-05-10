@@ -12,6 +12,7 @@ namespace SpaceEngineers.Lib
 
     public class TargetInfo
     {
+        const int HIT_POINT_DEPTH = 5;
         public MyDetectedEntityInfo Entity { get; private set; }
 
         // время последнего обнаружения цели
@@ -64,8 +65,8 @@ namespace SpaceEngineers.Lib
             {
                 var hitPos = entity.HitPosition.Value;
 
-                // ставим метку на 1 метр вперед от точки пересечения
-                var correctedHitPos = hitPos + Vector3D.Normalize(hitPos - camPos);
+                // ставим метку на 5 метров вперед от точки пересечения
+                var correctedHitPos = hitPos + Vector3D.Normalize(hitPos - camPos) * HIT_POINT_DEPTH;
                 var invertedMatrix = MatrixD.Invert(entity.Orientation);
 
                 relativeHitPos = Vector3D.Transform(correctedHitPos - entity.Position, invertedMatrix);

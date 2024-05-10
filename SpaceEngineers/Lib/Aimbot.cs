@@ -131,17 +131,20 @@ namespace SpaceEngineers.Lib
             this.gyroList = gyroList;
         }
 
-        public AimbotState Aim(MyDetectedEntityInfo target, double bulletSpeed, DateTime now)
+        public AimbotState Aim(TargetInfo targetInfo, double bulletSpeed, DateTime now)
         {
+            var target = targetInfo.Entity;
+
             var ownPos = remoteControl.GetPosition();
             var ownVelocity = remoteControl.GetShipVelocities().LinearVelocity;
 
+            var targetPos = targetInfo.GetHitPosWorld();
             var relativeTargetVelocity = target.Velocity - ownVelocity;
 
-            var point = Helpers.CalculateInterceptPoint(ownPos, bulletSpeed, target.Position, relativeTargetVelocity);
+            var point = Helpers.CalculateInterceptPoint(ownPos, bulletSpeed, targetPos, relativeTargetVelocity);
 
             var targetVector = point == null
-                ? (target.Position - ownPos) // если снаряд не может догнать цель, то целимся в текущую позицию цели 
+                ? (targetPos - ownPos) // если снаряд не может догнать цель, то целимся в текущую позицию цели 
                 : (point.Position - ownPos); // иначе курс на точку перехвата
 
             var axis = DirectionController2.GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
