@@ -15,9 +15,9 @@ namespace SpaceEngineers.Lib.Torpedos
 
     public class SpaceTorpedo : BaseTorpedo
     {
-        const double INTERCEPT_DISTANCE = 1200;
+        const double INTERCEPT_DISTANCE = 800;
 
-        public SpaceTorpedo(IMyBlockGroup group, int delay = 2000, float factor = 7, int lifespan = 360) : base(group, delay, factor, lifespan)
+        public SpaceTorpedo(IMyBlockGroup group, int delay = 2000, float factor = 7, int lifespan = 480) : base(group, delay, factor, lifespan)
         {
         }
 

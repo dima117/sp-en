@@ -137,12 +137,6 @@ namespace SpaceEngineers.Scripts.BattleShip
                 case "mode":
                     weapons.ToggleFiringMode();
                     break;
-                case "prev":
-                    weapons.PrevTarget();
-                    break;
-                case "next":
-                    weapons.NextTarget();
-                    break;
                 case "lock-top":
                     weapons.Scan(cameraTop);
                     break;

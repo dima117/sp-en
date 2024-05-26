@@ -19,14 +19,14 @@ using SpaceEngineers.Lib;
 using SpaceEngineers.Lib.Torpedos;
 using System.Data;
 using SpaceEngineers.Scripts.Torpedos;
+using System.Reflection;
 
 namespace SpaceEngineers.Lib
 {
     #region Copy
 
     // import:Serializer.cs
-    // import:Transmitter2.cs
-    // import:TargetTracker2.cs
+    // import:TargetTracker3.cs
     // import:Aimbot.cs
     // import:DirectionController2.cs
     // import:Torpedos\SpaceTorpedo.cs
@@ -39,8 +39,7 @@ namespace SpaceEngineers.Lib
         public const int RAILGUN_SPEED = 2000;
         public const int ARTILLERY_SPEED = 500;
 
-        private TargetTracker2 tracker;
-        private Transmitter2 transmitter;
+        private TargetTracker3 tracker;
         private IMyTextSurface lcdTargets;
         private IMyTextSurface lcdTorpedos;
         private IMyTextSurface lcdSystem;
@@ -53,9 +52,6 @@ namespace SpaceEngineers.Lib
         private IMyLargeMissileTurret[] turrets;
 
         private bool onlyEnemies;
-        private int targetIndex;
-        private long targetId;
-
         private bool courseFiringMode = false;
 
         private DateTime? enemyLock;
@@ -80,7 +76,6 @@ namespace SpaceEngineers.Lib
 
         readonly Aimbot aimbot;
         readonly Dictionary<long, SpaceTorpedo> torpedos = new Dictionary<long, SpaceTorpedo>();
-        readonly Dictionary<long, long> targeting = new Dictionary<long, long>(); // цели торпед
 
         public WeaponController(
             IMyGyro[] gyros,
@@ -99,12 +94,9 @@ namespace SpaceEngineers.Lib
             IMySoundBlock soundEnemyLock
         )
         {
-            tracker = new TargetTracker2(cameras);
-            tracker.TargetListChanged += Tracker_TargetListChanged;
-
-            transmitter = new Transmitter2(igc, antennas);
-            transmitter.Subscribe(MsgTags.SYNC_TARGETS, Transmitter_SyncTargets, true);
-            transmitter.Subscribe(MsgTags.REMOTE_LOCK_TARGET, Transmitter_RemoteLock, true);
+            tracker = new TargetTracker3(cameras);
+            tracker.TargetLocked += Tracker_TargetChanged;
+            tracker.TargetReleased += Tracker_TargetChanged;
 
             this.cockpit = cockpit;
             this.lcdTargets = lcdTargets;
@@ -122,44 +114,18 @@ namespace SpaceEngineers.Lib
             aimbot = new Aimbot(cockpit, gyros);
         }
 
-        public TargetInfo Current => tracker.GetByEntityId(targetId);
-
         public void ToggleFilter()
         {
             onlyEnemies = !onlyEnemies;
         }
 
-        public void NextTarget()
-        {
-            if (targetIndex + 1 < tracker.TargetCount)
-            {
-                targetIndex++;
-                targetId = tracker.GetTargets()[targetIndex].Entity.EntityId;
-            }
-        }
-        public void PrevTarget()
-        {
-            if (targetIndex - 1 >= 0)
-            {
-                targetIndex--;
-                targetId = tracker.GetTargets()[targetIndex].Entity.EntityId;
-            }
-
-        }
-
         public void Scan(IMyCameraBlock cam)
         {
-            var target = TargetTracker2.Scan(cam, RAYCAST_DISTANCE, onlyEnemies);
+            var target = TargetTracker3.Scan(cam, RAYCAST_DISTANCE, onlyEnemies);
 
             if (target != null)
             {
-                sound?.Play();
                 tracker.LockTarget(target);
-
-                // выбираем в залоченную цель в качестве текущей
-                targetId = target.Entity.EntityId;
-
-                FixTargetIndex();
             }
         }
 
@@ -167,7 +133,7 @@ namespace SpaceEngineers.Lib
         {
             foreach (var gr in groups)
             {
-                var tmp = new SpaceTorpedo(gr, factor: 2.5f, lifespan: TORPEDO_LIFESPAN);
+                var tmp = new SpaceTorpedo(gr, factor: 3f, lifespan: TORPEDO_LIFESPAN);
 
                 // добавляем новые торпеды
                 if (!torpedos.ContainsKey(tmp.EntityId))
@@ -181,7 +147,6 @@ namespace SpaceEngineers.Lib
                 if (!t.Value.IsAlive)
                 {
                     torpedos.Remove(t.Key);
-                    targeting.Remove(t.Key);
                 }
             }
         }
@@ -235,16 +200,14 @@ namespace SpaceEngineers.Lib
 
         public bool Launch()
         {
-            // запускает торпеду по текущей цели
-            var target = Current;
+            // запускает одну из готовых к запусу торпед
             var torpedo = torpedos.Values.FirstOrDefault(t => t.Stage == LaunchStage.Ready);
 
-            if (target == null || torpedo == null)
+            if (torpedo == null)
             {
                 return false;
             }
 
-            targeting[torpedo.EntityId] = target.Entity.EntityId;
             torpedo.Start();
 
             return true;
@@ -254,64 +217,41 @@ namespace SpaceEngineers.Lib
 
         public void UpdateNext(string argument, UpdateType updateSource)
         {
-
-            switch (updateIndex)
-            {
-                case 0:
-                    // обрабатываем принятые сообщения
-                    transmitter.Update(argument, updateSource);
-
-                    // обновлям данные о цели
-                    tracker.Update();
-                    break;
-                case 1:
-                    // обновляем цели торпед
-                    UpdateTorpedoTargets();
-                    break;
-                case 2:
-                    // обновляем наведение курсовых орудий
-                    UpdateAimBot();
-                    break;
-                case 3:
-                    var selfPos = cockpit.GetPosition();
-
-                    // обновляем содержимое экранов
-                    UpdateHUD(selfPos);
-                    UpdateLcdTargets(selfPos);
-                    UpdateLcdSystem();
-                    break;
-            }
-
-            updateIndex = (updateIndex + 1) % 4;
-        }
-
-
-        public void Update(string argument, UpdateType updateSource)
-        {
             try
             {
-                // обрабатываем принятые сообщения
-                transmitter.Update(argument, updateSource);
+                switch (updateIndex)
+                {
+                    case 0:
+                        // обновлям данные о цели
+                        tracker.Update();
+                        break;
+                    case 1:
+                        // обновляем наведение курсовых орудий
+                        UpdateAimBot();
+                        break;
+                    case 2:
+                        // обновлям данные о цели (повторно)
+                        tracker.Update();
 
-                // обновлям данные о цели
-                tracker.Update();
+                        // обновляем цели торпед
+                        UpdateTorpedoTargets();
+                        break;
+                    case 3:
+                        var selfPos = cockpit.GetPosition();
 
-                var selfPos = cockpit.GetPosition();
-
-                // обновляем цели торпед
-                UpdateTorpedoTargets();
-
-                UpdateAimBot();
-
-                // обновляем содержимое экранов
-                UpdateHUD(selfPos);
-                UpdateLcdTargets(selfPos);
-                UpdateLcdSystem();
+                        // обновляем содержимое экранов
+                        UpdateHUD(selfPos);
+                        UpdateLcdTarget(selfPos);
+                        UpdateLcdSystem();
+                        break;
+                }
             }
             catch (Exception e)
             {
                 OnError(e);
             }
+
+            updateIndex = (updateIndex + 1) % 4;
         }
 
         public bool AimbotEnabled
@@ -339,7 +279,7 @@ namespace SpaceEngineers.Lib
 
             if (aimbotTargetShotSpeed > 0)
             {
-                var target = Current;
+                var target = tracker.Current;
 
                 if (target != null)
                 {
@@ -393,11 +333,10 @@ namespace SpaceEngineers.Lib
         {
             var sb = new StringBuilder();
 
+            var target = tracker.Current;
+
             foreach (var t in torpedos.Values)
             {
-                var targetId = targeting.GetValueOrDefault(t.EntityId);
-                var target = tracker.GetByEntityId(targetId);
-
                 var state = t.Update(target);
                 sb.AppendLine(state.ToString());
             }
@@ -421,13 +360,13 @@ namespace SpaceEngineers.Lib
                 var targetName = "NO TARGET";
                 string dist = null;
 
-                if (Current != null)
+                if (tracker.Current != null)
                 {
-                    var t = Current.Entity;
+                    var t = tracker.Current.Entity;
                     var d = (t.Position - selfPos).Length();
 
                     var size = t.Type == MyDetectedEntityType.SmallGrid ? "SM" : "LG";
-                    var name = TargetTracker2.GetName(t.EntityId);
+                    var name = TargetTracker3.GetName(t.EntityId);
 
                     targetName = friends.Contains(t.Relationship)
                         ? $"{size} — {t.Name}"
@@ -631,90 +570,33 @@ namespace SpaceEngineers.Lib
             lcdSystem?.WriteText(sb);
         }
 
-        private void UpdateLcdTargets(Vector3D selfPos)
+        private void UpdateLcdTarget(Vector3D selfPos)
         {
             var sb = new StringBuilder();
-            var targets = tracker.GetTargets();
+            var target = tracker.Current;
 
-            if (targets.Any())
+            if (target != null)
             {
-                for (var i = 0; i < targets.Length; i++)
-                {
-                    var t = targets[i].Entity;
+                var t = target.Entity;
 
-                    var type = t.Type.ToString().Substring(0, 1);
-                    var name = TargetTracker2.GetName(t.EntityId);
-                    var dist = (t.Position - selfPos).Length();
-                    var speed = t.Velocity.Length();
+                var type = t.Type.ToString().Substring(0, 1);
+                var name = TargetTracker3.GetName(t.EntityId);
+                var dist = (t.Position - selfPos).Length();
+                var speed = t.Velocity.Length();
 
-                    var pointer = targetIndex == i ? "> " : " ";
-
-                    sb.AppendLine($"{pointer}{type} {name} {dist:0}m {speed:0}m/s");
-                }
+                sb.AppendLine($"{type} {name} {dist:0}m {speed:0}m/s");
             }
             else
             {
-                sb.AppendLine("NO TARGETS");
+                sb.AppendLine("NO TARGET");
             }
 
             lcdTargets?.WriteText(sb);
         }
 
-        private void Tracker_TargetListChanged()
+        private void Tracker_TargetChanged()
         {
             sound?.Play();
-
-            FixTargetIndex();
-        }
-
-        private void FixTargetIndex()
-        {
-            var targets = tracker.GetTargets();
-            targetIndex = Array.FindIndex(targets, t => t.Entity.EntityId == targetId);
-
-            if (targetIndex < 0)
-            {
-                targetIndex = 0;
-                targetId = targets.Any() ? targets[0].Entity.EntityId : 0;
-            }
-        }
-
-        private void Transmitter_RemoteLock(MyIGCMessage message)
-        {
-            try
-            {
-                var data = message.Data.ToString();
-                var reader = new Serializer.StringReader(data);
-
-                TargetInfo target;
-                if (Serializer.TryParseTargetInfo(reader, out target))
-                {
-                    tracker.LockTarget(target);
-                }
-            }
-            catch (Exception ex)
-            {
-                OnError?.Invoke(ex);
-            }
-        }
-
-        private void Transmitter_SyncTargets(MyIGCMessage message)
-        {
-            try
-            {
-                var data = message.Data.ToString();
-                var reader = new Serializer.StringReader(data);
-
-                TargetInfo[] targets;
-                if (Serializer.TryParseTargetInfoArray(reader, out targets))
-                {
-                    tracker.Merge(targets);
-                }
-            }
-            catch (Exception ex)
-            {
-                OnError?.Invoke(ex);
-            }
         }
 
         private float GetRailgunChargeLevel(IMySmallMissileLauncherReload railgun, float max = 500)
