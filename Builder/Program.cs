@@ -119,6 +119,7 @@ namespace Builder
                 "Scripts\\Fortress.cs",
                 "Scripts\\Spotter.cs",
                 "Scripts\\TowShip.cs",
+                "Scripts\\Kamikaze.cs",
                 "Scripts\\Printer.cs"
             };
 
