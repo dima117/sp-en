@@ -70,17 +70,17 @@ namespace SpaceEngineers.Scripts.Torpedos
         public long EntityId => (tRemote?.EntityId).GetValueOrDefault();
         public string Name => name;
         public Vector3D Position => tRemote.GetPosition();
-        public double Speed => started && IsAlive ? tRemote.GetShipSpeed() : 0;
+        public double GetSpeed(DateTime now) => started && IsAlive(now) ? tRemote.GetShipSpeed() : 0;
         public bool IsInvalid => !listEngine.Any() || !listGyro.Any() || tRemote == null || tClamp == null;
-        public LaunchStage Stage =>
-            !IsAlive ? LaunchStage.Dead :
+        public LaunchStage GetStage(DateTime now) =>
+            !IsAlive(now) ? LaunchStage.Dead :
             started ? LaunchStage.Started :
             IsInvalid ? LaunchStage.Invalid : LaunchStage.Ready;
-        public bool IsAlive =>
+        public bool IsAlive(DateTime now) =>
             tRemote.IsFunctional &&
             listEngine.All(e => e.IsFunctional && e.CubeGrid.EntityId == tRemote.CubeGrid.EntityId) &&
             listGyro.All(g => g.IsFunctional && g.CubeGrid.EntityId == tRemote.CubeGrid.EntityId) &&
-            DateTime.UtcNow < deathTime;
+            now < deathTime;
 
         protected BaseTorpedo(
             IMyBlockGroup group,
@@ -104,9 +104,9 @@ namespace SpaceEngineers.Scripts.Torpedos
             tControl = new DirectionController2(tRemote, listGyro, factor);
         }
 
-        public virtual void Start()
+        public virtual void Start(DateTime now)
         {
-            startTime = DateTime.UtcNow;
+            startTime = now;
             deathTime = startTime.AddSeconds(lifespan);
 
             tClamp.Enabled = false;
@@ -128,11 +128,11 @@ namespace SpaceEngineers.Scripts.Torpedos
             started = true;
         }
 
-        public virtual TorpedoStatus Update(TargetInfo target)
+        public virtual TorpedoStatus Update(DateTime now, TargetInfo target)
         {
             double distance = 0;
 
-            if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
+            if ((now - startTime).TotalMilliseconds > delay)
             {
                 // включаем управление торпедой через пару секунд,
                 // чтобы она успела отлететь от корабля
@@ -148,7 +148,7 @@ namespace SpaceEngineers.Scripts.Torpedos
             return new TorpedoStatus
             {
                 Name = name,
-                Stage = Stage,
+                Stage = GetStage(now),
                 Distance = distance,
             };
         }

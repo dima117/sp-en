@@ -109,6 +109,8 @@ namespace SpaceEngineers.Scripts.BattleShip
 
         public void Main(string argument, UpdateType updateSource)
         {
+            var now = DateTime.UtcNow;
+
             tracker.AddRuntime();
 
             switch (argument)
@@ -126,7 +128,7 @@ namespace SpaceEngineers.Scripts.BattleShip
 
                 // weapons
                 case "aim-set":
-                    weapons.Aim();
+                    weapons.Aim(now);
                     break;
                 case "aim-clear":
                     weapons.ClearAimBotTarget();
@@ -145,13 +147,13 @@ namespace SpaceEngineers.Scripts.BattleShip
                     break;
                 case "reload":
                     var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
-                    weapons.Reload(groups);
+                    weapons.Reload(now, groups);
                     break;
                 case "start":
-                    weapons.Launch();
+                    weapons.Launch(now);
                     break;
                 case "set-enemy-lock":
-                    weapons.SetEnemyLock();
+                    weapons.SetEnemyLock(now);
                     break;
                 case "clear-enemy-lock":
                     weapons.ClearEnemyLock();
@@ -165,7 +167,7 @@ namespace SpaceEngineers.Scripts.BattleShip
                     }
                     else
                     {
-                        weapons.UpdateNext(argument, updateSource);
+                        weapons.UpdateNext(now, argument, updateSource);
                     }
 
                     iii = !iii;

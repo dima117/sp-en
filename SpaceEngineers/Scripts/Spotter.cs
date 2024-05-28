@@ -131,6 +131,8 @@ namespace SpaceEngineers.Scripts.Spotter
 
         public void Main(string argument, UpdateType updateSource)
         {
+            var now = DateTime.UtcNow;
+
             tsm.Update(argument, updateSource);
 
             switch (argument)
@@ -142,7 +144,7 @@ namespace SpaceEngineers.Scripts.Spotter
                     tsm.Send(MsgTags.REMOTE_START);
                     break;
                 case "scan":
-                    var target = Scan();
+                    var target = Scan(now);
 
                     if (target != null)
                     {
@@ -165,7 +167,7 @@ namespace SpaceEngineers.Scripts.Spotter
             }
         }
 
-        private TargetInfo Scan(double distance = DISTANCE_SCAN_DEFAULT)
+        private TargetInfo Scan(DateTime now, double distance = DISTANCE_SCAN_DEFAULT)
         {
             var entity = cam.Raycast(distance);
 
@@ -184,7 +186,7 @@ namespace SpaceEngineers.Scripts.Spotter
                 return null;
             }
 
-            return TargetInfo.CreateTargetInfo(entity, cam.GetPosition(), DateTime.UtcNow);
+            return TargetInfo.CreateTargetInfo(entity, cam.GetPosition(), now);
         }
 
         #endregion

@@ -85,10 +85,10 @@ namespace SpaceEngineers
             tControl = new DirectionController2(tRemote, listGyro, factor);
         }
 
-        public void Start(MyDetectedEntityInfo target)
+        public void Start(DateTime now, MyDetectedEntityInfo target)
         {
             Target = target;
-            startTime = DateTime.UtcNow;
+            startTime = now;
 
             tClamp.Enabled = false;
 
@@ -109,9 +109,9 @@ namespace SpaceEngineers
             Started = true;
         }
 
-        public void Update()
+        public void Update(DateTime now)
         {
-            if ((DateTime.UtcNow - startTime).TotalMilliseconds > delay)
+            if ((now - startTime).TotalMilliseconds > delay)
             {
                 tControl.ICBM(Target);
             }

@@ -98,6 +98,8 @@ namespace SpaceEngineers.Scripts.Fortress
 
         public void Main(string argument, UpdateType updateSource)
         {
+            var now = DateTime.UtcNow;
+
             tracker.AddRuntime();
 
             switch (argument)
@@ -110,25 +112,14 @@ namespace SpaceEngineers.Scripts.Fortress
                     break;
                 case "reload":
                     var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
-                    weapons.Reload(groups);
+                    weapons.Reload(now, groups);
                     break;
                 case "start":
-                    weapons.Launch();
+                    weapons.Launch(now);
                     break;
             }
 
-            weapons.UpdateNext(argument, updateSource);
-
-            //switch (argument)
-            //{
-            //    case "init":
-            //        tt.UpdateCamArray();
-            //        break;
-            //    case "reset":
-            //        tt.Clear();
-
-            //        break;
-            //}
+            weapons.UpdateNext(now, argument, updateSource);
 
             tracker.AddInstructions();
             trackerLcd.WriteText(tracker.ToString());

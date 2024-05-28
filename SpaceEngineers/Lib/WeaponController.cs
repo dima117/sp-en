@@ -61,11 +61,11 @@ namespace SpaceEngineers.Lib
         private int aimbotTargetShotSpeed;
         private AimbotState lastAimbotState = AimbotState.UNKNOWN;
         private DateTime lastAimbotStateUpdated;
-        private void SetAimbotState(AimbotState state)
+        private void SetAimbotState(DateTime now, AimbotState state)
         {
             if (state != lastAimbotState)
             {
-                lastAimbotStateUpdated = DateTime.UtcNow;
+                lastAimbotStateUpdated = now;
             }
 
             lastAimbotState = state;
@@ -129,7 +129,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void Reload(IMyBlockGroup[] groups)
+        public void Reload(DateTime now, IMyBlockGroup[] groups)
         {
             foreach (var gr in groups)
             {
@@ -144,19 +144,19 @@ namespace SpaceEngineers.Lib
 
             foreach (var t in torpedos.ToArray())
             {
-                if (!t.Value.IsAlive)
+                if (!t.Value.IsAlive(now))
                 {
                     torpedos.Remove(t.Key);
                 }
             }
         }
 
-        public void Aim()
+        public void Aim(DateTime now)
         {
             aimbotTargetShotSpeed = aimbotTargetShotSpeed == ARTILLERY_SPEED
                 ? RAILGUN_SPEED : ARTILLERY_SPEED;
 
-            SetAimbotState(aimbot.Reset());
+            SetAimbotState(now, aimbot.Reset());
         }
 
         public void ClearAimBotTarget()
@@ -164,9 +164,9 @@ namespace SpaceEngineers.Lib
             aimbotTargetShotSpeed = 0;
         }
 
-        public void SetEnemyLock()
+        public void SetEnemyLock(DateTime now)
         {
-            enemyLock = DateTime.UtcNow;
+            enemyLock = now;
             soundEnemyLock?.Play();
         }
 
@@ -198,24 +198,24 @@ namespace SpaceEngineers.Lib
 
         }
 
-        public bool Launch()
+        public bool Launch(DateTime now)
         {
             // запускает одну из готовых к запусу торпед
-            var torpedo = torpedos.Values.FirstOrDefault(t => t.Stage == LaunchStage.Ready);
+            var torpedo = torpedos.Values.FirstOrDefault(t => t.GetStage(now) == LaunchStage.Ready);
 
             if (torpedo == null)
             {
                 return false;
             }
 
-            torpedo.Start();
+            torpedo.Start(now);
 
             return true;
         }
 
         private int updateIndex = 0;
 
-        public void UpdateNext(string argument, UpdateType updateSource)
+        public void UpdateNext(DateTime now, string argument, UpdateType updateSource)
         {
             try
             {
@@ -227,20 +227,20 @@ namespace SpaceEngineers.Lib
                         break;
                     case 1:
                         // обновляем наведение курсовых орудий
-                        UpdateAimBot();
+                        UpdateAimBot(now);
                         break;
                     case 2:
                         // обновлям данные о цели (повторно)
                         tracker.Update();
 
                         // обновляем цели торпед
-                        UpdateTorpedoTargets();
+                        UpdateTorpedoTargets(now);
                         break;
                     case 3:
                         var selfPos = cockpit.GetPosition();
 
                         // обновляем содержимое экранов
-                        UpdateHUD(selfPos);
+                        UpdateHUD(now, selfPos);
                         UpdateLcdTarget(selfPos);
                         UpdateLcdSystem();
                         break;
@@ -262,10 +262,8 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        private void UpdateAimBot()
+        private void UpdateAimBot(DateTime now)
         {
-            var now = DateTime.UtcNow;
-
             if (courseFiringMode)
             {
                 foreach (var t in turrets)
@@ -283,7 +281,7 @@ namespace SpaceEngineers.Lib
 
                 if (target != null)
                 {
-                    SetAimbotState(aimbot.Aim(target, aimbotTargetShotSpeed, now));
+                    SetAimbotState(now, aimbot.Aim(target, aimbotTargetShotSpeed, now));
 
                     if (lastAimbotState == AimbotState.READY &&
                        (now - lastAimbotStateUpdated).TotalMilliseconds > 500)
@@ -329,7 +327,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        private void UpdateTorpedoTargets()
+        private void UpdateTorpedoTargets(DateTime now)
         {
             var sb = new StringBuilder();
 
@@ -337,7 +335,7 @@ namespace SpaceEngineers.Lib
 
             foreach (var t in torpedos.Values)
             {
-                var state = t.Update(target);
+                var state = t.Update(now, target);
                 sb.AppendLine(state.ToString());
             }
 
@@ -351,10 +349,8 @@ namespace SpaceEngineers.Lib
                 MyRelationsBetweenPlayerAndBlock.Friends,
             };
 
-        private void UpdateHUD(Vector3D selfPos)
+        private void UpdateHUD(DateTime now, Vector3D selfPos)
         {
-            var now = DateTime.UtcNow;
-
             if (hud.Any() && (now - lastUpdateHUD).TotalMilliseconds > 100)
             {
                 var targetName = "NO TARGET";
@@ -420,14 +416,8 @@ namespace SpaceEngineers.Lib
                     if (value < 0.99 && value > rgPercent) { rgPercent = value; }
                 }
 
-                var tCount = torpedos.Values.Count(t => t.Stage == LaunchStage.Ready);
-                var enemyLock = false;
-
-                if (this.enemyLock.HasValue)
-                {
-                    var diff = (now - this.enemyLock.Value);
-                    enemyLock = diff.TotalSeconds > 4 || diff.Milliseconds < 600;
-                }
+                var tCount = torpedos.Values.Count(t => t.GetStage(now) == LaunchStage.Ready);
+                var enemyLock = this.enemyLock.HasValue;
 
                 var sprites = GetHudState(
                     targetName, dist, aimbot, turrets,

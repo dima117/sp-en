@@ -68,6 +68,8 @@ namespace SpaceEngineers
         }
         public void Main(string argument, UpdateType updateSource)
         {
+            var now = DateTime.UtcNow;
+
             switch (argument)
             {
                 case "filter":
@@ -103,13 +105,13 @@ namespace SpaceEngineers
                         .Select(gr => new Torpedo(gr))
                         .Where(t => !ids.Contains(t.EntityId)));
 
-                    torpedos.RemoveAll(t => !t.IsAlive);
+                    torpedos.RemoveAll(t => !t.IsAlive(now));
 
                     welders.ForEach(w => w.Enabled = false);
                     break;
                 case "start":
                     // запускаем одну из торпед
-                    torpedos.FirstOrDefault(t => !t.Started)?.Start();
+                    torpedos.FirstOrDefault(t => !t.Started)?.Start(now);
 
                     break;
                 default:
@@ -121,7 +123,7 @@ namespace SpaceEngineers
                     }
 
                     // обновляем параметры цели на всех торпедах
-                    torpedos?.ForEach(t => t.Update(tt.Current));
+                    torpedos?.ForEach(t => t.Update(now, tt.Current));
 
                     break;
             }
@@ -130,7 +132,7 @@ namespace SpaceEngineers
             UpdateSystemLcd();
             UpdateTargetLcd();
             UpdateWcLcd();
-            UpdateTorpedoLcd(torpedos);
+            UpdateTorpedoLcd(now, torpedos);
         }
 
         private void UpdateWcLcd()
@@ -177,7 +179,7 @@ namespace SpaceEngineers
             lcd2.WriteText(sb);
         }
 
-        void UpdateTorpedoLcd(List<Torpedo> torpedos)
+        void UpdateTorpedoLcd(DateTime now, List<Torpedo> torpedos)
         {
             var targetPos = tt.Current?.Entity.Position;
 
@@ -188,13 +190,13 @@ namespace SpaceEngineers
                 var t = torpedos[i];
                 var myPos = t.Position;
 
-                sb.Append($"{i + 1} Speed: {t.Speed:0.0}");
+                sb.Append($"{i + 1} Speed: {t.GetSpeed(now):0.0}");
 
                 if (!t.Started)
                 {
                     sb.Append(" Status: Ready");
                 }
-                else if (t.IsAlive)
+                else if (t.IsAlive(now))
                 {
                     sb.Append(" Status: Active");
                 }
@@ -203,7 +205,7 @@ namespace SpaceEngineers
                     sb.Append(" Status: Dead");
                 }
 
-                if (targetPos != null && t.IsAlive)
+                if (targetPos != null && t.IsAlive(now))
                 {
                     var distance = Vector3D.Distance(myPos, targetPos.Value);
 

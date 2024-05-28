@@ -126,8 +126,10 @@ namespace SpaceEngineers.Scripts.TowShip
 
         private void RemoteStart(MyIGCMessage message)
         {
+            var now = DateTime.UtcNow;
+
             // запускаем одну из торпед
-            torpedos.FirstOrDefault(t => !t.Started)?.Start();
+            torpedos.FirstOrDefault(t => !t.Started)?.Start(now);
         }
 
         private void GetStatus(MyIGCMessage message)
@@ -140,6 +142,8 @@ namespace SpaceEngineers.Scripts.TowShip
 
         public void Main(string argument, UpdateType updateSource)
         {
+            var now = DateTime.UtcNow;
+
             tracker.AddRuntime();
 
             tsm.Update(argument, updateSource);
@@ -178,12 +182,12 @@ namespace SpaceEngineers.Scripts.TowShip
                         .Select(gr => new Torpedo(gr, factor: 3f, lifespan: LIFESPAN))
                         .Where(t => !ids.Contains(t.EntityId)));
 
-                    torpedos.RemoveAll(t => !t.IsAlive);
+                    torpedos.RemoveAll(t => !t.IsAlive(now));
 
                     break;
                 case "start":
                     // запускаем одну из торпед
-                    torpedos.FirstOrDefault(t => !t.Started)?.Start();
+                    torpedos.FirstOrDefault(t => !t.Started)?.Start(now);
 
                     break;
                 default:
@@ -191,7 +195,7 @@ namespace SpaceEngineers.Scripts.TowShip
                     tt.Update();
 
                     // обновляем параметры цели на всех торпедах
-                    var state = torpedos?.Select(t => t.Update(tt.Current));
+                    var state = torpedos?.Select(t => t.Update(now, tt.Current));
                     var text = String.Join("\n", state?.Select(s => s.ToString()));
 
                     lcdTorpedos?.WriteText(text);

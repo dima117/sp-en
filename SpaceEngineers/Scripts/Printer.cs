@@ -342,14 +342,14 @@ namespace SpaceEngineers.Scripts.Printer
         private PrintState printState;
 
         // pause state
-        private bool IsOnPause(DateTime? now = null)
+        private bool IsOnPause(DateTime now)
         {
-            return pauseTimestamp > (now ?? DateTime.UtcNow);
+            return pauseTimestamp > now;
         }
 
-        private void Pause(int? s = null)
+        private void Pause(DateTime ts)
         {
-            pauseTimestamp = s.HasValue ? DateTime.UtcNow.AddSeconds(s.Value) : DateTime.MaxValue;
+            pauseTimestamp = ts;
 
             cockpit.DampenersOverride = true;
 
@@ -408,7 +408,7 @@ namespace SpaceEngineers.Scripts.Printer
                 printState = ps;
             }
 
-            Pause();
+            Pause(DateTime.MaxValue);
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
@@ -476,14 +476,14 @@ namespace SpaceEngineers.Scripts.Printer
             }
         }
 
-        private void Move()
+        private void Move(DateTime now)
         {
-            if (printState == null || IsOnPause()) { return; }
+            if (printState == null || IsOnPause(now)) { return; }
 
             if (printState.level < 0 || printState.level >= printState.maxLevel)
             {
                 // если закончили печать или на паузе, то останавливаемся
-                Pause();
+                Pause(DateTime.MaxValue);
 
                 return;
             }
@@ -541,7 +541,7 @@ namespace SpaceEngineers.Scripts.Printer
                 }
 
                 SaveState();
-                Pause(5);
+                Pause(now.AddSeconds(5));
             }
         }
 
@@ -569,6 +569,8 @@ namespace SpaceEngineers.Scripts.Printer
 
         public void Main(string argument, UpdateType updateSource)
         {
+            var now = DateTime.UtcNow;
+
             tracker.AddRuntime();
 
             Align();
@@ -613,7 +615,7 @@ namespace SpaceEngineers.Scripts.Printer
                         }
                         break;
                     default:
-                        Move();
+                        Move(now);
                         break;
                 }
             }
@@ -621,13 +623,13 @@ namespace SpaceEngineers.Scripts.Printer
             switch (argument)
             {
                 case "pause":
-                    if (IsOnPause())
+                    if (IsOnPause(now))
                     {
                         Resume();
                     }
                     else
                     {
-                        Pause();
+                        Pause(DateTime.MaxValue);
                     }
 
                     break;
@@ -636,7 +638,7 @@ namespace SpaceEngineers.Scripts.Printer
             var sb = new StringBuilder();
             sb.AppendLine($"Locked: {orientation.HasValue}");
             sb.AppendLine($"Id printing: {printState != null}");
-            sb.AppendLine($"Is on pause: {IsOnPause()}");
+            sb.AppendLine($"Is on pause: {IsOnPause(now)}");
             lcdStatus.WriteText(sb);
 
             tracker.AddInstructions();
