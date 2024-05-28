@@ -50,8 +50,6 @@ namespace SpaceEngineers.Scripts.Torpedos
 
     public abstract class BaseTorpedo
     {
-        public readonly string Id = DateTime.UtcNow.Ticks.ToString();
-
         protected readonly int delay;
         protected readonly int lifespan;
         protected readonly string name;

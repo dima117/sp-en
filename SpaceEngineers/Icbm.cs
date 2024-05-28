@@ -34,8 +34,6 @@ namespace SpaceEngineers
 
     public class Icbm
     {
-        public readonly string Id = DateTime.UtcNow.Ticks.ToString();
-
         readonly int delay;
         readonly string name;
 

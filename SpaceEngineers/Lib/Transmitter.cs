@@ -28,7 +28,7 @@ namespace SpaceEngineers.Lib
 
     public class Transmitter
     {
-        private int seq = 0;
+        private static int seq = 0;
 
         protected IMyIntergridCommunicationSystem igc;
 
@@ -56,7 +56,7 @@ namespace SpaceEngineers.Lib
             if (broadcast)
             {
                 var listener = igc.RegisterBroadcastListener(tag);
-                var listenerId = (DateTime.UtcNow.Ticks - (seq++)).ToString();
+                var listenerId = $"{tag}-{seq++}";
 
                 listener.SetMessageCallback(listenerId);
                 listeners[listenerId] = listener;

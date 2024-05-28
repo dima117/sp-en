@@ -105,12 +105,6 @@ namespace SpaceEngineers.Scripts.Fortress
                 case "filter":
                     weapons.ToggleFilter();
                     break;
-                case "prev":
-                    weapons.PrevTarget();
-                    break;
-                case "next":
-                    weapons.NextTarget();
-                    break;
                 case "lock":
                     weapons.Scan(camera);
                     break;

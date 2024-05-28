@@ -29,8 +29,6 @@ namespace SpaceEngineers.Lib
 
     public class Torpedo
     {
-        public readonly string Id = DateTime.UtcNow.Ticks.ToString();
-
         readonly int delay;
         readonly int lifespan;
         readonly string name;
