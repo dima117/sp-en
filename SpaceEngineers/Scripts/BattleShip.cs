@@ -24,17 +24,15 @@ namespace SpaceEngineers.Scripts.BattleShip
 
         // боевой корабль для PvP
 
-        // import:RuntimeTracker.cs
         // import:Lib\Grid.cs
+        // import:Lib\LocalTime.cs
         // import:Lib\GravityDrive.cs
         // import:Lib\WeaponController.cs
 
         private const string GROUP_PREFIX_TORPEDO = "ws_torpedo";
 
-        readonly RuntimeTracker tracker;
-        readonly IMyTextSurface lcd;
-
         readonly Grid grid;
+        readonly LocalTime localTime;
         readonly GravityDrive gdrive;
         readonly WeaponController weapons;
 
@@ -50,11 +48,8 @@ namespace SpaceEngineers.Scripts.BattleShip
 
         public Program()
         {
-            tracker = new RuntimeTracker(this);
-            lcd = Me.GetSurface(1);
-            lcd.ContentType = ContentType.TEXT_AND_IMAGE;
-
             grid = new Grid(GridTerminalSystem);
+            localTime = new LocalTime(Runtime);
 
             cameraTop = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_t");
             cameraBottom = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_b");
@@ -109,9 +104,8 @@ namespace SpaceEngineers.Scripts.BattleShip
 
         public void Main(string argument, UpdateType updateSource)
         {
-            var now = DateTime.UtcNow;
-
-            tracker.AddRuntime();
+            //var now = DateTime.UtcNow;
+            var now = localTime.Update(updateSource);
 
             switch (argument)
             {
@@ -174,9 +168,6 @@ namespace SpaceEngineers.Scripts.BattleShip
 
                     break;
             }
-
-            tracker.AddInstructions();
-            lcd.WriteText(tracker.ToString());
         }
 
         private string Format(double p, double v, string textP, string textN)

@@ -70,6 +70,7 @@
     <Compile Include="Examples\JumpDriveStatus.cs" />
     <Compile Include="Lib\Aimbot.cs" />
     <Compile Include="Lib\Grid.cs" />
+    <Compile Include="Lib\LocalTime.cs" />
     <Compile Include="Lib\TargetTracker.cs" />
     <Compile Include="Lib\TargetTracker2.cs" />
     <Compile Include="Lib\Torpedos\SpaceTorpedo.cs" />
