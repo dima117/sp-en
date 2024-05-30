@@ -94,6 +94,7 @@ namespace SpaceEngineers.Lib
         }
 
         public static TargetInfo Scan(
+            DateTime now,
             IMyCameraBlock cam,
             double distance = DISTANCE_SCAN_DEFAULT,
             bool onlyEnemies = false)
@@ -121,7 +122,7 @@ namespace SpaceEngineers.Lib
                 return null;
             }
 
-            return TargetInfo.CreateTargetInfo(entity, camPos, DateTime.UtcNow);
+            return TargetInfo.CreateTargetInfo(entity, camPos, now);
         }
 
         public void LockTarget(TargetInfo target)
@@ -169,9 +170,8 @@ namespace SpaceEngineers.Lib
             return targets.ContainsKey(entityId) ? targets[entityId] : null;
         }
 
-        public void Update()
+        public void Update(DateTime now)
         {
-            var now = DateTime.UtcNow;
             var nextScan = now.AddMilliseconds(SCAN_DELAY_MS);
 
             var isChanged = false;

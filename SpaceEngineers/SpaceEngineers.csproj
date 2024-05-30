@@ -70,7 +70,7 @@
     <Compile Include="Examples\JumpDriveStatus.cs" />
     <Compile Include="Lib\Aimbot.cs" />
     <Compile Include="Lib\Grid.cs" />
-    <Compile Include="Lib\TargetTracker3.cs" />
+    <Compile Include="Lib\TargetTracker.cs" />
     <Compile Include="Lib\TargetTracker2.cs" />
     <Compile Include="Lib\Torpedos\SpaceTorpedo.cs" />
     <Compile Include="Lib\Transmitter.cs" />
@@ -101,9 +101,7 @@
     <Compile Include="Examples\TmpGravDrive.cs" />
     <Compile Include="Lib\GravityDrive.cs" />
     <Compile Include="Lib\Helpers.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TargetTracker.cs" />
     <Compile Include="Tmp.cs" />
     <Compile Include="Lib\Torpedo.cs" />
     <Compile Include="WcPbApi.cs" />

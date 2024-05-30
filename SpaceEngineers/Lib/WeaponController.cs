@@ -26,7 +26,7 @@ namespace SpaceEngineers.Lib
     #region Copy
 
     // import:Serializer.cs
-    // import:TargetTracker3.cs
+    // import:TargetTracker.cs
     // import:Aimbot.cs
     // import:DirectionController2.cs
     // import:Torpedos\SpaceTorpedo.cs
@@ -39,7 +39,7 @@ namespace SpaceEngineers.Lib
         public const int RAILGUN_SPEED = 2000;
         public const int ARTILLERY_SPEED = 500;
 
-        private TargetTracker3 tracker;
+        private TargetTracker tracker;
         private IMyTextSurface lcdTargets;
         private IMyTextSurface lcdTorpedos;
         private IMyTextSurface lcdSystem;
@@ -94,7 +94,7 @@ namespace SpaceEngineers.Lib
             IMySoundBlock soundEnemyLock
         )
         {
-            tracker = new TargetTracker3(cameras);
+            tracker = new TargetTracker(cameras);
             tracker.TargetLocked += Tracker_TargetChanged;
             tracker.TargetReleased += Tracker_TargetChanged;
 
@@ -119,9 +119,9 @@ namespace SpaceEngineers.Lib
             onlyEnemies = !onlyEnemies;
         }
 
-        public void Scan(IMyCameraBlock cam)
+        public void Scan(DateTime now, IMyCameraBlock cam)
         {
-            var target = TargetTracker3.Scan(cam, RAYCAST_DISTANCE, onlyEnemies);
+            var target = TargetTracker.Scan(now, cam, RAYCAST_DISTANCE, onlyEnemies);
 
             if (target != null)
             {
@@ -223,7 +223,7 @@ namespace SpaceEngineers.Lib
                 {
                     case 0:
                         // обновлям данные о цели
-                        tracker.Update();
+                        tracker.Update(now);
                         break;
                     case 1:
                         // обновляем наведение курсовых орудий
@@ -231,7 +231,7 @@ namespace SpaceEngineers.Lib
                         break;
                     case 2:
                         // обновлям данные о цели (повторно)
-                        tracker.Update();
+                        tracker.Update(now);
 
                         // обновляем цели торпед
                         UpdateTorpedoTargets(now);
@@ -362,7 +362,7 @@ namespace SpaceEngineers.Lib
                     var d = (t.Position - selfPos).Length();
 
                     var size = t.Type == MyDetectedEntityType.SmallGrid ? "SM" : "LG";
-                    var name = TargetTracker3.GetName(t.EntityId);
+                    var name = TargetTracker.GetName(t.EntityId);
 
                     targetName = friends.Contains(t.Relationship)
                         ? $"{size} — {t.Name}"
@@ -570,7 +570,7 @@ namespace SpaceEngineers.Lib
                 var t = target.Entity;
 
                 var type = t.Type.ToString().Substring(0, 1);
-                var name = TargetTracker3.GetName(t.EntityId);
+                var name = TargetTracker.GetName(t.EntityId);
                 var dist = (t.Position - selfPos).Length();
                 var speed = t.Velocity.Length();
 

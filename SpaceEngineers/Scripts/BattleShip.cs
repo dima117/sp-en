@@ -140,10 +140,10 @@ namespace SpaceEngineers.Scripts.BattleShip
                     weapons.ToggleFiringMode();
                     break;
                 case "lock-top":
-                    weapons.Scan(cameraTop);
+                    weapons.Scan(now, cameraTop);
                     break;
                 case "lock-bottom":
-                    weapons.Scan(cameraBottom);
+                    weapons.Scan(now, cameraBottom);
                     break;
                 case "reload":
                     var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);

@@ -24,7 +24,7 @@ namespace SpaceEngineers.Lib
     // import:TargetInfo.cs
 
     // одиночный трекер
-    public class TargetTracker3
+    public class TargetTracker
     {
         public static readonly string[] names = new[] {
             "корова",
@@ -81,7 +81,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public TargetTracker3(IMyCameraBlock[] cameras)
+        public TargetTracker(IMyCameraBlock[] cameras)
         {
             this.cameras = cameras;
 
@@ -93,6 +93,7 @@ namespace SpaceEngineers.Lib
         }
 
         public static TargetInfo Scan(
+            DateTime now,
             IMyCameraBlock cam,
             double distance = DISTANCE_SCAN_DEFAULT,
             bool onlyEnemies = false)
@@ -121,7 +122,7 @@ namespace SpaceEngineers.Lib
 
             var camPos = cam.GetPosition();
 
-            return TargetInfo.CreateTargetInfo(entity, camPos, DateTime.UtcNow);
+            return TargetInfo.CreateTargetInfo(entity, camPos, now);
         }
 
         public void LockTarget(TargetInfo target)
@@ -142,7 +143,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void Update()
+        public void Update(DateTime now)
         {
             // если цель не захвачена, то ничего не делаем
             if (Current == null)
@@ -150,7 +151,6 @@ namespace SpaceEngineers.Lib
                 return;
             }
 
-            var now = DateTime.UtcNow;
             var prevTarget = Current;
 
             // если прошло мало времени, то ничего не делаем

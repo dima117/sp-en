@@ -108,7 +108,7 @@ namespace SpaceEngineers.Scripts.Fortress
                     weapons.ToggleFilter();
                     break;
                 case "lock":
-                    weapons.Scan(camera);
+                    weapons.Scan(now, camera);
                     break;
                 case "reload":
                     var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);

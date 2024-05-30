@@ -28,7 +28,7 @@ namespace SpaceEngineers.Scripts.Kamikaze
         // import:RuntimeTracker.cs
         // import:Lib\Grid.cs
         // import:Lib\DirectionController2.cs
-        // import:TargetTracker.cs
+        // import:Lib\TargetTracker.cs
 
         readonly IMyTextSurface lcd;
 
@@ -46,13 +46,15 @@ namespace SpaceEngineers.Scripts.Kamikaze
         public Program()
         {
             grid = new Grid(GridTerminalSystem);
+
             cam = grid.GetCamera("camera_main");
-            tt = new TargetTracker(this);
 
             cockpit = grid.GetByFilterOrAny<IMyCockpit>();
             GridTerminalSystem.GetBlocksOfType(listGyro);
             GridTerminalSystem.GetBlocksOfType(listEngine);
 
+            var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
+            tt = new TargetTracker(cameras);
             dc = new DirectionController2(cockpit, listGyro);
 
             lcd = grid.GetBlockWithName<IMyTextPanel>("lcd");
@@ -63,14 +65,16 @@ namespace SpaceEngineers.Scripts.Kamikaze
 
         public void Main(string argument, UpdateType updateSource)
         {
+            DateTime now = DateTime.UtcNow;
+
             switch (argument)
             {
                 case "lock":
-                    var target = TargetTracker.Scan(cam, 7000, false);
+                    var target = TargetTracker.Scan(now, cam, 7000, false);
 
                     if (target != null)
                     {
-                        tt.LockOn(target);
+                        tt.LockTarget(target);
                     }
 
                     break;
@@ -96,7 +100,7 @@ namespace SpaceEngineers.Scripts.Kamikaze
                     break;
                 default:
                     // обновлям данные о цели
-                    tt.Update();
+                    tt.Update(now);
 
                     if (started)
                     {

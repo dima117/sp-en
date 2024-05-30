@@ -28,7 +28,7 @@ namespace SpaceEngineers.Scripts.TowShip
         // import:Lib\TargetInfo.cs
         // import:Lib\Serializer.cs
         // import:Lib\Torpedo.cs
-        // import:TargetTracker.cs
+        // import:Lib\TargetTracker.cs
 
         const int DISTANCE = 15000;
         const int LIFESPAN = 600;
@@ -42,6 +42,7 @@ namespace SpaceEngineers.Scripts.TowShip
         readonly RuntimeTracker tracker;
         readonly IMyTextSurface lcd;
 
+        readonly Grid grid;
         readonly Transmitter tsm;
         readonly TargetTracker tt;
         readonly IMyCameraBlock cam;
@@ -61,6 +62,8 @@ namespace SpaceEngineers.Scripts.TowShip
             lcd = Me.GetSurface(1);
             lcd.ContentType = ContentType.TEXT_AND_IMAGE;
 
+            grid = new Grid(GridTerminalSystem);
+
             // антенна
             GridTerminalSystem.GetBlocksOfType(antennas);
             tsm = new Transmitter2(IGC, antennas.ToArray());
@@ -69,7 +72,8 @@ namespace SpaceEngineers.Scripts.TowShip
             tsm.Subscribe(MsgTags.GET_STATUS, GetStatus, true);
 
             // массив камер радара
-            tt = new TargetTracker(this);
+            var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
+            tt = new TargetTracker(cameras);
 
             // главная камера
             cam = GridTerminalSystem.GetBlockWithName(BLOCK_NAME_CAMERA) as IMyCameraBlock;
@@ -108,7 +112,7 @@ namespace SpaceEngineers.Scripts.TowShip
                 TargetInfo target;
                 if (Serializer.TryParseTargetInfo(reader, out target))
                 {
-                    tt.LockOn(target);
+                    tt.LockTarget(target);
 
                     if (tt.Current != null)
                     {
@@ -154,15 +158,12 @@ namespace SpaceEngineers.Scripts.TowShip
                     onlyEnemies = !onlyEnemies;
 
                     break;
-                case "init":
-                    tt.UpdateCamArray();
-                    break;
                 case "lock":
-                    var target = TargetTracker.Scan(cam, DISTANCE, onlyEnemies);
+                    var target = TargetTracker.Scan(now, cam, DISTANCE, onlyEnemies);
 
                     if (target != null)
                     {
-                        tt.LockOn(target);
+                        tt.LockTarget(target);
 
                         sound?.Play();
                     }
@@ -192,7 +193,7 @@ namespace SpaceEngineers.Scripts.TowShip
                     break;
                 default:
                     // обновлям данные о цели
-                    tt.Update();
+                    tt.Update(now);
 
                     // обновляем параметры цели на всех торпедах
                     var state = torpedos?.Select(t => t.Update(now, tt.Current));
