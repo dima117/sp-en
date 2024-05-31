@@ -35,6 +35,7 @@ namespace SpaceEngineers.Lib
     {
         const int RAYCAST_DISTANCE = 6500;
         const int TORPEDO_LIFESPAN = 600;
+        const int BEACON_RADIUS = 70;
 
         public const int RAILGUN_SPEED = 2000;
         public const int ARTILLERY_SPEED = 500;
@@ -44,6 +45,7 @@ namespace SpaceEngineers.Lib
         private IMyTextSurface lcdTorpedos;
         private IMyTextSurface lcdSystem;
         private IMyShipController cockpit;
+        private IMyBeacon beacon;
         private IMySoundBlock sound;
         private IMySoundBlock soundEnemyLock;
         private IMyTextPanel[] hud;
@@ -89,7 +91,7 @@ namespace SpaceEngineers.Lib
             IMyTextSurface lcdTorpedos,
             IMyTextSurface lcdSystem,
             IMyIntergridCommunicationSystem igc,
-            IMyRadioAntenna[] antennas,
+            IMyBeacon beacon,
             IMySoundBlock sound,
             IMySoundBlock soundEnemyLock
         )
@@ -97,6 +99,10 @@ namespace SpaceEngineers.Lib
             tracker = new TargetTracker(cameras);
             tracker.TargetLocked += Tracker_TargetChanged;
             tracker.TargetReleased += Tracker_TargetChanged;
+
+            this.beacon = beacon;
+            this.beacon.Enabled = true;
+            this.beacon.Radius = BEACON_RADIUS;
 
             this.cockpit = cockpit;
             this.lcdTargets = lcdTargets;
@@ -351,7 +357,7 @@ namespace SpaceEngineers.Lib
 
         private void UpdateHUD(DateTime now, Vector3D selfPos)
         {
-            if (hud.Any() && (now - lastUpdateHUD).TotalMilliseconds > 100)
+            if ((now - lastUpdateHUD).TotalMilliseconds > 100)
             {
                 var targetName = "NO TARGET";
                 string dist = null;
@@ -373,7 +379,7 @@ namespace SpaceEngineers.Lib
 
                 var tc = this.turrets.Count(t => t.IsWorking);
                 var tm = courseFiringMode ? "Fwd" : "Auto";
-                var turrets = tc > 0 ? $"{tc} | {tm}" : tm;
+                var turrets = tc > 0 ? $"{tc} ∙ {tm}" : tm;
 
                 var aimbot = "Off";
 
@@ -389,16 +395,6 @@ namespace SpaceEngineers.Lib
                             break;
                         default:
                             aimbot = aimbotTargetShotSpeed.ToString("0 m/s");
-                            break;
-                    }
-
-                    switch (lastAimbotState)
-                    {
-                        case AimbotState.READY:
-                            aimbot += $" | READY";
-                            break;
-                        case AimbotState.TOO_CLOSE:
-                            aimbot += $" | TOO CLOSE";
                             break;
                     }
                 }
@@ -433,6 +429,9 @@ namespace SpaceEngineers.Lib
                 }
 
                 lastUpdateHUD = now;
+
+                var rp = rgPercent > 0 ? $" ∙ {rgPercent:0}%" : "";
+                beacon.HudText = $"{targetName} | {aimbot} | {tm} | Rail: {rgReadyCount} {rp}";
             }
         }
 

@@ -49,9 +49,11 @@ namespace SpaceEngineers.Scripts.Kamikaze
 
             cam = grid.GetCamera("camera_main");
 
+            var group = GridTerminalSystem.GetBlockGroupWithName("kamikaze");
+
             cockpit = grid.GetByFilterOrAny<IMyCockpit>();
-            GridTerminalSystem.GetBlocksOfType(listGyro);
-            GridTerminalSystem.GetBlocksOfType(listEngine);
+            group.GetBlocksOfType(listGyro);
+            group.GetBlocksOfType(listEngine);
 
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             tt = new TargetTracker(cameras);
@@ -75,35 +77,35 @@ namespace SpaceEngineers.Scripts.Kamikaze
                     if (target != null)
                     {
                         tt.LockTarget(target);
+
+                        listGyro.ForEach(g =>
+                        {
+                            g.Enabled = true;
+                            g.GyroOverride = true;
+                        });
+
+                        listEngine.ForEach(e =>
+                        {
+                            e.Enabled = true;
+                            e.ThrustOverridePercentage = 1;
+                        });
+
+                        started = true;
                     }
 
                     break;
                 case "reset":
                     tt.Clear();
 
-                    break;
-                case "start":
-                    listGyro.ForEach(g =>
-                    {
-                        g.Enabled = true;
-                        g.GyroOverride = true;
-                    });
-
-                    listEngine.ForEach(e =>
-                    {
-                        e.Enabled = true;
-                        e.ThrustOverridePercentage = 1;
-                    });
-
-                    started = true;
+                    listGyro.ForEach(g => g.GyroOverride = false);
+                    listEngine.ForEach(e => e.ThrustOverridePercentage = 0);
+                    started = false;
 
                     break;
                 default:
-                    // обновлям данные о цели
-                    tt.Update(now);
-
                     if (started)
                     {
+                        tt.Update(now);
                         Update(tt.Current);
                     }
                     break;

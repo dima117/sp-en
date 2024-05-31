@@ -56,7 +56,7 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             var cockpit = grid.GetBlockWithName<IMyCockpit>("ws_cockpit");
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
-            var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
+            var beacon = grid.GetBlockWithName<IMyBeacon>("ws_beacon");
 
             var railguns = grid.GetLargeRailguns(sameGrid);
             var artillery = grid.GetArtillery(sameGrid);
@@ -87,7 +87,7 @@ namespace SpaceEngineers.Scripts.BattleShip
                 lcdTorpedos,
                 lcdSystem,
                 IGC,
-                antennas,
+                beacon,
                 sound,
                 soundEnemyLock
               );
