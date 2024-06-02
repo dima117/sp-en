@@ -157,7 +157,7 @@ namespace SpaceEngineers.Scripts.BattleShip
 
                     if (iii)
                     {
-                        gdrive.Update(!weapons.AimbotEnabled);
+                        gdrive.Update(!weapons.AimbotIsActive);
                     }
                     else
                     {

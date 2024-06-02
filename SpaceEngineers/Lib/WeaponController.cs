@@ -233,7 +233,7 @@ namespace SpaceEngineers.Lib
                         break;
                     case 1:
                         // обновляем наведение курсовых орудий
-                        UpdateAimBot(now);
+                        UpdateAimbot(now);
                         break;
                     case 2:
                         // обновлям данные о цели (повторно)
@@ -260,15 +260,15 @@ namespace SpaceEngineers.Lib
             updateIndex = (updateIndex + 1) % 4;
         }
 
-        public bool AimbotEnabled
+        public bool AimbotIsActive
         {
             get
             {
-                return aimbotTargetShotSpeed > 0;
+                return aimbotTargetShotSpeed > 0 && tracker.Current != null;
             }
         }
 
-        private void UpdateAimBot(DateTime now)
+        private void UpdateAimbot(DateTime now)
         {
             if (courseFiringMode)
             {
@@ -371,8 +371,8 @@ namespace SpaceEngineers.Lib
                     var name = TargetTracker.GetName(t.EntityId);
 
                     targetName = friends.Contains(t.Relationship)
-                        ? $"{size} — {t.Name}"
-                        : $"{size} — {name}";
+                        ? $"{size} ∙ {t.Name}"
+                        : $"{size} ∙ {name}";
 
                     dist = d.ToString("0m");
                 }
@@ -430,7 +430,8 @@ namespace SpaceEngineers.Lib
 
                 lastUpdateHUD = now;
 
-                var rp = rgPercent > 0 ? $" ∙ {rgPercent:0}%" : "";
+                var p = rgPercent * 100;
+                var rp = p > 0 ? $" ∙ {p:0}%" : "";
                 beacon.HudText = $"{targetName} | {aimbot} | {tm} | Rail: {rgReadyCount} {rp}";
             }
         }
