@@ -38,6 +38,7 @@ namespace SpaceEngineers.Scripts.BattleShip
 
         readonly IMyCameraBlock cameraTop;
         readonly IMyCameraBlock cameraBottom;
+        readonly IMyShipWelder[] welders;
 
         private bool iii = false;
 
@@ -50,6 +51,8 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             grid = new Grid(GridTerminalSystem);
             localTime = new LocalTime(Runtime);
+
+            welders = grid.GetBlocksOfType<IMyShipWelder>(sameGrid);
 
             cameraTop = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_t");
             cameraBottom = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_b");
@@ -112,9 +115,11 @@ namespace SpaceEngineers.Scripts.BattleShip
                 // gdrive
                 case "gd-on":
                     gdrive.Enabled = true;
+                    foreach (var w in welders) w.Enabled = true;
                     break;
                 case "gd-off":
                     gdrive.Enabled = false;
+                    foreach (var w in welders) w.Enabled = false;
                     break;
                 case "gd-info":
                     UpdateGdInfo();
