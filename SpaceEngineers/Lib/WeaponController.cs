@@ -37,8 +37,9 @@ namespace SpaceEngineers.Lib
         const int TORPEDO_LIFESPAN = 600;
         const int BEACON_RADIUS = 70;
 
-        public const int RAILGUN_SPEED = 2000;
-        public const int ARTILLERY_SPEED = 500;
+        public const int AIMBOT_OFF = 0;
+        public const int AIMBOT_RAILGUN_SPEED = 2000;
+        public const int AIMBOT_ARTILLERY_SPEED = 500;
 
         private TargetTracker tracker;
         private IMyTextSurface lcdTargets;
@@ -157,17 +158,22 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void Aim(DateTime now)
+        public void ToggleAimbot(DateTime now)
         {
-            aimbotTargetShotSpeed = aimbotTargetShotSpeed == ARTILLERY_SPEED
-                ? RAILGUN_SPEED : ARTILLERY_SPEED;
-
-            SetAimbotState(now, aimbot.Reset());
-        }
-
-        public void ClearAimBotTarget()
-        {
-            aimbotTargetShotSpeed = 0;
+            switch (aimbotTargetShotSpeed)
+            {
+                case AIMBOT_OFF:
+                    aimbotTargetShotSpeed = AIMBOT_ARTILLERY_SPEED;
+                    SetAimbotState(now, aimbot.Reset());
+                    break;
+                case AIMBOT_ARTILLERY_SPEED:
+                    aimbotTargetShotSpeed = AIMBOT_RAILGUN_SPEED;
+                    SetAimbotState(now, aimbot.Reset());
+                    break;
+                default:
+                    aimbotTargetShotSpeed = AIMBOT_OFF;
+                    break;
+            }
         }
 
         public void SetEnemyLock(DateTime now)
@@ -297,10 +303,10 @@ namespace SpaceEngineers.Lib
 
                         switch (aimbotTargetShotSpeed)
                         {
-                            case RAILGUN_SPEED:
+                            case AIMBOT_RAILGUN_SPEED:
                                 list = railguns.Where(r => r.IsWorking).ToArray();
                                 break;
-                            case ARTILLERY_SPEED:
+                            case AIMBOT_ARTILLERY_SPEED:
                                 list = artillery.Where(r => r.IsWorking).ToArray();
 
                                 if (courseFiringMode)
@@ -387,10 +393,10 @@ namespace SpaceEngineers.Lib
                 {
                     switch (aimbotTargetShotSpeed)
                     {
-                        case RAILGUN_SPEED:
+                        case AIMBOT_RAILGUN_SPEED:
                             aimbot = "Rail";
                             break;
-                        case ARTILLERY_SPEED:
+                        case AIMBOT_ARTILLERY_SPEED:
                             aimbot = "Art";
                             break;
                         default:

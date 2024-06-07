@@ -126,11 +126,8 @@ namespace SpaceEngineers.Scripts.BattleShip
                     break;
 
                 // weapons
-                case "aim-set":
-                    weapons.Aim(now);
-                    break;
-                case "aim-clear":
-                    weapons.ClearAimBotTarget();
+                case "aimbot-toggle":
+                    weapons.ToggleAimbot(now);
                     break;
                 case "filter":
                     weapons.ToggleFilter();
