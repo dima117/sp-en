@@ -72,7 +72,7 @@ namespace SpaceEngineers.Scripts.Kamikaze
             switch (argument)
             {
                 case "lock":
-                    var target = TargetTracker.Scan(now, cam, 7000, false);
+                    var target = TargetTracker.Scan(now, cam, 7000);
 
                     if (target != null)
                     {

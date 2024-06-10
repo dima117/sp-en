@@ -23,18 +23,16 @@ namespace SpaceEngineers.Scripts.Fortress
 
         #region Copy
 
-        // import:RuntimeTracker.cs
         // import:Lib\Grid.cs
+        // import:Lib\LocalTime.cs
         // import:Lib\WeaponController.cs
 
         private const string GROUP_PREFIX_TORPEDO = "TORPEDO";
 
-        private readonly RuntimeTracker tracker;
-        private readonly IMyTextSurface trackerLcd;
-
         private readonly IMyCameraBlock camera;
 
         private readonly Grid grid;
+        private readonly LocalTime localTime;
         private readonly WeaponController weapons;
 
         private bool sameGrid<T>(T b) where T : IMyTerminalBlock
@@ -44,11 +42,8 @@ namespace SpaceEngineers.Scripts.Fortress
 
         public Program()
         {
-            tracker = new RuntimeTracker(this);
-            trackerLcd = Me.GetSurface(1);
-            trackerLcd.ContentType = ContentType.TEXT_AND_IMAGE;
-
             grid = new Grid(GridTerminalSystem);
+            localTime = new LocalTime(Runtime);
 
             camera = grid.GetCamera("CAMERA");
 
@@ -59,7 +54,7 @@ namespace SpaceEngineers.Scripts.Fortress
 
             var railguns = grid.GetLargeRailguns();
             var artillery = grid.GetArtillery();
-            var antennas = grid.GetBlocksOfType<IMyRadioAntenna>();
+            var beacon = grid.GetBlockWithName<IMyBeacon>("ws_beacon");
             var lcdTargets = cockpit.GetSurface(0);
             var lcdTorpedos = cockpit.GetSurface(1);
             var lcdSystem = cockpit.GetSurface(2);
@@ -81,7 +76,7 @@ namespace SpaceEngineers.Scripts.Fortress
                 lcdTorpedos,
                 lcdSystem,
                 IGC,
-                antennas,
+                beacon,
                 sound,
                 soundEnemyLock
               );
@@ -98,15 +93,10 @@ namespace SpaceEngineers.Scripts.Fortress
 
         public void Main(string argument, UpdateType updateSource)
         {
-            var now = DateTime.UtcNow;
-
-            tracker.AddRuntime();
+            var now = localTime.Update(updateSource);
 
             switch (argument)
             {
-                case "filter":
-                    weapons.ToggleFilter();
-                    break;
                 case "lock":
                     weapons.Scan(now, camera);
                     break;
@@ -119,10 +109,7 @@ namespace SpaceEngineers.Scripts.Fortress
                     break;
             }
 
-            weapons.UpdateNext(now, argument, updateSource);
-
-            tracker.AddInstructions();
-            trackerLcd.WriteText(tracker.ToString());
+            weapons.UpdateNext(now);
         }
 
         #endregion

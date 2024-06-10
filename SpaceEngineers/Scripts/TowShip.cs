@@ -23,7 +23,6 @@ namespace SpaceEngineers.Scripts.TowShip
 
         #region Copy
 
-        // import:RuntimeTracker.cs
         // import:Lib\Transmitter2.cs
         // import:Lib\TargetInfo.cs
         // import:Lib\Serializer.cs
@@ -36,11 +35,6 @@ namespace SpaceEngineers.Scripts.TowShip
         const string BLOCK_NAME_CAMERA = "CAMERA";
         const string BLOCK_NAME_SOUND = "SOUND";
         const string GROUP_PREFIX_TORPEDO = "TORPEDO";
-
-        bool onlyEnemies = false;
-
-        readonly RuntimeTracker tracker;
-        readonly IMyTextSurface lcd;
 
         readonly Grid grid;
         readonly Transmitter tsm;
@@ -58,10 +52,6 @@ namespace SpaceEngineers.Scripts.TowShip
 
         public Program()
         {
-            tracker = new RuntimeTracker(this);
-            lcd = Me.GetSurface(1);
-            lcd.ContentType = ContentType.TEXT_AND_IMAGE;
-
             grid = new Grid(GridTerminalSystem);
 
             // антенна
@@ -148,18 +138,12 @@ namespace SpaceEngineers.Scripts.TowShip
         {
             var now = DateTime.UtcNow;
 
-            tracker.AddRuntime();
-
             tsm.Update(argument, updateSource);
 
             switch (argument)
             {
-                case "filter":
-                    onlyEnemies = !onlyEnemies;
-
-                    break;
                 case "lock":
-                    var target = TargetTracker.Scan(now, cam, DISTANCE, onlyEnemies);
+                    var target = TargetTracker.Scan(now, cam, DISTANCE);
 
                     if (target != null)
                     {
@@ -212,9 +196,6 @@ namespace SpaceEngineers.Scripts.TowShip
 
             UpdateTargetLcd();
             UpdateSystemLcd();
-
-            tracker.AddInstructions();
-            lcd.WriteText(tracker.ToString());
         }
 
         void UpdateTargetLcd()
@@ -235,13 +216,10 @@ namespace SpaceEngineers.Scripts.TowShip
 
         void UpdateSystemLcd()
         {
-            var filter = onlyEnemies ? "Enemies" : "All";
-
             var sb = new StringBuilder();
             sb.AppendLine($"Range: {cam.AvailableScanRange:0.0}");
             sb.AppendLine($"Total range: {tt.TotalRange:0.0}");
             sb.AppendLine($"Cam count: {tt.Count}");
-            sb.AppendLine($"Filter: {filter}");
 
             lcdSystem.WriteText(sb.ToString());
         }

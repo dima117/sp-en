@@ -107,7 +107,6 @@ namespace SpaceEngineers.Scripts.BattleShip
 
         public void Main(string argument, UpdateType updateSource)
         {
-            //var now = DateTime.UtcNow;
             var now = localTime.Update(updateSource);
 
             switch (argument)
@@ -128,9 +127,6 @@ namespace SpaceEngineers.Scripts.BattleShip
                 // weapons
                 case "aimbot-toggle":
                     weapons.ToggleAimbot(now);
-                    break;
-                case "filter":
-                    weapons.ToggleFilter();
                     break;
                 case "mode":
                     weapons.ToggleFiringMode();
@@ -163,7 +159,7 @@ namespace SpaceEngineers.Scripts.BattleShip
                     }
                     else
                     {
-                        weapons.UpdateNext(now, argument, updateSource);
+                        weapons.UpdateNext(now);
                     }
 
                     iii = !iii;

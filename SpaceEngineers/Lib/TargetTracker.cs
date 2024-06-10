@@ -95,8 +95,7 @@ namespace SpaceEngineers.Lib
         public static TargetInfo Scan(
             DateTime now,
             IMyCameraBlock cam,
-            double distance = DISTANCE_SCAN_DEFAULT,
-            bool onlyEnemies = false)
+            double distance = DISTANCE_SCAN_DEFAULT)
         {
             if (cam == null)
             {
@@ -111,11 +110,6 @@ namespace SpaceEngineers.Lib
             }
 
             if (!targetTypes.Contains(entity.Type))
-            {
-                return null;
-            }
-
-            if (onlyEnemies && entity.Relationship != MyRelationsBetweenPlayerAndBlock.Enemies)
             {
                 return null;
             }

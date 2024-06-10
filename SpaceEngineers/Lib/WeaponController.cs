@@ -54,7 +54,6 @@ namespace SpaceEngineers.Lib
         private IMySmallMissileLauncher[] artillery;
         private IMyLargeMissileTurret[] turrets;
 
-        private bool onlyEnemies;
         private bool courseFiringMode = false;
 
         private DateTime? enemyLock;
@@ -121,14 +120,9 @@ namespace SpaceEngineers.Lib
             aimbot = new Aimbot(cockpit, gyros);
         }
 
-        public void ToggleFilter()
-        {
-            onlyEnemies = !onlyEnemies;
-        }
-
         public void Scan(DateTime now, IMyCameraBlock cam)
         {
-            var target = TargetTracker.Scan(now, cam, RAYCAST_DISTANCE, onlyEnemies);
+            var target = TargetTracker.Scan(now, cam, RAYCAST_DISTANCE);
 
             if (target != null)
             {
@@ -227,7 +221,7 @@ namespace SpaceEngineers.Lib
 
         private int updateIndex = 0;
 
-        public void UpdateNext(DateTime now, string argument, UpdateType updateSource)
+        public void UpdateNext(DateTime now)
         {
             try
             {
@@ -438,7 +432,7 @@ namespace SpaceEngineers.Lib
 
                 var p = rgPercent * 100;
                 var rp = p > 0 ? $" ∙ {p:0}%" : "";
-                beacon.HudText = $"{targetName} | {aimbot} | {tm} | Rail: {rgReadyCount} {rp}";
+                beacon.HudText = $"{targetName} | {dist}\n{aimbot} | {tm} | Rail: {rgReadyCount} {rp}";
             }
         }
 
@@ -556,12 +550,9 @@ namespace SpaceEngineers.Lib
 
         private void UpdateLcdSystem()
         {
-            var filter = onlyEnemies ? "Enemies" : "All";
-
             var sb = new StringBuilder();
             sb.AppendLine($"Total range: {tracker.TotalRange:0.0}");
             sb.AppendLine($"Cam count: {tracker.Count}");
-            sb.AppendLine($"Filter: {filter}");
 
             lcdSystem?.WriteText(sb);
         }
