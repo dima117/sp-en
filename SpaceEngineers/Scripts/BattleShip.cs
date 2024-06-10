@@ -67,7 +67,6 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             var hud = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("ws_hud"));
             var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");
-            var lcdTargets = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_2");
             var lcdSystem = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_3");
             var sound = grid.GetSound("ws_sound_1", "SoundBlockEnemyDetected");
             var soundEnemyLock = grid.GetSound("ws_sound_2", "SoundBlockAlert1");
@@ -86,7 +85,6 @@ namespace SpaceEngineers.Scripts.BattleShip
                 railguns,
                 artillery,
                 hud,
-                lcdTargets,
                 lcdTorpedos,
                 lcdSystem,
                 IGC,

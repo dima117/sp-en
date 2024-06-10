@@ -42,7 +42,6 @@ namespace SpaceEngineers.Lib
         public const int AIMBOT_ARTILLERY_SPEED = 500;
 
         private TargetTracker tracker;
-        private IMyTextSurface lcdTargets;
         private IMyTextSurface lcdTorpedos;
         private IMyTextSurface lcdSystem;
         private IMyShipController cockpit;
@@ -87,7 +86,6 @@ namespace SpaceEngineers.Lib
             IMySmallMissileLauncherReload[] railguns,
             IMySmallMissileLauncher[] artillery,
             IMyTextPanel[] hud,
-            IMyTextSurface lcdTargets,
             IMyTextSurface lcdTorpedos,
             IMyTextSurface lcdSystem,
             IMyIntergridCommunicationSystem igc,
@@ -105,7 +103,6 @@ namespace SpaceEngineers.Lib
             this.beacon.Radius = BEACON_RADIUS;
 
             this.cockpit = cockpit;
-            this.lcdTargets = lcdTargets;
             this.lcdTorpedos = lcdTorpedos;
             this.lcdSystem = lcdSystem;
             this.hud = hud;
@@ -247,7 +244,6 @@ namespace SpaceEngineers.Lib
 
                         // обновляем содержимое экранов
                         UpdateHUD(now, selfPos);
-                        UpdateLcdTarget(selfPos);
                         UpdateLcdSystem();
                         break;
                 }
@@ -359,7 +355,7 @@ namespace SpaceEngineers.Lib
         {
             if ((now - lastUpdateHUD).TotalMilliseconds > 100)
             {
-                var targetName = "NO TARGET";
+                string targetName = null;
                 string dist = null;
 
                 if (tracker.Current != null)
@@ -430,9 +426,10 @@ namespace SpaceEngineers.Lib
 
                 lastUpdateHUD = now;
 
+                var ti = targetName == null ? "NO TARGET" : $"{targetName} | {dist}";
                 var p = rgPercent * 100;
                 var rp = p > 0 ? $" ∙ {p:0}%" : "";
-                beacon.HudText = $"{targetName} | {dist}\n{aimbot} | {tm} | Rail: {rgReadyCount} {rp}";
+                beacon.HudText = $"{ti}\n{aimbot} | {tm} | Rail: {rgReadyCount} {rp}";
             }
         }
 
@@ -444,7 +441,7 @@ namespace SpaceEngineers.Lib
 
             // target
 
-            list.AddRange(Text("target", targetName, TextAlignment.CENTER, TOP));
+            list.AddRange(Text("target", targetName ?? "NO TARGET", TextAlignment.CENTER, TOP));
 
             if (dist != null)
             {
@@ -555,30 +552,6 @@ namespace SpaceEngineers.Lib
             sb.AppendLine($"Cam count: {tracker.Count}");
 
             lcdSystem?.WriteText(sb);
-        }
-
-        private void UpdateLcdTarget(Vector3D selfPos)
-        {
-            var sb = new StringBuilder();
-            var target = tracker.Current;
-
-            if (target != null)
-            {
-                var t = target.Entity;
-
-                var type = t.Type.ToString().Substring(0, 1);
-                var name = TargetTracker.GetName(t.EntityId);
-                var dist = (t.Position - selfPos).Length();
-                var speed = t.Velocity.Length();
-
-                sb.AppendLine($"{type} {name} {dist:0}m {speed:0}m/s");
-            }
-            else
-            {
-                sb.AppendLine("NO TARGET");
-            }
-
-            lcdTargets?.WriteText(sb);
         }
 
         private void Tracker_TargetChanged()
