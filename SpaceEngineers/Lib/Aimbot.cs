@@ -135,7 +135,7 @@ namespace SpaceEngineers.Lib
         {
             var target = targetInfo.Entity;
 
-            var ownPos = remoteControl.GetPosition();
+            var ownPos = remoteControl.CenterOfMass;
             var ownVelocity = remoteControl.GetShipVelocities().LinearVelocity;
 
             var targetPos = targetInfo.GetHitPosWorld();
