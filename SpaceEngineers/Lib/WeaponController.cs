@@ -41,6 +41,7 @@ namespace SpaceEngineers.Lib
         public const int AIMBOT_RAILGUN_SPEED = 2000;
         public const int AIMBOT_ARTILLERY_SPEED = 500;
 
+        private LocalTime localTime;
         private TargetTracker tracker;
         private IMyTextSurface lcdTorpedos;
         private IMyTextSurface lcdSystem;
@@ -55,7 +56,7 @@ namespace SpaceEngineers.Lib
 
         private bool courseFiringMode = false;
 
-        private DateTime? enemyLock;
+        private bool enemyLock;
 
         private DateTime lastUpdateHUD = DateTime.MinValue;
 
@@ -79,6 +80,7 @@ namespace SpaceEngineers.Lib
         readonly Dictionary<long, SpaceTorpedo> torpedos = new Dictionary<long, SpaceTorpedo>();
 
         public WeaponController(
+            LocalTime localTime,
             IMyGyro[] gyros,
             IMyShipController cockpit,
             IMyCameraBlock[] cameras,
@@ -94,6 +96,8 @@ namespace SpaceEngineers.Lib
             IMySoundBlock soundEnemyLock
         )
         {
+            this.localTime = localTime;
+
             tracker = new TargetTracker(cameras);
             tracker.TargetLocked += Tracker_TargetChanged;
             tracker.TargetReleased += Tracker_TargetChanged;
@@ -117,8 +121,10 @@ namespace SpaceEngineers.Lib
             aimbot = new Aimbot(cockpit, gyros);
         }
 
-        public void Scan(DateTime now, IMyCameraBlock cam)
+        public void Scan(IMyCameraBlock cam)
         {
+            var now = localTime.Now;
+
             var target = TargetTracker.Scan(now, cam, RAYCAST_DISTANCE);
 
             if (target != null)
@@ -127,8 +133,10 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void Reload(DateTime now, IMyBlockGroup[] groups)
+        public void Reload(IMyBlockGroup[] groups)
         {
+            var now = localTime.Now;
+
             foreach (var gr in groups)
             {
                 var tmp = new SpaceTorpedo(gr, factor: 3f, lifespan: TORPEDO_LIFESPAN);
@@ -149,8 +157,10 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void ToggleAimbot(DateTime now)
+        public void ToggleAimbot()
         {
+            var now = localTime.Now;
+
             switch (aimbotTargetShotSpeed)
             {
                 case AIMBOT_OFF:
@@ -167,15 +177,15 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void SetEnemyLock(DateTime now)
+        public void SetEnemyLock()
         {
-            enemyLock = now;
+            enemyLock = true;
             soundEnemyLock?.Play();
         }
 
         public void ClearEnemyLock()
         {
-            enemyLock = null;
+            enemyLock = false;
             soundEnemyLock?.Stop();
         }
 
@@ -201,8 +211,10 @@ namespace SpaceEngineers.Lib
 
         }
 
-        public bool Launch(DateTime now)
+        public bool Launch()
         {
+            var now = localTime.Now;
+
             // запускает одну из готовых к запусу торпед
             var torpedo = torpedos.Values.FirstOrDefault(t => t.GetStage(now) == LaunchStage.Ready);
 
@@ -216,44 +228,51 @@ namespace SpaceEngineers.Lib
             return true;
         }
 
-        private int updateIndex = 0;
-
-        public void UpdateNext(DateTime now)
+        private bool Exec(Action action)
         {
-            try
+            try { action(); }
+            catch (Exception e) { OnError(e); }
+            return true;
+        }
+
+        private IEnumerator<bool> GetEventLoop()
+        {
+            while (true)
             {
-                switch (updateIndex)
+                // обновлям данные о цели
+                yield return Exec(() => tracker.Update(localTime.Now));
+
+                // обновляем наведение курсовых орудий
+                yield return Exec(() => UpdateAimbot(localTime.Now));
+
+                // обновлям данные о цели (повторно)
+                yield return Exec(() => tracker.Update(localTime.Now));
+
+                // обновляем цели торпед
+                yield return Exec(() => UpdateTorpedoTargets(localTime.Now));
+
+                // обновляем содержимое экранов
+                yield return Exec(() =>
                 {
-                    case 0:
-                        // обновлям данные о цели
-                        tracker.Update(now);
-                        break;
-                    case 1:
-                        // обновляем наведение курсовых орудий
-                        UpdateAimbot(now);
-                        break;
-                    case 2:
-                        // обновлям данные о цели (повторно)
-                        tracker.Update(now);
+                    var selfPos = cockpit.GetPosition();
 
-                        // обновляем цели торпед
-                        UpdateTorpedoTargets(now);
-                        break;
-                    case 3:
-                        var selfPos = cockpit.GetPosition();
-
-                        // обновляем содержимое экранов
-                        UpdateHUD(now, selfPos);
-                        UpdateLcdSystem();
-                        break;
-                }
+                    UpdateHUD(localTime.Now, selfPos);
+                    UpdateLcdSystem();
+                });
             }
-            catch (Exception e)
+        }
+
+        private IEnumerator<bool> actions = null;
+
+        public void UpdateNext()
+        {
+            var a = actions ?? (actions = GetEventLoop());
+
+            if (!a.MoveNext())
             {
-                OnError(e);
+                a.Dispose();
+                actions = null;
             }
-
-            updateIndex = (updateIndex + 1) % 4;
         }
 
         public bool AimbotIsActive
@@ -409,8 +428,6 @@ namespace SpaceEngineers.Lib
                 }
 
                 var tCount = torpedos.Values.Count(t => t.GetStage(now) == LaunchStage.Ready);
-                var enemyLock = this.enemyLock.HasValue;
-
                 var sprites = GetHudState(
                     targetName, dist, aimbot, turrets,
                     tCount, enemyLock,

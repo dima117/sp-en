@@ -40,7 +40,8 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly IMyCameraBlock cameraBottom;
         readonly IMyShipWelder[] welders;
 
-        private bool iii = false;
+        const int TICK_COUNT = 8;
+        private int tick = 0;
 
         private bool sameGrid<T>(T b) where T : IMyTerminalBlock
         {
@@ -78,6 +79,7 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             gdrive = new GravityDrive(cockpit, group);
             weapons = new WeaponController(
+                localTime,
                 gyros.ToArray(),
                 cockpit,
                 cameras,
@@ -107,62 +109,74 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             var now = localTime.Update(updateSource);
 
-            switch (argument)
+            if ((updateSource & UpdateType.Update1) == UpdateType.Update1)
             {
-                // gdrive
-                case "gd-on":
-                    gdrive.Enabled = true;
-                    foreach (var w in welders) w.Enabled = true;
-                    break;
-                case "gd-off":
-                    gdrive.Enabled = false;
-                    foreach (var w in welders) w.Enabled = false;
-                    break;
-                case "gd-info":
-                    UpdateGdInfo();
-                    break;
+                tick = (tick + 1) % TICK_COUNT;
 
-                // weapons
-                case "aimbot-toggle":
-                    weapons.ToggleAimbot(now);
-                    break;
-                case "mode":
-                    weapons.ToggleFiringMode();
-                    break;
-                case "lock-top":
-                    weapons.Scan(now, cameraTop);
-                    break;
-                case "lock-bottom":
-                    weapons.Scan(now, cameraBottom);
-                    break;
-                case "reload":
-                    var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
-                    weapons.Reload(now, groups);
-                    break;
-                case "start":
-                    weapons.Launch(now);
-                    break;
-                case "set-enemy-lock":
-                    weapons.SetEnemyLock(now);
-                    break;
-                case "clear-enemy-lock":
-                    weapons.ClearEnemyLock();
-                    break;
+                switch (tick)
+                {
+                    case 0:
+                    case 2:
+                    case 4:
+                        weapons.UpdateNext();
+                        break;
+                    case 6:
+                        gdrive.UpdateGenerators();
+                        break;
 
-                default:
+                    case 1:
+                    case 5:
+                        if (!weapons.AimbotIsActive)
+                        {
+                            gdrive.UpdateGyro();
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                switch (argument)
+                {
+                    // gdrive
+                    case "gd-on":
+                        gdrive.Enabled = true;
+                        foreach (var w in welders) w.Enabled = true;
+                        break;
+                    case "gd-off":
+                        gdrive.Enabled = false;
+                        foreach (var w in welders) w.Enabled = false;
+                        break;
+                    case "gd-info":
+                        UpdateGdInfo();
+                        break;
 
-                    if (iii)
-                    {
-                        gdrive.Update(!weapons.AimbotIsActive);
-                    }
-                    else
-                    {
-                        weapons.UpdateNext(now);
-                    }
-
-                    iii = !iii;
-
-                    break;
+                    // weapons
+                    case "aimbot-toggle":
+                        weapons.ToggleAimbot();
+                        break;
+                    case "mode":
+                        weapons.ToggleFiringMode();
+                        break;
+                    case "lock-top":
+                        weapons.Scan(cameraTop);
+                        break;
+                    case "lock-bottom":
+                        weapons.Scan(cameraBottom);
+                        break;
+                    case "reload":
+                        var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
+                        weapons.Reload(groups);
+                        break;
+                    case "start":
+                        weapons.Launch();
+                        break;
+                    case "set-enemy-lock":
+                        weapons.SetEnemyLock();
+                        break;
+                    case "clear-enemy-lock":
+                        weapons.ClearEnemyLock();
+                        break;
+                }
             }
         }
 

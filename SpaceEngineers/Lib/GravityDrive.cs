@@ -71,7 +71,7 @@ namespace SpaceEngineers.Lib
             IMyShipController cockpit,
             IMyBlockGroup group)
         {
-            this.controller = cockpit;
+            controller = cockpit;
 
             group.GetBlocksOfType(gyroBlocks, b => b.IsSameConstructAs(cockpit));
             group.GetBlocksOfType(massBlocks, b => b.IsSameConstructAs(cockpit));
@@ -122,20 +122,11 @@ namespace SpaceEngineers.Lib
 
         public bool DampenersOverride => controller.DampenersOverride;
 
-        public void Update(bool controlGyros = true)
+        public void UpdateGyro()
         {
             MyShipVelocities velocities = controller.GetShipVelocities();
+            Vector3D worldAngularVelocity = velocities.AngularVelocity;
 
-            UpdateGenerators(velocities.LinearVelocity);
-
-            if (controlGyros)
-            {
-                UpdateGyro(velocities.AngularVelocity);
-            }
-        }
-
-        private void UpdateGyro(Vector3D worldAngularVelocity)
-        {
             Vector3D rot = worldAngularVelocity * 100 * worldAngularVelocity.LengthSquared();
             rot += controller.WorldMatrix.Right * controller.RotationIndicator.X * ROTATION_RATIO;
             rot += controller.WorldMatrix.Up * controller.RotationIndicator.Y * ROTATION_RATIO;
@@ -149,8 +140,11 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        private void UpdateGenerators(Vector3D worldVelocity)
+        public void UpdateGenerators()
         {
+            MyShipVelocities velocities = controller.GetShipVelocities();
+            Vector3D worldVelocity = velocities.LinearVelocity;
+
             Vector3 input = controller.MoveIndicator;
             MatrixD matrix = MatrixD.Transpose(controller.WorldMatrix);
 
