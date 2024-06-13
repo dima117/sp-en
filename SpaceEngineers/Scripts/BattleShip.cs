@@ -137,21 +137,8 @@ namespace SpaceEngineers.Scripts.BattleShip
             {
                 switch (argument)
                 {
-                    // gdrive
-                    case "gd-on":
-                        gdrive.Enabled = true;
-                        foreach (var w in welders) w.Enabled = true;
-                        break;
-                    case "gd-off":
-                        gdrive.Enabled = false;
-                        foreach (var w in welders) w.Enabled = false;
-                        break;
-                    case "gd-info":
-                        UpdateGdInfo();
-                        break;
-
                     // weapons
-                    case "aimbot-toggle":
+                    case "aimbot":
                         weapons.ToggleAimbot();
                         break;
                     case "mode":

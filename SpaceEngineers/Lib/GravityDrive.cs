@@ -47,8 +47,6 @@ namespace SpaceEngineers.Lib
 
     public class GravityDrive
     {
-        private bool enabled;
-
         readonly IMyShipController controller;
         readonly List<IMyArtificialMassBlock> massBlocks = new List<IMyArtificialMassBlock>();
         readonly List<IMyGyro> gyroBlocks = new List<IMyGyro>();
@@ -66,6 +64,8 @@ namespace SpaceEngineers.Lib
         const float GRAVITY_RATIO = 9.8f;
         const float DAMPENERS_RATIO = 0.1f;
         const float ROTATION_RATIO = 10f;
+
+        bool isActive;
 
         public GravityDrive(
             IMyShipController cockpit,
@@ -92,6 +92,23 @@ namespace SpaceEngineers.Lib
                 else if (cockpit.WorldMatrix.Down == block.WorldMatrix.Down)
                     downGens.Add(block);
             }
+
+            // init
+            SetActiveState(false, forceUpdate: true);
+
+            foreach (var b in allGens)
+            {
+                b.Enabled = false;
+                b.GravityAcceleration = 0f;
+            }
+
+            foreach (IMyGyro b in gyroBlocks)
+            {
+                b.GyroOverride = true;
+                b.Yaw = 0f;
+                b.Pitch = 0f;
+                b.Roll = 0f;
+            }
         }
 
         public CenterOfMass CalculateCenterOfMass()
@@ -112,12 +129,6 @@ namespace SpaceEngineers.Lib
                 physicalValue: new CenterOfMassPosition(localCenterOfMass, centerOfMass),
                 virtualValue: new CenterOfMassPosition(localVirtualCenterOfMass, virtualCenterOfMass)
             );
-        }
-
-        public bool Enabled
-        {
-            get { return enabled; }
-            set { ToggleEngine(value); }
         }
 
         public bool DampenersOverride => controller.DampenersOverride;
@@ -150,55 +161,46 @@ namespace SpaceEngineers.Lib
 
             Vector3 localVelocity = Vector3D.TransformNormal(worldVelocity, matrix);
 
-            SetGravityAcceleration(input.X, localVelocity.X, rightGens, leftGens);
-            SetGravityAcceleration(input.Y, localVelocity.Y, upGens, downGens);
-            SetGravityAcceleration(input.Z, localVelocity.Z, backwardGens, forwardGens);
+            var isInUse = SetGravityAcceleration(input.X, localVelocity.X, rightGens, leftGens);
+            isInUse |= SetGravityAcceleration(input.Y, localVelocity.Y, upGens, downGens);
+            isInUse |= SetGravityAcceleration(input.Z, localVelocity.Z, backwardGens, forwardGens);
+
+            SetActiveState(isInUse);
+        }
+
+        private void SetActiveState(bool isActive, bool forceUpdate = false)
+        {
+            if (isActive != this.isActive || forceUpdate)
+            {
+                this.isActive = isActive;
+                foreach (IMyArtificialMassBlock b in massBlocks)
+                {
+                    b.Enabled = isActive;
+                }
+            }
         }
 
         private bool IsZero(float value) => Math.Abs(value) < 0.00001;
 
-        private void SetGravityAcceleration(float input, float velocity, IList<IMyGravityGeneratorBase> positive, IList<IMyGravityGeneratorBase> negative)
+        private bool SetGravityAcceleration(float input, float velocity, IList<IMyGravityGeneratorBase> positive, IList<IMyGravityGeneratorBase> negative)
         {
             var value = IsZero(input) && DampenersOverride ? -velocity * DAMPENERS_RATIO : input;
-            var enabled = Enabled && !IsZero(value);
-
-            var acceleration = value * GRAVITY_RATIO;
+            var isInUse = !IsZero(value);
+            var acceleration = isInUse ? value * GRAVITY_RATIO : 0;
 
             foreach (var x in positive)
             {
                 x.GravityAcceleration = acceleration;
-                x.Enabled = enabled;
+                x.Enabled = isInUse;
             }
 
             foreach (var x in negative)
             {
                 x.GravityAcceleration = -acceleration;
-                x.Enabled = enabled;
-            }
-        }
-
-        void ToggleEngine(bool enabled)
-        {
-            this.enabled = enabled;
-
-            foreach (IMyArtificialMassBlock b in massBlocks)
-            {
-                b.Enabled = enabled;
+                x.Enabled = isInUse;
             }
 
-            foreach (var b in allGens)
-            {
-                b.Enabled = enabled;
-                b.GravityAcceleration = 0f;
-            }
-
-            foreach (IMyGyro b in gyroBlocks)
-            {
-                b.GyroOverride = enabled;
-                b.Yaw = 0f;
-                b.Pitch = 0f;
-                b.Roll = 0f;
-            }
+            return isInUse;
         }
     }
 
