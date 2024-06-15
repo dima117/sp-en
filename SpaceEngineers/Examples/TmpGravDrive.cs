@@ -35,18 +35,7 @@ namespace SpaceEngineers.Examples
 
         public void Main(string argument, UpdateType updateSource)
         {
-            switch (argument)
-            {
-                case "on":
-                    drive.Enabled = true;
-                    break;
-                case "off":
-                    drive.Enabled = false;
-                    break;
-                default:
-                    drive.Update();
-                    break;
-            }
+            drive.Update();
         }
     }
 }

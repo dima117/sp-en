@@ -49,7 +49,6 @@ namespace SpaceEngineers.Lib
     {
         readonly IMyShipController controller;
         readonly List<IMyArtificialMassBlock> massBlocks = new List<IMyArtificialMassBlock>();
-        readonly List<IMyGyro> gyroBlocks = new List<IMyGyro>();
 
         // сферические генерации нужно ставить по краям, направляя верх в сторону блоков массы
         // например, генераторы сзади, верх которых направлен вперед, будут усиливать движение вперед/назад
@@ -63,7 +62,7 @@ namespace SpaceEngineers.Lib
 
         const float GRAVITY_RATIO = 9.8f;
         const float DAMPENERS_RATIO = 0.1f;
-        const float ROTATION_RATIO = 10f;
+
 
         bool isActive;
 
@@ -73,7 +72,6 @@ namespace SpaceEngineers.Lib
         {
             controller = cockpit;
 
-            group.GetBlocksOfType(gyroBlocks, b => b.IsSameConstructAs(cockpit));
             group.GetBlocksOfType(massBlocks, b => b.IsSameConstructAs(cockpit));
             group.GetBlocksOfType(allGens, b => b.IsSameConstructAs(cockpit));
 
@@ -101,14 +99,6 @@ namespace SpaceEngineers.Lib
                 b.Enabled = false;
                 b.GravityAcceleration = 0f;
             }
-
-            foreach (IMyGyro b in gyroBlocks)
-            {
-                b.GyroOverride = true;
-                b.Yaw = 0f;
-                b.Pitch = 0f;
-                b.Roll = 0f;
-            }
         }
 
         public CenterOfMass CalculateCenterOfMass()
@@ -133,25 +123,7 @@ namespace SpaceEngineers.Lib
 
         public bool DampenersOverride => controller.DampenersOverride;
 
-        public void UpdateGyro()
-        {
-            MyShipVelocities velocities = controller.GetShipVelocities();
-            Vector3D worldAngularVelocity = velocities.AngularVelocity;
-
-            Vector3D rot = worldAngularVelocity * 100 * worldAngularVelocity.LengthSquared();
-            rot += controller.WorldMatrix.Right * controller.RotationIndicator.X * ROTATION_RATIO;
-            rot += controller.WorldMatrix.Up * controller.RotationIndicator.Y * ROTATION_RATIO;
-            rot += controller.WorldMatrix.Backward * controller.RollIndicator * ROTATION_RATIO;
-
-            foreach (var gyro in gyroBlocks)
-            {
-                gyro.Yaw = (float)rot.Dot(gyro.WorldMatrix.Up);
-                gyro.Pitch = (float)rot.Dot(gyro.WorldMatrix.Right);
-                gyro.Roll = (float)rot.Dot(gyro.WorldMatrix.Backward);
-            }
-        }
-
-        public void UpdateGenerators()
+        public void Update()
         {
             MyShipVelocities velocities = controller.GetShipVelocities();
             Vector3D worldVelocity = velocities.LinearVelocity;

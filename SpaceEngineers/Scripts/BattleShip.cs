@@ -27,6 +27,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         // import:Lib\Grid.cs
         // import:Lib\LocalTime.cs
         // import:Lib\GravityDrive.cs
+        // import:Lib\ShipDirectionController.cs
         // import:Lib\WeaponController.cs
 
         private const string GROUP_PREFIX_TORPEDO = "ws_torpedo";
@@ -34,6 +35,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly Grid grid;
         readonly LocalTime localTime;
         readonly GravityDrive gdrive;
+        readonly ShipDirectionController directionController;
         readonly WeaponController weapons;
 
         readonly IMyCameraBlock cameraTop;
@@ -78,6 +80,7 @@ namespace SpaceEngineers.Scripts.BattleShip
             group.GetBlocksOfType(gyros);
 
             gdrive = new GravityDrive(cockpit, group);
+            directionController = new ShipDirectionController(cockpit, gyros);
             weapons = new WeaponController(
                 localTime,
                 gyros.ToArray(),
@@ -121,14 +124,14 @@ namespace SpaceEngineers.Scripts.BattleShip
                         weapons.UpdateNext();
                         break;
                     case 6:
-                        gdrive.UpdateGenerators();
+                        gdrive.Update();
                         break;
 
                     case 1:
                     case 5:
                         if (!weapons.AimbotIsActive)
                         {
-                            gdrive.UpdateGyro();
+                            directionController.Update();
                         }
                         break;
                 }

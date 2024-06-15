@@ -65,6 +65,7 @@ namespace SpaceEngineers.Scripts.Fortress
 
 
             weapons = new WeaponController(
+                localTime,
                 gyros,
                 cockpit,
                 cameras,
@@ -72,7 +73,6 @@ namespace SpaceEngineers.Scripts.Fortress
                 railguns,
                 artillery,
                 hud,
-                lcdTargets,
                 lcdTorpedos,
                 lcdSystem,
                 IGC,
@@ -98,18 +98,18 @@ namespace SpaceEngineers.Scripts.Fortress
             switch (argument)
             {
                 case "lock":
-                    weapons.Scan(now, camera);
+                    weapons.Scan(camera);
                     break;
                 case "reload":
                     var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
-                    weapons.Reload(now, groups);
+                    weapons.Reload(groups);
                     break;
                 case "start":
-                    weapons.Launch(now);
+                    weapons.Launch();
                     break;
             }
 
-            weapons.UpdateNext(now);
+            weapons.UpdateNext();
         }
 
         #endregion
