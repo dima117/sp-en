@@ -66,6 +66,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Examples\Class3.cs" />
     <Compile Include="Examples\LCDExample.cs" />
     <Compile Include="Examples\JumpDriveStatus.cs" />
     <Compile Include="Lib\ShipDirectionController.cs" />
