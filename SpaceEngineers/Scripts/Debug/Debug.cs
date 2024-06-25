@@ -15,6 +15,7 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using System.Net;
+using Sandbox.Game.Lights;
 
 namespace SpaceEngineers.Scripts.Debug
 {
@@ -22,34 +23,36 @@ namespace SpaceEngineers.Scripts.Debug
     {
         #region Copy
 
+        IMyTextPanel lcd;
+        IMyOffensiveCombatBlock ai;
+        IMyFlightMovementBlock flight;
+
         public Program()
         {
-            //Runtime.UpdateFrequency = UpdateFrequency.Update1;
+
+            ai = GridTerminalSystem.GetBlockWithName("ai") as IMyOffensiveCombatBlock;
+            lcd = GridTerminalSystem.GetBlockWithName("lcd") as IMyTextPanel;
+            flight = GridTerminalSystem.GetBlockWithName("flight") as IMyFlightMovementBlock;
+
+            lcd.WriteText(ai.DetailedInfo);
+
+            Runtime.UpdateFrequency = UpdateFrequency.Update10;
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
-            //IMyLargeMissileTurret
-            // LargeCalibreTurret
-            var art = GridTerminalSystem.GetBlockWithName("xxx");
+            var wp = new List<IMyAutopilotWaypoint>();
+            flight.GetWaypoints(wp);
 
-            Echo(art.GetType().Name);
-            Echo(art.BlockDefinition.SubtypeId);
-            Me.CustomData = art.BlockDefinition.SubtypeName;
+            lcd.WriteText(ai.DetailedInfo + "-----\n");
+            lcd.WriteText(wp.Count.ToString() + "-----\n", true);
+            lcd.WriteText(FormatGPS(flight.CurrentWaypoint.Matrix.GetRow(3), "TARGET"), true);
 
-            if (argument == "aaa")
-            {
-                var t = art as IMyLargeMissileTurret;
+        }
 
-                if (t != null)
-                {
-                    t.Range = 0;
-                    t.SetManualAzimuthAndElevation(0, 0);
-
-                    t.SyncAzimuth();
-                    t.SyncElevation();
-                }
-            }
+        private string FormatGPS(Vector4D point, string label)
+        {
+            return $"GPS:{label}:{point.X:0.00}:{point.Y:0.00}:{point.Z:0.00}:#FF89F175:";
         }
 
         #endregion
