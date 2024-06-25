@@ -72,11 +72,8 @@ namespace SpaceEngineers.Scripts.Fortress
                 turrets,
                 railguns,
                 artillery,
-                hud,
                 lcdTorpedos,
                 lcdSystem,
-                IGC,
-                beacon,
                 sound,
                 soundEnemyLock
               );

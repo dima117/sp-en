@@ -29,6 +29,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         // import:Lib\GravityDrive.cs
         // import:Lib\ShipDirectionController.cs
         // import:Lib\WeaponController.cs
+        // import:Lib\HUD.cs
 
         private const string GROUP_PREFIX_TORPEDO = "ws_torpedo";
 
@@ -37,10 +38,12 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly GravityDrive gdrive;
         readonly ShipDirectionController directionController;
         readonly WeaponController weapons;
+        readonly HUD hud;
 
         readonly IMyCameraBlock cameraTop;
         readonly IMyCameraBlock cameraBottom;
         readonly IMyShipWelder[] welders;
+        readonly IMyCockpit cockpit;
 
         const int TICK_COUNT = 8;
         private int tick = 0;
@@ -57,10 +60,10 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             welders = grid.GetBlocksOfType<IMyShipWelder>(sameGrid);
 
+            cockpit = grid.GetBlockWithName<IMyCockpit>("ws_cockpit");
             cameraTop = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_t");
             cameraBottom = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_b");
 
-            var cockpit = grid.GetBlockWithName<IMyCockpit>("ws_cockpit");
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             var beacon = grid.GetBlockWithName<IMyBeacon>("ws_beacon");
 
@@ -68,7 +71,7 @@ namespace SpaceEngineers.Scripts.BattleShip
             var artillery = grid.GetArtillery(sameGrid);
             var turrets = grid.GetArtilleryTurrets(sameGrid);
 
-            var hud = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("ws_hud"));
+            var lcdHUD = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("ws_hud"));
             var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");
             var lcdSystem = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_3");
             var sound = grid.GetSound("ws_sound_1", "SoundBlockEnemyDetected");
@@ -78,6 +81,8 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             var gyros = new List<IMyGyro>();
             group.GetBlocksOfType(gyros);
+
+            hud = new HUD(lcdHUD, beacon, GetHudState);
 
             gdrive = new GravityDrive(cockpit, group);
             directionController = new ShipDirectionController(cockpit, gyros);
@@ -89,11 +94,8 @@ namespace SpaceEngineers.Scripts.BattleShip
                 turrets,
                 railguns,
                 artillery,
-                hud,
                 lcdTorpedos,
                 lcdSystem,
-                IGC,
-                beacon,
                 sound,
                 soundEnemyLock
               );
@@ -101,6 +103,17 @@ namespace SpaceEngineers.Scripts.BattleShip
             weapons.OnError += HandleError;
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
+        }
+
+        private HudState GetHudState(DateTime now)
+        {
+            return new HudState
+            {
+                Aimbot = weapons.Aimbot,
+                EnemyLock = weapons.EnemyLock,
+                Target = weapons.CurrentTarget,
+                Weapon = weapons.GetState(now),
+            };
         }
 
         private void HandleError(Exception ex)
@@ -126,7 +139,9 @@ namespace SpaceEngineers.Scripts.BattleShip
                     case 6:
                         gdrive.Update();
                         break;
-
+                    case 3:
+                        hud.Update(now, cockpit.GetPosition());
+                        break;
                     case 1:
                     case 5:
                         if (!weapons.AimbotIsActive)

@@ -28,6 +28,7 @@ namespace SpaceEngineers.Lib
     // import:Serializer.cs
     // import:TargetTracker.cs
     // import:Aimbot.cs
+    // import:HUD.cs
     // import:DirectionController2.cs
     // import:Torpedos\SpaceTorpedo.cs
 
@@ -37,7 +38,6 @@ namespace SpaceEngineers.Lib
         const int TORPEDO_LIFESPAN = 600;
         const int BEACON_RADIUS = 70;
 
-        public const int AIMBOT_OFF = 0;
         public const int AIMBOT_RAILGUN_SPEED = 2000;
         public const int AIMBOT_ARTILLERY_SPEED = 500;
 
@@ -46,21 +46,46 @@ namespace SpaceEngineers.Lib
         private IMyTextSurface lcdTorpedos;
         private IMyTextSurface lcdSystem;
         private IMyShipController cockpit;
-        private IMyBeacon beacon;
         private IMySoundBlock sound;
         private IMySoundBlock soundEnemyLock;
-        private IMyTextPanel[] hud;
         private IMySmallMissileLauncherReload[] railguns;
         private IMySmallMissileLauncher[] artillery;
         private IMyLargeMissileTurret[] turrets;
 
-        private bool courseFiringMode = false;
+        public bool EnemyLock { get; private set; }
+        public FiringMode FiringMode { get; private set; }
+        public ForwardWeapon? Aimbot { get; private set; }
+        public TargetInfo CurrentTarget => tracker.Current;
 
-        private bool enemyLock;
+        public WeaponState GetState(DateTime now)
+        {
+            var railguns = this.railguns.Where(r => r.IsWorking).ToArray();
+            int rgReadyCount = 0;
+            float rgPercent = 0;
 
-        private DateTime lastUpdateHUD = DateTime.MinValue;
+            for (int i = 0; i < railguns.Length; i++)
+            {
+                var value = GetRailgunChargeLevel(railguns[i]);
 
-        private int aimbotTargetShotSpeed;
+                if (value > 0.99) { rgReadyCount++; }
+
+                if (value < 0.99 && value > rgPercent) { rgPercent = value; }
+            }
+
+            var torpedosCount = torpedos.Values.Count(t => t.GetStage(now) == LaunchStage.Ready);
+            var turretsCount = turrets.Count(t => t.IsWorking);
+
+            return new WeaponState
+            {
+                RalgunsСharge = rgPercent,
+                RalgunsCount = railguns.Length,
+                RalgunsReadyCount = rgReadyCount,
+                TorpedosCount = torpedosCount,
+                TurretsCount = turretsCount,
+                TurretsFiringMode = FiringMode,
+            };
+        }
+
         private AimbotState lastAimbotState = AimbotState.UNKNOWN;
         private DateTime lastAimbotStateUpdated;
         private void SetAimbotState(DateTime now, AimbotState state)
@@ -87,11 +112,8 @@ namespace SpaceEngineers.Lib
             IMyLargeMissileTurret[] turrets,
             IMySmallMissileLauncherReload[] railguns,
             IMySmallMissileLauncher[] artillery,
-            IMyTextPanel[] hud,
             IMyTextSurface lcdTorpedos,
             IMyTextSurface lcdSystem,
-            IMyIntergridCommunicationSystem igc,
-            IMyBeacon beacon,
             IMySoundBlock sound,
             IMySoundBlock soundEnemyLock
         )
@@ -102,14 +124,9 @@ namespace SpaceEngineers.Lib
             tracker.TargetLocked += Tracker_TargetChanged;
             tracker.TargetReleased += Tracker_TargetChanged;
 
-            this.beacon = beacon;
-            this.beacon.Enabled = true;
-            this.beacon.Radius = BEACON_RADIUS;
-
             this.cockpit = cockpit;
             this.lcdTorpedos = lcdTorpedos;
             this.lcdSystem = lcdSystem;
-            this.hud = hud;
 
             this.railguns = railguns;
             this.artillery = artillery;
@@ -161,41 +178,41 @@ namespace SpaceEngineers.Lib
         {
             var now = localTime.Now;
 
-            switch (aimbotTargetShotSpeed)
+            switch (Aimbot)
             {
-                case AIMBOT_OFF:
-                    aimbotTargetShotSpeed = AIMBOT_ARTILLERY_SPEED;
-                    SetAimbotState(now, aimbot.Reset());
+                case null:
+                    Aimbot = ForwardWeapon.Artillery;
                     break;
-                case AIMBOT_ARTILLERY_SPEED:
-                    aimbotTargetShotSpeed = AIMBOT_RAILGUN_SPEED;
-                    SetAimbotState(now, aimbot.Reset());
+                case ForwardWeapon.Artillery:
+                    Aimbot = ForwardWeapon.Railgun;
                     break;
                 default:
-                    aimbotTargetShotSpeed = AIMBOT_OFF;
+                    Aimbot = null;
                     break;
             }
+
+            SetAimbotState(now, aimbot.Reset());
         }
 
         public void SetEnemyLock()
         {
-            enemyLock = true;
+            EnemyLock = true;
             soundEnemyLock?.Play();
         }
 
         public void ClearEnemyLock()
         {
-            enemyLock = false;
+            EnemyLock = false;
             soundEnemyLock?.Stop();
         }
 
         public void ToggleFiringMode()
         {
-            courseFiringMode = !courseFiringMode;
+            FiringMode = FiringMode == FiringMode.Forward ? FiringMode.Auto : FiringMode.Forward;
 
             foreach (var t in turrets)
             {
-                if (courseFiringMode)
+                if (FiringMode == FiringMode.Forward)
                 {
                     t.Range = 0;
                     t.EnableIdleRotation = false;
@@ -252,13 +269,7 @@ namespace SpaceEngineers.Lib
                 yield return Exec(() => UpdateTorpedoTargets(localTime.Now));
 
                 // обновляем содержимое экранов
-                yield return Exec(() =>
-                {
-                    var selfPos = cockpit.GetPosition();
-
-                    UpdateHUD(localTime.Now, selfPos);
-                    UpdateLcdSystem();
-                });
+                yield return Exec(() => UpdateLcdSystem());
             }
         }
 
@@ -279,13 +290,13 @@ namespace SpaceEngineers.Lib
         {
             get
             {
-                return aimbotTargetShotSpeed > 0 && tracker.Current != null;
+                return Aimbot.HasValue && tracker.Current != null;
             }
         }
 
         private void UpdateAimbot(DateTime now)
         {
-            if (courseFiringMode)
+            if (FiringMode == FiringMode.Forward)
             {
                 foreach (var t in turrets)
                 {
@@ -296,13 +307,13 @@ namespace SpaceEngineers.Lib
                 }
             }
 
-            if (aimbotTargetShotSpeed > 0)
+            if (Aimbot.HasValue)
             {
                 var target = tracker.Current;
 
                 if (target != null)
                 {
-                    SetAimbotState(now, aimbot.Aim(target, aimbotTargetShotSpeed, now));
+                    SetAimbotState(now, aimbot.Aim(target, GetBulletSpeed(Aimbot.Value), now));
 
                     if (lastAimbotState == AimbotState.READY &&
                        (now - lastAimbotStateUpdated).TotalMilliseconds > 500)
@@ -310,15 +321,15 @@ namespace SpaceEngineers.Lib
                         IMyUserControllableGun[] list = null;
                         IMyLargeMissileTurret[] listTurrets = null;
 
-                        switch (aimbotTargetShotSpeed)
+                        switch (Aimbot)
                         {
-                            case AIMBOT_RAILGUN_SPEED:
+                            case ForwardWeapon.Railgun:
                                 list = railguns.Where(r => r.IsWorking).ToArray();
                                 break;
-                            case AIMBOT_ARTILLERY_SPEED:
+                            case ForwardWeapon.Artillery:
                                 list = artillery.Where(r => r.IsWorking).ToArray();
 
-                                if (courseFiringMode)
+                                if (FiringMode == FiringMode.Forward)
                                 {
                                     listTurrets = turrets.Where(r => r.IsWorking
                                         && r.Azimuth < 0.001
@@ -348,6 +359,19 @@ namespace SpaceEngineers.Lib
             }
         }
 
+        private double GetBulletSpeed(ForwardWeapon value)
+        {
+            switch (value)
+            {
+                case ForwardWeapon.Railgun:
+                    return AIMBOT_RAILGUN_SPEED;
+                case ForwardWeapon.Artillery:
+                    return AIMBOT_ARTILLERY_SPEED;
+            }
+
+            throw new Exception();
+        }
+
         private void UpdateTorpedoTargets(DateTime now)
         {
             var sb = new StringBuilder();
@@ -361,205 +385,6 @@ namespace SpaceEngineers.Lib
             }
 
             lcdTorpedos?.WriteText(sb);
-        }
-
-        private HashSet<MyRelationsBetweenPlayerAndBlock> friends =
-            new HashSet<MyRelationsBetweenPlayerAndBlock> {
-                MyRelationsBetweenPlayerAndBlock.Owner,
-                MyRelationsBetweenPlayerAndBlock.FactionShare,
-                MyRelationsBetweenPlayerAndBlock.Friends,
-            };
-
-        private void UpdateHUD(DateTime now, Vector3D selfPos)
-        {
-            if ((now - lastUpdateHUD).TotalMilliseconds > 100)
-            {
-                string targetName = null;
-                string dist = null;
-
-                if (tracker.Current != null)
-                {
-                    var t = tracker.Current.Entity;
-                    var d = (t.Position - selfPos).Length();
-
-                    var size = t.Type == MyDetectedEntityType.SmallGrid ? "SM" : "LG";
-                    var name = TargetTracker.GetName(t.EntityId);
-
-                    targetName = friends.Contains(t.Relationship)
-                        ? $"{size} ∙ {t.Name}"
-                        : $"{size} ∙ {name}";
-
-                    dist = d.ToString("0m");
-                }
-
-                var tc = this.turrets.Count(t => t.IsWorking);
-                var tm = courseFiringMode ? "Fwd" : "Auto";
-                var turrets = tc > 0 ? $"{tc} ∙ {tm}" : tm;
-
-                var aimbot = "Off";
-
-                if (aimbotTargetShotSpeed > 0)
-                {
-                    switch (aimbotTargetShotSpeed)
-                    {
-                        case AIMBOT_RAILGUN_SPEED:
-                            aimbot = "Rail";
-                            break;
-                        case AIMBOT_ARTILLERY_SPEED:
-                            aimbot = "Art";
-                            break;
-                        default:
-                            aimbot = aimbotTargetShotSpeed.ToString("0 m/s");
-                            break;
-                    }
-                }
-
-                var rg = railguns.Where(r => r.IsWorking).ToArray();
-                int rgReadyCount = 0;
-                float rgPercent = 0;
-
-                for (int i = 0; i < rg.Length; i++)
-                {
-                    var value = GetRailgunChargeLevel(rg[i]);
-
-                    if (value > 0.99) { rgReadyCount++; }
-
-                    if (value < 0.99 && value > rgPercent) { rgPercent = value; }
-                }
-
-                var tCount = torpedos.Values.Count(t => t.GetStage(now) == LaunchStage.Ready);
-                var sprites = GetHudState(
-                    targetName, dist, aimbot, turrets,
-                    tCount, enemyLock,
-                    rg.Length, rgReadyCount, rgPercent);
-
-                foreach (var lcd in hud)
-                {
-                    using (var frame = lcd.DrawFrame())
-                    {
-                        frame.AddRange(sprites);
-                    }
-                }
-
-                lastUpdateHUD = now;
-
-                var ti = targetName == null ? "NO TARGET" : $"{targetName} | {dist}";
-                var p = rgPercent * 100;
-                var rp = p > 0 ? $" ∙ {p:0}%" : "";
-                beacon.HudText = $"{ti}\n{aimbot} | {tm} | Rail: {rgReadyCount} {rp}";
-            }
-        }
-
-        private MySprite[] GetHudState(
-            string targetName, string dist, string aimbot, string turrets, int tCount, bool enemyLock,
-            int rgTotal, int rgReady, float rgChargeLevel)
-        {
-            var list = new List<MySprite>();
-
-            // target
-
-            list.AddRange(Text("target", targetName ?? "NO TARGET", TextAlignment.CENTER, TOP));
-
-            if (dist != null)
-            {
-                list.AddRange(Text("dist", dist, TextAlignment.LEFT, TOP));
-            }
-
-
-            // torpedo count
-            list.AddRange(Text("torpedos", tCount.ToString(), TextAlignment.RIGHT, TOP));
-
-
-            // aimbot
-            list.AddRange(Text("aimbot", aimbot, TextAlignment.CENTER, BOTTOM));
-            list.AddRange(Text("turrets", turrets, TextAlignment.LEFT, BOTTOM));
-
-
-            // enemy lock
-            if (enemyLock)
-            {
-                list.AddRange(Text(null, "ENEMY LOCK", TextAlignment.CENTER, BOTTOM - 1, color: Color.OrangeRed));
-            }
-
-            // railguns
-            if (rgTotal > 0)
-            {
-                list.AddRange(Text("railgun", $"{rgReady} / {rgTotal}", TextAlignment.RIGHT, BOTTOM));
-
-                list.Add(new MySprite()
-                {
-                    Type = SpriteType.TEXTURE,
-                    Data = "SquareSimple",
-                    Position = new Vector2(452, 509),
-                    Size = new Vector2(Convert.ToInt32(60 * rgChargeLevel), 3),
-                    Color = Color.Teal,
-                });
-            }
-
-            return list.ToArray();
-        }
-
-        const int TOP = 0;
-        const int BOTTOM = 9;
-        const int LABEL_HEIGHT = 20;
-        const int VALUE_HEIGHT = 30;
-        const int LINE_HEIGHT = 51; // label + value + space
-        const int CELL_WIDTH = 128;
-
-        private MySprite[] Text(
-            string label,
-            string text,
-            TextAlignment alignment,
-            byte line = TOP,
-            byte offset = 0,
-            Color? color = null)
-        {
-            int x = 0;
-
-            switch (alignment)
-            {
-                case TextAlignment.LEFT:
-                    x = 0 + offset * CELL_WIDTH;
-                    break;
-                case TextAlignment.RIGHT:
-                    x = 512 - offset * CELL_WIDTH;
-                    break;
-                case TextAlignment.CENTER:
-                    x = 256;
-                    break;
-            }
-
-            int y = line * LINE_HEIGHT;
-
-            var valueSprite = new MySprite() // text
-            {
-                Type = SpriteType.TEXT,
-                Data = text,
-                Position = new Vector2(x, y + LABEL_HEIGHT),
-                RotationOrScale = 1f,
-                Color = color ?? Color.White,
-                Alignment = alignment,
-                FontId = "White"
-            };
-
-            if (string.IsNullOrEmpty(label))
-            {
-                return new[] { valueSprite };
-            }
-
-            return new[] {
-                new MySprite() // label
-                {
-                    Type = SpriteType.TEXT,
-                    Data = label,
-                    Position = new Vector2(x, y),
-                    RotationOrScale = 0.8f,
-                    Color = Color.Teal,
-                    Alignment = alignment,
-                    FontId = "White"
-                },
-                valueSprite
-            };
         }
 
         private void UpdateLcdSystem()
