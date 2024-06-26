@@ -72,8 +72,8 @@ namespace SpaceEngineers.Scripts.BattleShip
             var turrets = grid.GetArtilleryTurrets(sameGrid);
 
             var lcdHUD = grid.GetBlocksOfType<IMyTextPanel>(p => p.CustomName.StartsWith("ws_hud"));
-            var lcdTorpedos = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_1");
-            var lcdSystem = grid.GetBlockWithName<IMyTextPanel>("ws_lcd_3");
+            var lcdSystem = cockpit.GetSurface(1);
+            var lcdTorpedos = cockpit.GetSurface(2);
             var sound = grid.GetSound("ws_sound_1", "SoundBlockEnemyDetected");
             var soundEnemyLock = grid.GetSound("ws_sound_2", "SoundBlockAlert1");
 

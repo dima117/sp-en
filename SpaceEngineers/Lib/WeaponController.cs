@@ -156,7 +156,7 @@ namespace SpaceEngineers.Lib
 
             foreach (var gr in groups)
             {
-                var tmp = new SpaceTorpedo(gr, factor: 3f, lifespan: TORPEDO_LIFESPAN);
+                var tmp = new SpaceTorpedo(gr, factor: 2f, lifespan: TORPEDO_LIFESPAN);
 
                 // добавляем новые торпеды
                 if (!torpedos.ContainsKey(tmp.EntityId))
