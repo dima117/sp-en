@@ -48,7 +48,7 @@ namespace SpaceEngineers.Lib
     public class GravityDrive
     {
         readonly IMyShipController controller;
-        readonly List<IMyArtificialMassBlock> massBlocks = new List<IMyArtificialMassBlock>();
+        readonly List<IMyVirtualMass> massBlocks = new List<IMyVirtualMass>();
 
         // сферические генерации нужно ставить по краям, направляя верх в сторону блоков массы
         // например, генераторы сзади, верх которых направлен вперед, будут усиливать движение вперед/назад
@@ -145,7 +145,7 @@ namespace SpaceEngineers.Lib
             if (isActive != this.isActive || forceUpdate)
             {
                 this.isActive = isActive;
-                foreach (IMyArtificialMassBlock b in massBlocks)
+                foreach (IMyVirtualMass b in massBlocks)
                 {
                     b.Enabled = isActive;
                 }
