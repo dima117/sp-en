@@ -47,6 +47,7 @@ namespace SpaceEngineers.Lib
 
     public class HudState
     {
+        public Vector3D? AITarget { get; set; }
         public TargetInfo Target { get; set; }
         public ForwardWeapon? Aimbot { get; set; }
         public WeaponState Weapon { get; set; }
@@ -91,57 +92,62 @@ namespace SpaceEngineers.Lib
 
         public void Update(DateTime now, Vector3D selfPos)
         {
-            if ((now - lastUpdateHUD).TotalMilliseconds > 100)
+            lastUpdateHUD = now;
+
+            var state = getState(now);
+
+            var w = state.Weapon;
+
+            string targetName = null;
+            string dist = null;
+
+            if (state.Target != null)
             {
-                lastUpdateHUD = now;
+                var t = state.Target.Entity;
+                var d = (t.Position - selfPos).Length();
 
-                var state = getState(now);
+                // todo: сделать мапинг
+                var size = t.Type == MyDetectedEntityType.SmallGrid ? "SM" : "LG";
+                var name = TargetTracker.GetName(t.EntityId);
 
-                var w = state.Weapon;
+                targetName = friends.Contains(t.Relationship)
+                    ? $"{size} ∙ {t.Name}"
+                    : $"{size} ∙ {name}";
 
-                string targetName = null;
-                string dist = null;
+                dist = d.ToString("0m");
+            }
 
-                if (state.Target != null)
+            var tm = w.TurretsFiringMode == FiringMode.Forward ? "Fwd" : "Auto";
+            var turrets = w.TurretsCount > 0 ? $"{w.TurretsCount} ∙ {tm}" : tm;
+
+            var aimbot = GetAimbotText(state.Aimbot);
+
+            var sprites = GetSprites(
+                state.AITarget,
+                targetName, dist, aimbot, turrets,
+                w.TorpedosCount, state.EnemyLock,
+                w.RalgunsCount, w.RalgunsReadyCount, w.RalgunsСharge);
+
+            foreach (var lcd in displays)
+            {
+                using (var frame = lcd.DrawFrame())
                 {
-                    var t = state.Target.Entity;
-                    var d = (t.Position - selfPos).Length();
+                    frame.AddRange(sprites);
 
-                    // todo: сделать мапинг
-                    var size = t.Type == MyDetectedEntityType.SmallGrid ? "SM" : "LG";
-                    var name = TargetTracker.GetName(t.EntityId);
-
-                    targetName = friends.Contains(t.Relationship)
-                        ? $"{size} ∙ {t.Name}"
-                        : $"{size} ∙ {name}";
-
-                    dist = d.ToString("0m");
-                }
-
-                var tm = w.TurretsFiringMode == FiringMode.Forward ? "Fwd" : "Auto";
-                var turrets = w.TurretsCount > 0 ? $"{w.TurretsCount} ∙ {tm}" : tm;
-
-                var aimbot = GetAimbotText(state.Aimbot);
-
-                var sprites = GetSprites(
-                    targetName, dist, aimbot, turrets,
-                    w.TorpedosCount, state.EnemyLock,
-                    w.RalgunsCount, w.RalgunsReadyCount, w.RalgunsСharge);
-
-                foreach (var lcd in displays)
-                {
-                    using (var frame = lcd.DrawFrame())
+                    if (state.AITarget.HasValue)
                     {
-                        frame.AddRange(sprites);
+                        lcd.ContentType = ContentType.TEXT_AND_IMAGE;
+                        frame.AddRange(GetTargetSprite(lcd, state.AITarget.Value));
+                        lcd.ContentType = ContentType.SCRIPT;
                     }
                 }
-
-                // beacon
-                var ti = targetName == null ? "NO TARGET" : $"{targetName} | {dist}";
-                var p = w.RalgunsСharge * 100;
-                var rp = p > 0 ? $" ∙ {p:0}%" : "";
-                beacon.HudText = $"{ti}\n{aimbot} | {tm} | Rail: {w.RalgunsReadyCount}{rp}";
             }
+
+            // beacon
+            var ti = targetName == null ? "NO TARGET" : $"{targetName} | {dist}";
+            var p = w.RalgunsСharge * 100;
+            var rp = p > 0 ? $" ∙ {p:0}%" : "";
+            beacon.HudText = $"{ti}\n{aimbot} | {tm} | Rail: {w.RalgunsReadyCount}{rp}";
         }
 
         private string GetAimbotText(ForwardWeapon? aimbot)
@@ -157,11 +163,56 @@ namespace SpaceEngineers.Lib
             }
         }
 
+        const float CAM_DISTANCE = 3.75f;
+        const float LCD_HALF_WIDTH = 1.1f; // половина ширины видимой области экрана
+
+        private MySprite[] GetTargetSprite(IMyTextPanel screen, Vector3D targetPos)
+        {
+            var m = screen.WorldMatrix;
+
+            var screenPos = screen.GetPosition();
+            var camPos = screenPos + m.Backward * CAM_DISTANCE;
+
+            var targetVector = targetPos - camPos;
+            var rate = CAM_DISTANCE / targetVector.Length();
+
+            var d = targetVector.Dot(m.Forward);
+            if (d > 0)
+            { // если цель спереди
+                var v = targetVector.Dot(m.Down) * rate;
+                var h = targetVector.Dot(m.Right) * rate;
+
+                if (Math.Abs(h) < LCD_HALF_WIDTH && Math.Abs(v) < LCD_HALF_WIDTH)
+                {
+                    // цель за экраном
+                    var x = Convert.ToInt32(256 * (1 + h / LCD_HALF_WIDTH));
+                    var y = Convert.ToInt32(256 * (1 + v / LCD_HALF_WIDTH));
+
+                    return new MySprite[] {
+                        new MySprite
+                        {
+                            Type = SpriteType.TEXTURE,
+                            Data = "SquareHollow",
+                            Position = new Vector2(x - 16, y),
+                            Size = new Vector2(32, 32),
+                            Color = Color.White
+                        }
+                    };
+                }
+            }
+
+            return new MySprite[0];
+        }
+
         private MySprite[] GetSprites(
+            Vector3D? aiTarget,
             string targetName, string dist, string aimbot, string turrets, int tCount, bool enemyLock,
             int rgTotal, int rgReady, float rgChargeLevel)
         {
             var list = new List<MySprite>();
+
+            // ai atrget
+            list.AddRange(Text(null, aiTarget.HasValue ? "AI: Locked" : "AI: Idle", TextAlignment.CENTER, TOP + 1));
 
             // target
 

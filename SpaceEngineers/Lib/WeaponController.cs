@@ -150,6 +150,18 @@ namespace SpaceEngineers.Lib
             }
         }
 
+        public void Scan(Vector3D? targetPos)
+        {
+            var now = localTime.Now;
+
+            var target = TargetTracker.Scan(now, tracker.cameras, targetPos);
+
+            if (target != null)
+            {
+                tracker.LockTarget(target);
+            }
+        }
+
         public void Reload(IMyBlockGroup[] groups)
         {
             var now = localTime.Now;

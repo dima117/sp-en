@@ -69,6 +69,7 @@
     <Compile Include="Examples\Class3.cs" />
     <Compile Include="Examples\LCDExample.cs" />
     <Compile Include="Examples\JumpDriveStatus.cs" />
+    <Compile Include="Lib\AITracker.cs" />
     <Compile Include="Lib\HUD.cs" />
     <Compile Include="Lib\ShipDirectionController.cs" />
     <Compile Include="Lib\Aimbot.cs" />

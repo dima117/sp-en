@@ -29,6 +29,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         // import:Lib\GravityDrive.cs
         // import:Lib\ShipDirectionController.cs
         // import:Lib\WeaponController.cs
+        // import:Lib\AITracker.cs
         // import:Lib\HUD.cs
 
         private const string GROUP_PREFIX_TORPEDO = "ws_torpedo";
@@ -39,6 +40,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly ShipDirectionController directionController;
         readonly WeaponController weapons;
         readonly HUD hud;
+        readonly AITracker ait;
 
         readonly IMyCameraBlock cameraTop;
         readonly IMyCameraBlock cameraBottom;
@@ -64,7 +66,8 @@ namespace SpaceEngineers.Scripts.BattleShip
             cameraTop = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_t");
             cameraBottom = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_b");
 
-            var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
+            var cameras = grid.GetBlocksOfType<IMyCameraBlock>(cam => !cam.CustomName.StartsWith("ws_cam"));
+
             var beacon = grid.GetBlockWithName<IMyBeacon>("ws_beacon");
 
             var railguns = grid.GetLargeRailguns(sameGrid);
@@ -77,12 +80,18 @@ namespace SpaceEngineers.Scripts.BattleShip
             var sound = grid.GetSound("ws_sound_1", "SoundBlockEnemyDetected");
             var soundEnemyLock = grid.GetSound("ws_sound_2", "SoundBlockAlert1");
 
+            var ajs = grid.GetBlockWithName<IMyMotorStator>("ws_ajs");
+
+            var ai = grid.GetByFilterOrAny<IMyOffensiveCombatBlock>(b => b.CubeGrid == ajs.TopGrid);
+            var flight = grid.GetByFilterOrAny<IMyFlightMovementBlock>(b => b.CubeGrid == ajs.TopGrid);
+
             var group = GridTerminalSystem.GetBlockGroupWithName("ws_gdrive");
 
             var gyros = new List<IMyGyro>();
             group.GetBlocksOfType(gyros);
 
             hud = new HUD(lcdHUD, beacon, GetHudState);
+            ait = new AITracker(ai, flight);
 
             gdrive = new GravityDrive(cockpit, group);
             directionController = new ShipDirectionController(cockpit, gyros);
@@ -109,6 +118,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             return new HudState
             {
+                AITarget = ait.Current,
                 Aimbot = weapons.Aimbot,
                 EnemyLock = weapons.EnemyLock,
                 Target = weapons.CurrentTarget,
@@ -161,6 +171,9 @@ namespace SpaceEngineers.Scripts.BattleShip
                         break;
                     case "mode":
                         weapons.ToggleFiringMode();
+                        break;
+                    case "lock-ai":
+                        weapons.Scan(ait.Current);
                         break;
                     case "lock-top":
                         weapons.Scan(cameraTop);

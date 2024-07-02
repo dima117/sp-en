@@ -59,7 +59,7 @@ namespace SpaceEngineers.Lib
             MyDetectedEntityType.LargeGrid
         };
 
-        private readonly IMyCameraBlock[] cameras;
+        public readonly IMyCameraBlock[] cameras;
 
         private int camIndex = 0;
 
@@ -92,18 +92,8 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public static TargetInfo Scan(
-            DateTime now,
-            IMyCameraBlock cam,
-            double distance = DISTANCE_SCAN_DEFAULT)
+        private static TargetInfo GetTargetInfo(DateTime now, IMyCameraBlock cam, MyDetectedEntityInfo entity)
         {
-            if (cam == null)
-            {
-                return null;
-            }
-
-            var entity = cam.Raycast(distance);
-
             if (entity.IsEmpty())
             {
                 return null;
@@ -117,6 +107,35 @@ namespace SpaceEngineers.Lib
             var camPos = cam.GetPosition();
 
             return TargetInfo.CreateTargetInfo(entity, camPos, now);
+        }
+
+        public static TargetInfo Scan(DateTime now, IMyCameraBlock[] cams, Vector3D? targetPos)
+        {
+            if (!targetPos.HasValue) { return null; }
+
+            var cam = cams.FirstOrDefault(x => x.CanScan(targetPos.Value));
+
+            if (cam == null) { return null; }
+
+            var entity = cam.Raycast(targetPos.Value);
+
+            return GetTargetInfo(now, cam, entity);
+        }
+
+
+        public static TargetInfo Scan(
+            DateTime now,
+            IMyCameraBlock cam,
+            double distance = DISTANCE_SCAN_DEFAULT)
+        {
+            if (cam == null)
+            {
+                return null;
+            }
+
+            var entity = cam.Raycast(distance);
+
+            return GetTargetInfo(now, cam, entity);
         }
 
         public void LockTarget(TargetInfo target)
@@ -225,7 +244,6 @@ namespace SpaceEngineers.Lib
 
             return default(T);
         }
-
     }
 
     #endregion
