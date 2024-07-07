@@ -118,6 +118,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             return new HudState
             {
+                AvgRuntime = localTime.Avg,
                 AITarget = ait.Current,
                 Aimbot = weapons.Aimbot,
                 EnemyLock = weapons.EnemyLock,
@@ -135,7 +136,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             var now = localTime.Update(updateSource);
 
-            if ((updateSource & UpdateType.Update1) == UpdateType.Update1)
+            if (localTime.Avg < 0.22 && (updateSource & UpdateType.Update1) == UpdateType.Update1)
             {
                 tick = (tick + 1) % TICK_COUNT;
 

@@ -47,6 +47,7 @@ namespace SpaceEngineers.Lib
 
     public class HudState
     {
+        public double AvgRuntime { get; set; }
         public Vector3D? AITarget { get; set; }
         public TargetInfo Target { get; set; }
         public ForwardWeapon? Aimbot { get; set; }
@@ -144,10 +145,11 @@ namespace SpaceEngineers.Lib
             }
 
             // beacon
-            var ti = targetName == null ? "NO TARGET" : $"{targetName} | {dist}";
+            var ai = state.AITarget.HasValue ? "locked" : "empty";
+            var ti = targetName == null ? "NO TARGET" : $"{targetName} ∙ {dist}";
             var p = w.RalgunsСharge * 100;
             var rp = p > 0 ? $" ∙ {p:0}%" : "";
-            beacon.HudText = $"{ti}\n{aimbot} | {tm} | Rail: {w.RalgunsReadyCount}{rp}";
+            beacon.HudText = $"{ti} | AI: {ai}\n{aimbot} | {tm} | Rail: {w.RalgunsReadyCount}{rp}\nAvg: {state.AvgRuntime:0.000ms}";
         }
 
         private string GetAimbotText(ForwardWeapon? aimbot)

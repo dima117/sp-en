@@ -19,9 +19,11 @@ namespace SpaceEngineers.Lib
         private long currentTick = 0;
         private TimeSpan offset = TimeSpan.Zero;
         private DateTime now;
+        private double avg = 0;
 
         public DateTime Now => now;
         public long CurrentTick => currentTick;
+        public double Avg => avg;
 
         public LocalTime(IMyGridProgramRuntimeInfo runtime, DateTime? initial = null)
         {
@@ -34,6 +36,8 @@ namespace SpaceEngineers.Lib
             switch (updateSource)
             {
                 case UpdateType.Update1:
+                    avg = avg * 0.99 + runtime.LastRunTimeMs * 0.01;
+
                     currentTick++;
                     offset = TimeSpan.Zero;
                     break;
