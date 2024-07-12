@@ -123,8 +123,15 @@ namespace SpaceEngineers.Lib
 
             var aimbot = GetAimbotText(state.Aimbot);
 
+            // ai target
+            var ai = "empty";
+            if (state.AITarget.HasValue) { 
+                var aiDist = (state.AITarget.Value - selfPos).Length();
+                ai = $"{aiDist:0}m";
+            }
+
             var sprites = GetSprites(
-                state.AITarget,
+                ai,
                 targetName, dist, aimbot, turrets,
                 w.TorpedosCount, state.EnemyLock,
                 w.RalgunsCount, w.RalgunsReadyCount, w.RalgunsСharge);
@@ -145,7 +152,6 @@ namespace SpaceEngineers.Lib
             }
 
             // beacon
-            var ai = state.AITarget.HasValue ? "locked" : "empty";
             var ti = targetName == null ? "NO TARGET" : $"{targetName} ∙ {dist}";
             var p = w.RalgunsСharge * 100;
             var rp = p > 0 ? $" ∙ {p:0}%" : "";
@@ -170,6 +176,7 @@ namespace SpaceEngineers.Lib
 
         private MySprite[] GetTargetSprite(IMyTextPanel screen, Vector3D targetPos)
         {
+            var c = Color.Orange;
             var m = screen.WorldMatrix;
 
             var screenPos = screen.GetPosition();
@@ -177,44 +184,58 @@ namespace SpaceEngineers.Lib
 
             var targetVector = targetPos - camPos;
             var rate = CAM_DISTANCE / targetVector.Length();
+            var v = targetVector.Dot(m.Down) * rate;
+            var h = targetVector.Dot(m.Right) * rate;
 
             var d = targetVector.Dot(m.Forward);
-            if (d > 0)
-            { // если цель спереди
-                var v = targetVector.Dot(m.Down) * rate;
-                var h = targetVector.Dot(m.Right) * rate;
 
-                if (Math.Abs(h) < LCD_HALF_WIDTH && Math.Abs(v) < LCD_HALF_WIDTH)
-                {
-                    // цель за экраном
-                    var x = Convert.ToInt32(256 * (1 + h / LCD_HALF_WIDTH));
-                    var y = Convert.ToInt32(256 * (1 + v / LCD_HALF_WIDTH));
+            var maxPos = Math.Max(Math.Abs(h), Math.Abs(v));
 
-                    return new MySprite[] {
+            if (d > 0 && maxPos < LCD_HALF_WIDTH)
+            {
+                // цель спереди и в пределах экрана
+                var x = Convert.ToInt32(256 * (1 + h / LCD_HALF_WIDTH));
+                var y = Convert.ToInt32(256 * (1 + v / LCD_HALF_WIDTH));
+
+                return new MySprite[] {
                         new MySprite
                         {
                             Type = SpriteType.TEXTURE,
                             Data = "SquareHollow",
                             Position = new Vector2(x - 16, y),
                             Size = new Vector2(32, 32),
-                            Color = Color.White
+                            Color = c
                         }
                     };
-                }
             }
+            else
+            {
+                // цель за пределами экрана или сзади
+                var x = Convert.ToInt32(256 * (1 + h / maxPos));
+                var y = Convert.ToInt32(256 * (1 + v / maxPos));
 
-            return new MySprite[0];
+                // если цель сзади, то вместо квадрата рисуем треугольник
+                var data = d < 0 ? "Triangle" : "SquareSimple";
+
+                return new MySprite[] {
+                        new MySprite
+                        {
+                            Type = SpriteType.TEXTURE,
+                            Data = data,
+                            Position = new Vector2(x > 256 ? x - 12 : x, y > 256 ? y - 12 : y),
+                            Size = new Vector2(12, 12),
+                            Color = c
+                        }
+                    };
+            }
         }
 
         private MySprite[] GetSprites(
-            Vector3D? aiTarget,
+            string aiTarget,
             string targetName, string dist, string aimbot, string turrets, int tCount, bool enemyLock,
             int rgTotal, int rgReady, float rgChargeLevel)
         {
             var list = new List<MySprite>();
-
-            // ai atrget
-            list.AddRange(Text(null, aiTarget.HasValue ? "AI: Locked" : "AI: Idle", TextAlignment.CENTER, TOP + 1));
 
             // target
 
@@ -225,9 +246,11 @@ namespace SpaceEngineers.Lib
                 list.AddRange(Text("dist", dist, TextAlignment.LEFT, TOP));
             }
 
+            // ai atrget
+            list.AddRange(Text("AI target", aiTarget, TextAlignment.RIGHT, TOP));
 
             // torpedo count
-            list.AddRange(Text("torpedos", tCount.ToString(), TextAlignment.RIGHT, TOP));
+            list.AddRange(Text("torpedos", tCount.ToString(), TextAlignment.RIGHT, TOP + 1));
 
 
             // aimbot
