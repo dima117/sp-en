@@ -56,6 +56,7 @@ namespace SpaceEngineers.Lib
         public FiringMode FiringMode { get; private set; }
         public ForwardWeapon? Aimbot { get; private set; }
         public TargetInfo CurrentTarget => tracker.Current;
+        public Vector3D? CurrentAiTarget => tracker.CurrentAiTarget;
 
         public WeaponState GetState(DateTime now)
         {
@@ -115,12 +116,14 @@ namespace SpaceEngineers.Lib
             IMyTextSurface lcdTorpedos,
             IMyTextSurface lcdSystem,
             IMySoundBlock sound,
-            IMySoundBlock soundEnemyLock
+            IMySoundBlock soundEnemyLock,
+            IMyOffensiveCombatBlock ai,
+            IMyFlightMovementBlock flight
         )
         {
             this.localTime = localTime;
 
-            tracker = new TargetTracker(cameras);
+            tracker = new TargetTracker(cameras, ai, flight);
             tracker.TargetLocked += Tracker_TargetChanged;
             tracker.TargetReleased += Tracker_TargetChanged;
 
@@ -152,13 +155,11 @@ namespace SpaceEngineers.Lib
 
         public void Scan(Vector3D? targetPos)
         {
-            var now = localTime.Now;
-
-            var target = TargetTracker.Scan(now, tracker.cameras, targetPos);
-
-            if (target != null)
+            if (targetPos.HasValue)
             {
-                tracker.LockTarget(target);
+                var now = localTime.Now;
+
+                tracker.TryLockPosition(now, targetPos.Value);
             }
         }
 

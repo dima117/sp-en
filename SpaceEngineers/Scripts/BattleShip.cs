@@ -29,7 +29,6 @@ namespace SpaceEngineers.Scripts.BattleShip
         // import:Lib\GravityDrive.cs
         // import:Lib\ShipDirectionController.cs
         // import:Lib\WeaponController.cs
-        // import:Lib\AITracker.cs
         // import:Lib\HUD.cs
 
         private const string GROUP_PREFIX_TORPEDO = "ws_torpedo";
@@ -40,7 +39,6 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly ShipDirectionController directionController;
         readonly WeaponController weapons;
         readonly HUD hud;
-        readonly AITracker ait;
 
         readonly IMyCameraBlock cameraTop;
         readonly IMyCameraBlock cameraBottom;
@@ -91,8 +89,6 @@ namespace SpaceEngineers.Scripts.BattleShip
             group.GetBlocksOfType(gyros);
 
             hud = new HUD(lcdHUD, beacon, GetHudState);
-            ait = new AITracker(ai, flight);
-
             gdrive = new GravityDrive(cockpit, group);
             directionController = new ShipDirectionController(cockpit, gyros);
             weapons = new WeaponController(
@@ -106,7 +102,8 @@ namespace SpaceEngineers.Scripts.BattleShip
                 lcdTorpedos,
                 lcdSystem,
                 sound,
-                soundEnemyLock
+                soundEnemyLock,
+                ai, flight
               );
 
             weapons.OnError += HandleError;
@@ -119,7 +116,7 @@ namespace SpaceEngineers.Scripts.BattleShip
             return new HudState
             {
                 AvgRuntime = localTime.Avg,
-                AITarget = ait.Current,
+                AiTarget = weapons.CurrentAiTarget,
                 Aimbot = weapons.Aimbot,
                 EnemyLock = weapons.EnemyLock,
                 Target = weapons.CurrentTarget,
@@ -174,7 +171,7 @@ namespace SpaceEngineers.Scripts.BattleShip
                         weapons.ToggleFiringMode();
                         break;
                     case "lock-ai":
-                        weapons.Scan(ait.Current);
+                        weapons.Scan(weapons.CurrentAiTarget);
                         break;
                     case "lock-top":
                         weapons.Scan(cameraTop);

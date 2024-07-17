@@ -48,7 +48,7 @@ namespace SpaceEngineers.Lib
     public class HudState
     {
         public double AvgRuntime { get; set; }
-        public Vector3D? AITarget { get; set; }
+        public Vector3D? AiTarget { get; set; }
         public TargetInfo Target { get; set; }
         public ForwardWeapon? Aimbot { get; set; }
         public WeaponState Weapon { get; set; }
@@ -125,8 +125,8 @@ namespace SpaceEngineers.Lib
 
             // ai target
             var ai = "empty";
-            if (state.AITarget.HasValue) { 
-                var aiDist = (state.AITarget.Value - selfPos).Length();
+            if (state.AiTarget.HasValue) { 
+                var aiDist = (state.AiTarget.Value - selfPos).Length();
                 ai = $"{aiDist:0}m";
             }
 
@@ -142,10 +142,10 @@ namespace SpaceEngineers.Lib
                 {
                     frame.AddRange(sprites);
 
-                    if (state.AITarget.HasValue)
+                    if (state.AiTarget.HasValue)
                     {
                         lcd.ContentType = ContentType.TEXT_AND_IMAGE;
-                        frame.AddRange(GetTargetSprite(lcd, state.AITarget.Value));
+                        frame.AddRange(GetTargetSprite(lcd, state.AiTarget.Value));
                         lcd.ContentType = ContentType.SCRIPT;
                     }
                 }
@@ -247,7 +247,7 @@ namespace SpaceEngineers.Lib
             }
 
             // ai atrget
-            list.AddRange(Text("AI target", aiTarget, TextAlignment.RIGHT, TOP));
+            list.AddRange(Text("ai target", aiTarget, TextAlignment.RIGHT, TOP));
 
             // torpedo count
             list.AddRange(Text("torpedos", tCount.ToString(), TextAlignment.RIGHT, TOP + 1));

@@ -59,11 +59,15 @@ namespace SpaceEngineers.Lib
             MyDetectedEntityType.LargeGrid
         };
 
-        public readonly IMyCameraBlock[] cameras;
+        readonly IMyCameraBlock[] cameras;
+        readonly IMyOffensiveCombatBlock ai;
+        readonly IMyFlightMovementBlock flight;
 
         private int camIndex = 0;
 
         public TargetInfo Current;
+        
+        public Vector3D? CurrentAiTarget => flight?.CurrentWaypoint == null ? null as Vector3D? : new Vector3D(flight.CurrentWaypoint.Matrix.GetRow(3));
 
         public event Action TargetLocked;
         public event Action TargetReleased;
@@ -81,7 +85,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public TargetTracker(IMyCameraBlock[] cameras)
+        public TargetTracker(IMyCameraBlock[] cameras, IMyOffensiveCombatBlock ai = null, IMyFlightMovementBlock flight = null)
         {
             this.cameras = cameras;
 
@@ -89,6 +93,23 @@ namespace SpaceEngineers.Lib
             {
                 cam.Enabled = true;
                 cam.EnableRaycast = true;
+            }
+
+            this.ai = ai;
+            this.flight = flight;
+
+            if (ai != null && flight != null)
+            {
+                ai.Enabled = true;
+                ai.UpdateTargetInterval = 5;
+
+                flight.Enabled = true;
+                flight.PrecisionMode = false;
+                flight.AlignToPGravity = false;
+                flight.CollisionAvoidance = false;
+                flight.FlightMode = FlightMode.OneWay;
+                flight.MinimalAltitude = 0;
+                flight.SpeedLimit = 100;
             }
         }
 
@@ -109,20 +130,6 @@ namespace SpaceEngineers.Lib
             return TargetInfo.CreateTargetInfo(entity, camPos, now);
         }
 
-        public static TargetInfo Scan(DateTime now, IMyCameraBlock[] cams, Vector3D? targetPos)
-        {
-            if (!targetPos.HasValue) { return null; }
-
-            var cam = cams.FirstOrDefault(x => x.CanScan(targetPos.Value));
-
-            if (cam == null) { return null; }
-
-            var entity = cam.Raycast(targetPos.Value);
-
-            return GetTargetInfo(now, cam, entity);
-        }
-
-
         public static TargetInfo Scan(
             DateTime now,
             IMyCameraBlock cam,
@@ -136,6 +143,23 @@ namespace SpaceEngineers.Lib
             var entity = cam.Raycast(distance);
 
             return GetTargetInfo(now, cam, entity);
+        }
+
+        public bool TryLockPosition(DateTime now, Vector3D targetPos)
+        {
+            var cam = cameras.FirstOrDefault(x => x.CanScan(targetPos));
+
+            if (cam == null) { return false; }
+
+            var entity = cam.Raycast(targetPos);
+
+            var target = GetTargetInfo(now, cam, entity);
+
+            if (target == null) { return false; }
+
+            LockTarget(target);
+
+            return true;
         }
 
         public void LockTarget(TargetInfo target)

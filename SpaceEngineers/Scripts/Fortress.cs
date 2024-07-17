@@ -75,7 +75,9 @@ namespace SpaceEngineers.Scripts.Fortress
                 lcdTorpedos,
                 lcdSystem,
                 sound,
-                soundEnemyLock
+                soundEnemyLock,
+                ai: null,
+                flight: null
               );
 
             weapons.OnError += HandleError;
