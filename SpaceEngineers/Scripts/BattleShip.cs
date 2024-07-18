@@ -61,8 +61,8 @@ namespace SpaceEngineers.Scripts.BattleShip
             welders = grid.GetBlocksOfType<IMyShipWelder>(sameGrid);
 
             cockpit = grid.GetBlockWithName<IMyCockpit>("ws_cockpit");
-            cameraTop = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_t");
-            cameraBottom = grid.GetBlockWithName<IMyCameraBlock>("ws_cam_b");
+            cameraTop = grid.GetCamera("ws_cam_t");
+            cameraBottom = grid.GetCamera("ws_cam_b");
 
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>(cam => !cam.CustomName.StartsWith("ws_cam"));
 
