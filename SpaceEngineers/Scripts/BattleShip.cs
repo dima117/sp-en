@@ -45,7 +45,7 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly IMyShipWelder[] welders;
         readonly IMyCockpit cockpit;
 
-        const int TICK_COUNT = 8;
+        const int TICK_COUNT = 12;
         private int tick = 0;
 
         private bool sameGrid<T>(T b) where T : IMyTerminalBlock
@@ -139,19 +139,23 @@ namespace SpaceEngineers.Scripts.BattleShip
 
                 switch (tick)
                 {
-                    case 0:
                     case 2:
                     case 4:
+                    case 8:
                         weapons.UpdateNext();
                         break;
-                    case 6:
+                    case 1:
+                    case 7:
                         gdrive.Update();
                         break;
-                    case 3:
+                    case 5:
+                    case 11:
                         hud.Update(now, cockpit.GetPosition());
                         break;
-                    case 1:
-                    case 5:
+                    case 0:
+                    case 3:
+                    case 6:
+                    case 9:
                         if (!weapons.AimbotIsActive)
                         {
                             directionController.Update();

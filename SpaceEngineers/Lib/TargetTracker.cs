@@ -53,6 +53,7 @@ namespace SpaceEngineers.Lib
         const int SCAN_DELAY_MS = 20;
         const double DISTANCE_SCAN_DEFAULT = 7500;
         const int TARGET_RELEASE_TIMEOUT = 2;
+        const int AI_INTERCEPT_PATTERN_ID = 3;
 
         static readonly HashSet<MyDetectedEntityType> targetTypes = new HashSet<MyDetectedEntityType> {
             MyDetectedEntityType.SmallGrid,
@@ -102,6 +103,8 @@ namespace SpaceEngineers.Lib
             {
                 ai.Enabled = true;
                 ai.UpdateTargetInterval = 5;
+                ai.TargetPriority = OffensiveCombatTargetPriority.Largest;
+                ai.SelectedAttackPattern = AI_INTERCEPT_PATTERN_ID;
 
                 flight.Enabled = true;
                 flight.PrecisionMode = false;
