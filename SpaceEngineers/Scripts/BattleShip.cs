@@ -79,7 +79,6 @@ namespace SpaceEngineers.Scripts.BattleShip
             var soundEnemyLock = grid.GetSound("ws_sound_2", "SoundBlockAlert1");
 
             var ajs = grid.GetBlockWithName<IMyMotorStator>("ws_ajs");
-
             var ai = grid.GetByFilterOrAny<IMyOffensiveCombatBlock>(b => b.CubeGrid == ajs.TopGrid);
             var flight = grid.GetByFilterOrAny<IMyFlightMovementBlock>(b => b.CubeGrid == ajs.TopGrid);
 
@@ -90,11 +89,12 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             hud = new HUD(lcdHUD, beacon, GetHudState);
             gdrive = new GravityDrive(cockpit, group);
+            
             directionController = new ShipDirectionController(cockpit, gyros);
+            directionController.OnReadyToShot += OnReadyToShot;
+
             weapons = new WeaponController(
                 localTime,
-                gyros.ToArray(),
-                cockpit,
                 cameras,
                 turrets,
                 railguns,
@@ -109,6 +109,11 @@ namespace SpaceEngineers.Scripts.BattleShip
             weapons.OnError += HandleError;
 
             Runtime.UpdateFrequency = UpdateFrequency.Update1;
+        }
+
+        private void OnReadyToShot()
+        {
+            weapons.TryFire();
         }
 
         private HudState GetHudState(DateTime now)
@@ -156,7 +161,11 @@ namespace SpaceEngineers.Scripts.BattleShip
                     case 3:
                     case 6:
                     case 9:
-                        if (!weapons.AimbotIsActive)
+                        if (weapons.Aimbot.HasValue && weapons.CurrentTarget != null)
+                        {
+                            directionController.Aim(weapons.CurrentTarget, weapons.Aimbot.Value, now);
+                        }
+                        else
                         {
                             directionController.Update();
                         }

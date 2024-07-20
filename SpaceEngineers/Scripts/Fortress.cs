@@ -66,8 +66,6 @@ namespace SpaceEngineers.Scripts.Fortress
 
             weapons = new WeaponController(
                 localTime,
-                gyros,
-                cockpit,
                 cameras,
                 turrets,
                 railguns,

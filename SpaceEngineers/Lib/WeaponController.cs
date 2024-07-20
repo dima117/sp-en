@@ -27,7 +27,6 @@ namespace SpaceEngineers.Lib
 
     // import:Serializer.cs
     // import:TargetTracker.cs
-    // import:Aimbot.cs
     // import:HUD.cs
     // import:DirectionController2.cs
     // import:Torpedos\SpaceTorpedo.cs
@@ -38,14 +37,10 @@ namespace SpaceEngineers.Lib
         const int TORPEDO_LIFESPAN = 600;
         const int BEACON_RADIUS = 70;
 
-        public const int AIMBOT_RAILGUN_SPEED = 2000;
-        public const int AIMBOT_ARTILLERY_SPEED = 500;
-
         private LocalTime localTime;
         private TargetTracker tracker;
         private IMyTextSurface lcdTorpedos;
         private IMyTextSurface lcdSystem;
-        private IMyShipController cockpit;
         private IMySoundBlock sound;
         private IMySoundBlock soundEnemyLock;
         private IMySmallMissileLauncherReload[] railguns;
@@ -87,28 +82,12 @@ namespace SpaceEngineers.Lib
             };
         }
 
-        private AimbotState lastAimbotState = AimbotState.UNKNOWN;
-        private DateTime lastAimbotStateUpdated;
-        private void SetAimbotState(DateTime now, AimbotState state)
-        {
-            if (state != lastAimbotState)
-            {
-                lastAimbotStateUpdated = now;
-            }
-
-            lastAimbotState = state;
-        }
-
-
         public event Action<Exception> OnError;
 
-        readonly Aimbot aimbot;
         readonly Dictionary<long, SpaceTorpedo> torpedos = new Dictionary<long, SpaceTorpedo>();
 
         public WeaponController(
             LocalTime localTime,
-            IMyGyro[] gyros,
-            IMyShipController cockpit,
             IMyCameraBlock[] cameras,
             IMyLargeMissileTurret[] turrets,
             IMySmallMissileLauncherReload[] railguns,
@@ -127,7 +106,6 @@ namespace SpaceEngineers.Lib
             tracker.TargetLocked += Tracker_TargetChanged;
             tracker.TargetReleased += Tracker_TargetChanged;
 
-            this.cockpit = cockpit;
             this.lcdTorpedos = lcdTorpedos;
             this.lcdSystem = lcdSystem;
 
@@ -137,8 +115,6 @@ namespace SpaceEngineers.Lib
 
             this.sound = sound;
             this.soundEnemyLock = soundEnemyLock;
-
-            aimbot = new Aimbot(cockpit, gyros);
         }
 
         public void Scan(IMyCameraBlock cam)
@@ -157,9 +133,7 @@ namespace SpaceEngineers.Lib
         {
             if (targetPos.HasValue)
             {
-                var now = localTime.Now;
-
-                tracker.TryLockPosition(now, targetPos.Value);
+                tracker.TryLockPosition(localTime.Now, targetPos.Value);
             }
         }
 
@@ -189,8 +163,6 @@ namespace SpaceEngineers.Lib
 
         public void ToggleAimbot()
         {
-            var now = localTime.Now;
-
             switch (Aimbot)
             {
                 case null:
@@ -203,8 +175,6 @@ namespace SpaceEngineers.Lib
                     Aimbot = null;
                     break;
             }
-
-            SetAimbotState(now, aimbot.Reset());
         }
 
         public void SetEnemyLock()
@@ -272,12 +242,6 @@ namespace SpaceEngineers.Lib
                 // обновлям данные о цели
                 yield return Exec(() => tracker.Update(localTime.Now));
 
-                // обновляем наведение курсовых орудий
-                yield return Exec(() => UpdateAimbot(localTime.Now));
-
-                // обновлям данные о цели (повторно)
-                yield return Exec(() => tracker.Update(localTime.Now));
-
                 // обновляем цели торпед
                 yield return Exec(() => UpdateTorpedoTargets(localTime.Now));
 
@@ -299,17 +263,9 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public bool AimbotIsActive
+        public void TryFire()
         {
-            get
-            {
-                return Aimbot.HasValue && tracker.Current != null;
-            }
-        }
-
-        private void UpdateAimbot(DateTime now)
-        {
-            if (FiringMode == FiringMode.Forward)
+            if (Aimbot == ForwardWeapon.Artillery && FiringMode == FiringMode.Forward)
             {
                 foreach (var t in turrets)
                 {
@@ -320,69 +276,42 @@ namespace SpaceEngineers.Lib
                 }
             }
 
-            if (Aimbot.HasValue)
-            {
-                var target = tracker.Current;
+            IMyUserControllableGun[] list = null;
+            IMyLargeMissileTurret[] listTurrets = null;
 
-                if (target != null)
-                {
-                    SetAimbotState(now, aimbot.Aim(target, GetBulletSpeed(Aimbot.Value), now));
-
-                    if (lastAimbotState == AimbotState.READY &&
-                       (now - lastAimbotStateUpdated).TotalMilliseconds > 500)
-                    {
-                        IMyUserControllableGun[] list = null;
-                        IMyLargeMissileTurret[] listTurrets = null;
-
-                        switch (Aimbot)
-                        {
-                            case ForwardWeapon.Railgun:
-                                list = railguns.Where(r => r.IsWorking).ToArray();
-                                break;
-                            case ForwardWeapon.Artillery:
-                                list = artillery.Where(r => r.IsWorking).ToArray();
-
-                                if (FiringMode == FiringMode.Forward)
-                                {
-                                    listTurrets = turrets.Where(r => r.IsWorking
-                                        && r.Azimuth < 0.001
-                                        && r.Elevation < 0.001).ToArray();
-                                }
-
-                                break;
-                        }
-
-                        if (list != null && list.Any())
-                        {
-                            foreach (var r in list)
-                            {
-                                r.ShootOnce();
-                            }
-                        }
-
-                        if (listTurrets != null && listTurrets.Any())
-                        {
-                            foreach (var r in listTurrets)
-                            {
-                                r.ShootOnce();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private double GetBulletSpeed(ForwardWeapon value)
-        {
-            switch (value)
+            switch (Aimbot)
             {
                 case ForwardWeapon.Railgun:
-                    return AIMBOT_RAILGUN_SPEED;
+                    list = railguns.Where(r => r.IsWorking).ToArray();
+                    break;
                 case ForwardWeapon.Artillery:
-                    return AIMBOT_ARTILLERY_SPEED;
+                    list = artillery.Where(r => r.IsWorking).ToArray();
+
+                    if (FiringMode == FiringMode.Forward)
+                    {
+                        listTurrets = turrets.Where(r => r.IsWorking
+                            && r.Azimuth < 0.001
+                            && r.Elevation < 0.001).ToArray();
+                    }
+
+                    break;
             }
 
-            throw new Exception();
+            if (list != null && list.Any())
+            {
+                foreach (var r in list)
+                {
+                    r.ShootOnce();
+                }
+            }
+
+            if (listTurrets != null && listTurrets.Any())
+            {
+                foreach (var r in listTurrets)
+                {
+                    r.ShootOnce();
+                }
+            }
         }
 
         private void UpdateTorpedoTargets(DateTime now)
