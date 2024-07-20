@@ -91,6 +91,11 @@ namespace SpaceEngineers.Lib
             }
         }
 
+        private static string Cut(string text, int length = 23)
+        {
+            return text.Length > length ? text.Substring(0, length - 1) + "…" : text;
+        }
+
         public void Update(DateTime now, Vector3D selfPos)
         {
             lastUpdateHUD = now;
@@ -112,7 +117,7 @@ namespace SpaceEngineers.Lib
                 var name = TargetTracker.GetName(t.EntityId);
 
                 targetName = friends.Contains(t.Relationship)
-                    ? $"{size} ∙ {t.Name}"
+                    ? $"{size} ∙ {Cut(t.Name)}"
                     : $"{size} ∙ {name}";
 
                 dist = d.ToString("0m");
@@ -125,7 +130,8 @@ namespace SpaceEngineers.Lib
 
             // ai target
             var ai = "empty";
-            if (state.AiTarget.HasValue) { 
+            if (state.AiTarget.HasValue)
+            {
                 var aiDist = (state.AiTarget.Value - selfPos).Length();
                 ai = $"{aiDist:0}m";
             }
