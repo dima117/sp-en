@@ -139,27 +139,24 @@ namespace SpaceEngineers.Lib
 
         public void Update()
         {
+            MatrixD wm = controller.WorldMatrix;
             MyShipVelocities velocities = controller.GetShipVelocities();
             Vector3D worldAngularVelocity = velocities.AngularVelocity;
 
-            Vector3D rot = worldAngularVelocity * 100 * worldAngularVelocity.LengthSquared();
-            rot += controller.WorldMatrix.Right * controller.RotationIndicator.X * ROTATION_RATIO;
-            rot += controller.WorldMatrix.Up * controller.RotationIndicator.Y * ROTATION_RATIO;
-            rot += controller.WorldMatrix.Backward * controller.RollIndicator * ROTATION_RATIO;
+            Vector3D axis = worldAngularVelocity * 100 * worldAngularVelocity.LengthSquared();
+            axis += wm.Right * controller.RotationIndicator.X * ROTATION_RATIO;
+            axis += wm.Up * controller.RotationIndicator.Y * ROTATION_RATIO;
+            axis += wm.Backward * controller.RollIndicator * ROTATION_RATIO;
 
-            foreach (var gyro in gyroList)
-            {
-                gyro.Yaw = (float)rot.Dot(gyro.WorldMatrix.Up);
-                gyro.Pitch = (float)rot.Dot(gyro.WorldMatrix.Right);
-                gyro.Roll = (float)rot.Dot(gyro.WorldMatrix.Backward);
-            }
+            SetGyroByAxis(axis);
         }
 
         public void Aim(TargetInfo targetInfo, ForwardWeapon weapon, DateTime now)
         {
-            double bulletSpeed = GetBulletSpeed(weapon);
-
+            MatrixD wm = controller.WorldMatrix;
             var target = targetInfo.Entity;
+
+            double bulletSpeed = GetBulletSpeed(weapon);
 
             var ownPos = controller.CenterOfMass;
             var ownVelocity = controller.GetShipVelocities().LinearVelocity;
@@ -173,12 +170,18 @@ namespace SpaceEngineers.Lib
                 ? (targetPos - ownPos) // если снаряд не может догнать цель, то целимся в текущую позицию цели 
                 : (point.Position - ownPos); // иначе курс на точку перехвата
 
-            var axis = DirectionController2.GetAxis(controller.WorldMatrix.Forward, targetVector);
+            var axis = DirectionController2.GetAxis(wm.Forward, targetVector);
 
             // fix error
-            axis = pid.Control(axis, now);
+            if (Math.Abs(controller.RollIndicator) > 0.001) {
+                axis += wm.Backward * controller.RollIndicator * ROTATION_RATIO;
+                pid.Reset();
+            } else
+            {
+                axis = pid.Control(axis, now);
+            }
 
-            DirectionController2.SetGyroByAxis(axis, gyroList);
+            SetGyroByAxis(axis);
 
             var distance = targetVector.Length();
 
@@ -200,6 +203,14 @@ namespace SpaceEngineers.Lib
             {
                 readyTimestamp = null;
             }
+        }
+
+        private void SetGyroByAxis(Vector3D axis) {
+            if (axis.Length() > MAX_ANGULAR_VELOCITY) { 
+                axis = Vector3D.Normalize(axis) * MAX_ANGULAR_VELOCITY;
+            }
+
+            DirectionController2.SetGyroByAxis(axis, gyroList);
         }
 
         private double GetBulletSpeed(ForwardWeapon value)
