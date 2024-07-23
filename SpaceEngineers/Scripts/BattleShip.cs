@@ -45,7 +45,8 @@ namespace SpaceEngineers.Scripts.BattleShip
         readonly IMyShipWelder[] welders;
         readonly IMyCockpit cockpit;
 
-        const int TICK_COUNT = 12;
+        private const int TICK_COUNT = 12;
+        private const double AVG_RUNTIME_LIMIT = 0.24;
         private int tick = 0;
 
         private bool sameGrid<T>(T b) where T : IMyTerminalBlock
@@ -89,7 +90,7 @@ namespace SpaceEngineers.Scripts.BattleShip
 
             hud = new HUD(lcdHUD, beacon, GetHudState);
             gdrive = new GravityDrive(cockpit, group);
-            
+
             directionController = new ShipDirectionController(cockpit, gyros);
             directionController.OnReadyToShot += OnReadyToShot;
 
@@ -120,7 +121,6 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             return new HudState
             {
-                AvgRuntime = localTime.Avg,
                 AiTarget = weapons.CurrentAiTarget,
                 Aimbot = weapons.Aimbot,
                 EnemyLock = weapons.EnemyLock,
@@ -138,38 +138,41 @@ namespace SpaceEngineers.Scripts.BattleShip
         {
             var now = localTime.Update(updateSource);
 
-            if (localTime.Avg < 0.22 && (updateSource & UpdateType.Update1) == UpdateType.Update1)
+            if ((updateSource & UpdateType.Update1) == UpdateType.Update1)
             {
-                tick = (tick + 1) % TICK_COUNT;
-
-                switch (tick)
+                if (localTime.Avg < AVG_RUNTIME_LIMIT)
                 {
-                    case 2:
-                    case 4:
-                    case 8:
-                        weapons.UpdateNext();
-                        break;
-                    case 1:
-                    case 7:
-                        gdrive.Update();
-                        break;
-                    case 5:
-                    case 11:
-                        hud.Update(now, cockpit.GetPosition());
-                        break;
-                    case 0:
-                    case 3:
-                    case 6:
-                    case 9:
-                        if (weapons.Aimbot.HasValue && weapons.CurrentTarget != null)
-                        {
-                            directionController.Aim(weapons.CurrentTarget, weapons.Aimbot.Value, now);
-                        }
-                        else
-                        {
-                            directionController.Update();
-                        }
-                        break;
+                    tick = (tick + 1) % TICK_COUNT;
+
+                    switch (tick)
+                    {
+                        case 2:
+                        case 4:
+                        case 8:
+                            weapons.UpdateNext();
+                            break;
+                        case 1:
+                        case 7:
+                            gdrive.Update();
+                            break;
+                        case 5:
+                        case 11:
+                            hud.Update(now, cockpit.GetPosition());
+                            break;
+                        case 0:
+                        case 3:
+                        case 6:
+                        case 9:
+                            if (weapons.Aimbot.HasValue && weapons.CurrentTarget != null)
+                            {
+                                directionController.Aim(weapons.CurrentTarget, weapons.Aimbot.Value, now);
+                            }
+                            else
+                            {
+                                directionController.Update();
+                            }
+                            break;
+                    }
                 }
             }
             else

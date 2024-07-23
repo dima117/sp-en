@@ -33,25 +33,16 @@ namespace SpaceEngineers.Lib
 
         public DateTime Update(UpdateType updateSource)
         {
-            switch (updateSource)
+            if ((updateSource & UpdateType.Update1) == UpdateType.Update1)
             {
-                case UpdateType.Update1:
-                    avg = avg * 0.99 + runtime.LastRunTimeMs * 0.01;
+                avg = avg * 0.99 + runtime.LastRunTimeMs * 0.01;
 
-                    currentTick++;
-                    offset = TimeSpan.Zero;
-                    break;
-                case UpdateType.Update10:
-                    currentTick += 10;
-                    offset = TimeSpan.Zero;
-                    break;
-                case UpdateType.Update100:
-                    currentTick += 100;
-                    offset = TimeSpan.Zero;
-                    break;
-                default:
-                    offset += runtime.TimeSinceLastRun;
-                    break;
+                currentTick++;
+                offset = TimeSpan.Zero;
+            }
+            else
+            {
+                offset += runtime.TimeSinceLastRun;
             }
 
             now = initial.AddMilliseconds(currentTick * oneTickMs) + offset;
