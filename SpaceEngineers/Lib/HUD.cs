@@ -37,6 +37,7 @@ namespace SpaceEngineers.Lib
 
     public class WeaponState
     {
+        public Vector3D[] ActiveTorpedos { get; set; }
         public int TorpedosCount { get; set; }
         public int RalgunsCount { get; set; }
         public float RalgunsСharge { get; set; }
@@ -57,6 +58,7 @@ namespace SpaceEngineers.Lib
     public class HUD
     {
         const int BEACON_RADIUS = 70;
+        static readonly Vector3D[] empty = new Vector3D[0];
 
         private static readonly HashSet<MyRelationsBetweenPlayerAndBlock> friends =
             new HashSet<MyRelationsBetweenPlayerAndBlock> {
@@ -90,7 +92,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        private static string Cut(string text, int length = 23)
+        private static string Cut(string text, int length = 21)
         {
             return text.Length > length ? text.Substring(0, length - 1) + "…" : text;
         }
@@ -112,7 +114,7 @@ namespace SpaceEngineers.Lib
                 var d = (t.Position - selfPos).Length();
 
                 // todo: сделать мапинг
-                var size = t.Type == MyDetectedEntityType.SmallGrid ? "SM" : "LG";
+                var size = t.Type == MyDetectedEntityType.SmallGrid ? "S" : "L";
                 var name = TargetTracker.GetName(t.EntityId);
 
                 targetName = friends.Contains(t.Relationship)
@@ -125,6 +127,11 @@ namespace SpaceEngineers.Lib
             var tm = w.TurretsFiringMode == FiringMode.Forward ? "Fwd" : "Auto";
             var turrets = w.TurretsCount > 0 ? $"{w.TurretsCount} ∙ {tm}" : tm;
 
+            var tpos = w.ActiveTorpedos ?? empty;
+            var tCount = w.TorpedosCount;
+            var tCountActive = tpos.Length;
+            var torpedos = tCountActive > 0 ? $"{tCountActive} ∙ {tCount}" : tCount.ToString();
+
             var aimbot = GetAimbotText(state.Aimbot);
 
             // ai target
@@ -136,31 +143,37 @@ namespace SpaceEngineers.Lib
             }
 
             var sprites = GetSprites(
-                ai,
                 targetName, dist, aimbot, turrets,
-                w.TorpedosCount, state.EnemyLock,
+                torpedos, state.EnemyLock,
                 w.RalgunsCount, w.RalgunsReadyCount, w.RalgunsСharge);
 
             foreach (var lcd in displays)
             {
+                // lcd.ContentType = ContentType.TEXT_AND_IMAGE;
+
                 using (var frame = lcd.DrawFrame())
                 {
                     frame.AddRange(sprites);
 
                     if (state.AiTarget.HasValue)
                     {
-                        lcd.ContentType = ContentType.TEXT_AND_IMAGE;
-                        frame.AddRange(GetTargetSprite(lcd, state.AiTarget.Value));
-                        lcd.ContentType = ContentType.SCRIPT;
+                        frame.AddRange(GetTargetSprite(selfPos, lcd, state.AiTarget.Value));
+                    }
+
+                    foreach (var pos in tpos)
+                    {
+                        frame.AddRange(GetTargetSprite(state.Target?.Entity.Position, lcd, pos, Color.LimeGreen, "CircleHollow", "CircleHollow", "Circle"));
                     }
                 }
+
+                // lcd.ContentType = ContentType.SCRIPT;
             }
 
             // beacon
             var ti = targetName == null ? "NO TARGET" : $"{targetName} ∙ {dist}";
             var p = w.RalgunsСharge * 100;
             var rp = p > 0 ? $" ∙ {p:0}%" : "";
-            beacon.HudText = $"{ti} | AI: {ai}\n{aimbot} | {tm} | Rail: {w.RalgunsReadyCount}{rp}";
+            beacon.HudText = $"{ti} | AI: {ai}\n{aimbot} | {tm} | T: {torpedos} | R: {w.RalgunsReadyCount}{rp}";
         }
 
         private string GetAimbotText(ForwardWeapon? aimbot)
@@ -179,9 +192,11 @@ namespace SpaceEngineers.Lib
         const float CAM_DISTANCE = 3.75f;
         const float LCD_HALF_WIDTH = 1.1f; // половина ширины видимой области экрана
 
-        private MySprite[] GetTargetSprite(IMyTextPanel screen, Vector3D targetPos)
+        private MySprite[] GetTargetSprite(
+            Vector3D? position, IMyTextPanel screen, Vector3D targetPos, Color? color = null,
+            string shape = "SquareHollow", string shapeOutside = "SquareSimple", string shapeOutsideBack = "Triangle")
         {
-            var c = Color.Orange;
+            var c = color ?? Color.Orange;
             var m = screen.WorldMatrix;
 
             var screenPos = screen.GetPosition();
@@ -193,21 +208,23 @@ namespace SpaceEngineers.Lib
             var h = targetVector.Dot(m.Right) * rate;
 
             var d = targetVector.Dot(m.Forward);
+            var dist = position.HasValue ? (targetPos - position.Value).Length().ToString("0") : string.Empty;
 
             var maxPos = Math.Max(Math.Abs(h), Math.Abs(v));
 
             if (d > 0 && maxPos < LCD_HALF_WIDTH)
             {
                 // цель спереди и в пределах экрана
-                var x = Convert.ToInt32(256 * (1 + h / LCD_HALF_WIDTH));
+                var x = Convert.ToInt32(256 * (1 + h / LCD_HALF_WIDTH)) - 16;
                 var y = Convert.ToInt32(256 * (1 + v / LCD_HALF_WIDTH));
 
                 return new MySprite[] {
+                        RelativeText(dist, x, y - 16, 32, 42, c),
                         new MySprite
                         {
                             Type = SpriteType.TEXTURE,
-                            Data = "SquareHollow",
-                            Position = new Vector2(x - 16, y),
+                            Data = shape,
+                            Position = new Vector2(x, y),
                             Size = new Vector2(32, 32),
                             Color = c
                         }
@@ -220,24 +237,38 @@ namespace SpaceEngineers.Lib
                 var y = Convert.ToInt32(256 * (1 + v / maxPos));
 
                 // если цель сзади, то вместо квадрата рисуем треугольник
-                var data = d < 0 ? "Triangle" : "SquareSimple";
+                var data = d < 0 ? shapeOutsideBack : shapeOutside;
 
-                return new MySprite[] {
-                        new MySprite
-                        {
-                            Type = SpriteType.TEXTURE,
-                            Data = data,
-                            Position = new Vector2(x > 256 ? x - 12 : x, y > 256 ? y - 12 : y),
-                            Size = new Vector2(12, 12),
-                            Color = c
-                        }
-                    };
+                var tx = x - 6;
+                var ty = y - 6;
+
+                tx = (tx < 0) ? 0 : (tx > 500) ? 500 : tx;
+                ty = (ty < 6) ? 6 : (ty > 500) ? 500 : ty;
+
+                var outline = new MySprite
+                {
+                    Type = SpriteType.TEXTURE,
+                    Data = data,
+                    Position = new Vector2(tx, ty),
+                    Size = new Vector2(12, 12),
+                    Color = c
+                };
+
+                if (string.IsNullOrEmpty(dist))
+                {
+                    return new MySprite[] { outline };
+                }
+
+                var text = RelativeText(dist, tx, ty, 12, 42, c);
+
+                return new MySprite[] { text, outline };
             }
         }
 
+
+
         private MySprite[] GetSprites(
-            string aiTarget,
-            string targetName, string dist, string aimbot, string turrets, int tCount, bool enemyLock,
+            string targetName, string dist, string aimbot, string turrets, string torpedos, bool enemyLock,
             int rgTotal, int rgReady, float rgChargeLevel)
         {
             var list = new List<MySprite>();
@@ -251,12 +282,8 @@ namespace SpaceEngineers.Lib
                 list.AddRange(Text("dist", dist, TextAlignment.LEFT, TOP));
             }
 
-            // ai atrget
-            list.AddRange(Text("ai target", aiTarget, TextAlignment.RIGHT, TOP));
-
             // torpedo count
-            list.AddRange(Text("torpedos", tCount.ToString(), TextAlignment.RIGHT, TOP + 1));
-
+            list.AddRange(Text("torpedos", torpedos, TextAlignment.RIGHT, TOP));
 
             // aimbot
             list.AddRange(Text("aimbot", aimbot, TextAlignment.CENTER, BOTTOM));
@@ -293,6 +320,36 @@ namespace SpaceEngineers.Lib
         const int VALUE_HEIGHT = 30;
         const int LINE_HEIGHT = 51; // label + value + space
         const int CELL_WIDTH = 128;
+
+        private MySprite RelativeText(string text, int x, int y, int s, int offset, Color? color = null)
+        {
+            TextAlignment alignment = TextAlignment.LEFT;
+
+            var tx = x;
+            var ty = y + s;
+
+            if (tx > 512 - offset)
+            {
+                alignment = TextAlignment.RIGHT;
+                tx = x + s;
+            }
+
+            if (ty > 512 - offset)
+            {
+                ty = y - 32; // переносим текст наверх, 24 - высота строки
+            }
+
+            return new MySprite
+            {
+                Type = SpriteType.TEXT,
+                Data = text,
+                Position = new Vector2(tx, ty),
+                RotationOrScale = 0.8f,
+                Color = color ?? Color.White,
+                Alignment = alignment,
+                FontId = "White"
+            };
+        }
 
         private MySprite[] Text(
             string label,

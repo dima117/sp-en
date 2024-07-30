@@ -71,11 +71,14 @@ namespace SpaceEngineers.Lib
             var torpedosCount = torpedos.Values.Count(t => t.GetStage(now) == LaunchStage.Ready);
             var turretsCount = turrets.Count(t => t.IsWorking);
 
+            var tpos = torpedos.Values.Where(t => t.GetStage(now) == LaunchStage.Started).Select(t => t.Position).ToArray();
+
             return new WeaponState
             {
                 RalgunsСharge = rgPercent,
                 RalgunsCount = railguns.Length,
                 RalgunsReadyCount = rgReadyCount,
+                ActiveTorpedos = tpos,
                 TorpedosCount = torpedosCount,
                 TurretsCount = turretsCount,
                 TurretsFiringMode = FiringMode,
