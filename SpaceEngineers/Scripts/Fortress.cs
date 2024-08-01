@@ -15,6 +15,7 @@ using VRage.Game.ObjectBuilders.Definitions;
 using VRage.Game.ModAPI.Ingame;
 using SpaceEngineers.Game.ModAPI.Ingame;
 using SpaceEngineers.Lib;
+using Sandbox.Game.Entities;
 
 namespace SpaceEngineers.Scripts.Fortress
 {
@@ -27,9 +28,12 @@ namespace SpaceEngineers.Scripts.Fortress
         // import:Lib\LocalTime.cs
         // import:Lib\WeaponController.cs
 
-        private const string GROUP_PREFIX_TORPEDO = "TORPEDO";
+        private const string TORPEDO_GROUP_PREFIX = "ws_torpedo";
+        private const int TORPEDO_INITIAL_DISTANCE = 4500;
+
 
         private readonly IMyCameraBlock camera;
+        private readonly IMyCockpit cockpit;
 
         private readonly Grid grid;
         private readonly LocalTime localTime;
@@ -46,9 +50,9 @@ namespace SpaceEngineers.Scripts.Fortress
             localTime = new LocalTime(Runtime);
 
             camera = grid.GetCamera("CAMERA");
+            cockpit = grid.GetByFilterOrAny<IMyCockpit>(sameGrid);
 
             var gyros = grid.GetBlocksOfType<IMyGyro>(sameGrid);
-            var cockpit = grid.GetByFilterOrAny<IMyCockpit>(sameGrid);
             var cameras = grid.GetBlocksOfType<IMyCameraBlock>();
             var turrets = grid.GetArtilleryTurrets();
 
@@ -98,11 +102,12 @@ namespace SpaceEngineers.Scripts.Fortress
                     weapons.Scan(camera);
                     break;
                 case "reload":
-                    var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
+                    var groups = grid.GetBlockGroups(TORPEDO_GROUP_PREFIX);
                     weapons.Reload(groups);
                     break;
                 case "start":
-                    weapons.Launch();
+                    var initialTarget = cockpit.CenterOfMass + cockpit.WorldMatrix.Forward * TORPEDO_INITIAL_DISTANCE;
+                    weapons.Launch(initialTarget);
                     break;
             }
 

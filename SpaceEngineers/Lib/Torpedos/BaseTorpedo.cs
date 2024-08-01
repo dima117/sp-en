@@ -62,7 +62,7 @@ namespace SpaceEngineers.Scripts.Torpedos
         protected readonly List<IMyThrust> listEngine = new List<IMyThrust>();
         protected readonly List<IMyGasGenerator> listH2Gen = new List<IMyGasGenerator>();
 
-
+        protected Vector3D destination;
         protected DateTime startTime = DateTime.MaxValue;
         protected DateTime deathTime = DateTime.MaxValue;
         protected bool started = false;
@@ -104,8 +104,10 @@ namespace SpaceEngineers.Scripts.Torpedos
             tControl = new DirectionController2(tRemote, listGyro, factor);
         }
 
-        public virtual void Start(DateTime now)
+        public virtual void Start(DateTime now, Vector3D destination)
         {
+            this.destination = destination;
+
             startTime = now;
             deathTime = startTime.AddSeconds(lifespan);
 
@@ -140,8 +142,11 @@ namespace SpaceEngineers.Scripts.Torpedos
                 if (target != null)
                 {
                     distance = (target.Entity.Position - Position).Length();
-
-                    SetDirection(target, distance);
+                    destination = SetDirection(target, distance);
+                }
+                else
+                {
+                    SetDirection(destination);
                 }
             }
 
@@ -153,7 +158,8 @@ namespace SpaceEngineers.Scripts.Torpedos
             };
         }
 
-        protected abstract void SetDirection(TargetInfo targetInfo, double distance);
+        protected abstract Vector3D SetDirection(TargetInfo targetInfo, double distance);
+        protected abstract void SetDirection(Vector3D targetPos);
     }
 
     #endregion

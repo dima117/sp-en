@@ -99,6 +99,11 @@ namespace SpaceEngineers.Lib
 
         public void Update(DateTime now, Vector3D selfPos)
         {
+            if ((now - lastUpdateHUD).TotalMilliseconds < 100)
+            {
+                return;
+            }
+
             lastUpdateHUD = now;
 
             var state = getState(now);

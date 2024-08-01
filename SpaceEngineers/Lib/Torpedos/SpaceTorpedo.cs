@@ -21,20 +21,28 @@ namespace SpaceEngineers.Lib.Torpedos
         {
         }
 
-        protected override void SetDirection(TargetInfo targetInfo, double distance)
+        protected override Vector3D SetDirection(TargetInfo targetInfo, double distance)
         {
             var targetPos = targetInfo.GetHitPosWorld();
+            Vector3D? interceptPos = null;
 
             if (distance < INTERCEPT_DISTANCE)
             {
                 // при большом расстоянии до цели точка перехвата далеко перемещается
                 // при маневрах цели, поэтому рассчитываем её только на дальности до 1 км
-                tControl.Intercept(targetPos, targetInfo.Entity.Velocity);
+                interceptPos = tControl.Intercept(targetPos, targetInfo.Entity.Velocity);
             }
             else
             {
                 tControl.Aim(targetPos);
             }
+
+            return interceptPos ?? targetPos;
+        }
+
+        protected override void SetDirection(Vector3D targetPos)
+        {
+            tControl.Aim(targetPos);
         }
     }
 

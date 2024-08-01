@@ -84,7 +84,7 @@ namespace SpaceEngineers.Lib
             }
         }
 
-        public void Aim(Vector3D targetPos)
+        public Vector3D Aim(Vector3D targetPos)
         {
             var ownPos = remoteControl.GetPosition();
             var velocity = remoteControl.GetShipVelocities().LinearVelocity;
@@ -93,9 +93,11 @@ namespace SpaceEngineers.Lib
             var axis = GetAxis(remoteControl.WorldMatrix.Forward, targetVector);
 
             SetGyroByAxis(axis, gyroList, factor);
+
+            return targetPos;
         }
 
-        public bool Intercept(Vector3D targetPosition, Vector3 targetVelocity)
+        public Vector3D? Intercept(Vector3D targetPosition, Vector3 targetVelocity)
         {
             var ownPos = remoteControl.GetPosition();
             var velocity = remoteControl.GetShipVelocities().LinearVelocity;
@@ -112,7 +114,7 @@ namespace SpaceEngineers.Lib
             var axis = GetAxis(remoteControl.WorldMatrix.Forward, compensatedTargetVector);
             SetGyroByAxis(axis, gyroList, factor);
 
-            return interceptPoint != null;
+            return interceptPoint?.Position;
         }
 
         public bool InterceptShot(MyDetectedEntityInfo target, double bulletSpeed)

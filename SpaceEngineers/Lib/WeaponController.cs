@@ -214,7 +214,7 @@ namespace SpaceEngineers.Lib
 
         }
 
-        public bool Launch()
+        public bool Launch(Vector3D initialPos)
         {
             var now = localTime.Now;
 
@@ -226,7 +226,7 @@ namespace SpaceEngineers.Lib
                 return false;
             }
 
-            torpedo.Start(now);
+            torpedo.Start(now, initialPos);
 
             return true;
         }

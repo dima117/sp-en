@@ -31,7 +31,8 @@ namespace SpaceEngineers.Scripts.BattleShip
         // import:Lib\WeaponController.cs
         // import:Lib\HUD.cs
 
-        private const string GROUP_PREFIX_TORPEDO = "ws_torpedo";
+        private const string TORPEDO_GROUP_PREFIX = "ws_torpedo";
+        private const int TORPEDO_INITIAL_DISTANCE = 4500;
 
         readonly Grid grid;
         readonly LocalTime localTime;
@@ -196,11 +197,12 @@ namespace SpaceEngineers.Scripts.BattleShip
                         weapons.Scan(cameraBottom);
                         break;
                     case "reload":
-                        var groups = grid.GetBlockGroups(GROUP_PREFIX_TORPEDO);
+                        var groups = grid.GetBlockGroups(TORPEDO_GROUP_PREFIX);
                         weapons.Reload(groups);
                         break;
                     case "start":
-                        weapons.Launch();
+                        var initialTarget = cockpit.CenterOfMass + cockpit.WorldMatrix.Forward * TORPEDO_INITIAL_DISTANCE;
+                        weapons.Launch(initialTarget);
                         break;
                     case "set-enemy-lock":
                         weapons.SetEnemyLock();
