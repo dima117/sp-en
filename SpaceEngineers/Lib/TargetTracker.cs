@@ -67,7 +67,7 @@ namespace SpaceEngineers.Lib
         private int camIndex = 0;
 
         public TargetInfo Current;
-        
+
         public Vector3D? CurrentAiTarget => flight?.CurrentWaypoint == null ? null as Vector3D? : new Vector3D(flight.CurrentWaypoint.Matrix.GetRow(3));
 
         public event Action TargetLocked;
@@ -148,9 +148,24 @@ namespace SpaceEngineers.Lib
             return GetTargetInfo(now, cam, entity);
         }
 
+        private bool CanScan(IMyCameraBlock cam, Vector3D targetPos)
+        {
+            var canScan = cam.IsFunctional && cam.Enabled && cam.CanScan(targetPos);
+
+            switch (cam.BlockDefinition.SubtypeId)
+            {
+                case "LargeCameraTopMounted":
+                    var dir = targetPos - cam.GetPosition();
+                    var isInArea = cam.WorldMatrix.Up.Dot(dir) > 0.2; // цель сверху и угол больше 10 градусов
+                    return canScan && isInArea;
+                default:
+                    return canScan;
+            }
+        }
+
         public bool TryLockPosition(DateTime now, Vector3D targetPos)
         {
-            var cam = cameras.FirstOrDefault(x => x.CanScan(targetPos));
+            var cam = cameras.FirstOrDefault(x => CanScan(x, targetPos));
 
             if (cam == null) { return false; }
 

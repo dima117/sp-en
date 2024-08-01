@@ -23,31 +23,36 @@ namespace SpaceEngineers.Scripts.Debug
     {
         #region Copy
 
+        IMyCameraBlock camera;
         IMyTextPanel lcd;
-        IMyOffensiveCombatBlock ai;
-        IMyFlightMovementBlock flight;
 
         public Program()
         {
-
-            ai = GridTerminalSystem.GetBlockWithName("ai") as IMyOffensiveCombatBlock;
             lcd = GridTerminalSystem.GetBlockWithName("lcd") as IMyTextPanel;
-            flight = GridTerminalSystem.GetBlockWithName("flight") as IMyFlightMovementBlock;
 
-            lcd.WriteText(ai.DetailedInfo);
+            camera = GridTerminalSystem.GetBlockWithName("cam") as IMyCameraBlock;
+            camera.Enabled = true;
+            camera.EnableRaycast = true;
 
-            Runtime.UpdateFrequency = UpdateFrequency.Update10;
+            Runtime.UpdateFrequency = UpdateFrequency.Update1;
         }
 
         public void Main(string argument, UpdateType updateSource)
         {
-            var wp = new List<IMyAutopilotWaypoint>();
-            flight.GetWaypoints(wp);
+            var pos = new Vector3D(-56.62, 21.86, 102.43);
+            lcd.WriteText($"Available: {CanScan(camera, pos)}\n");
+            lcd.WriteText($"Working: {camera.IsFunctional && camera.Enabled}", true);
+        }
 
-            lcd.WriteText(ai.DetailedInfo + "-----\n");
-            lcd.WriteText(wp.Count.ToString() + "-----\n", true);
-            lcd.WriteText(FormatGPS(flight.CurrentWaypoint.Matrix.GetRow(3), "TARGET"), true);
+        private bool CanScan(IMyCameraBlock cam, Vector3D targetPos) { 
+            var dir = targetPos - cam.GetPosition();
+            var a = true;
 
+            if (cam.BlockDefinition.SubtypeId == "LargeCameraTopMounted") { 
+                a = cam.WorldMatrix.Up.Dot(dir) > 0.2;
+            }
+
+            return cam.CanScan(targetPos) && a;
         }
 
         private string FormatGPS(Vector4D point, string label)
